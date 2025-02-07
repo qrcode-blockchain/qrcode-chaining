@@ -3,7 +3,7 @@ import ProductRegistration from "../components/ProductRegistration";
 import SideBarComponent from "../components/SideBarComponent";
 import NavBar from "../components/NavBar";
 
-export default function Home() {
+export default function QRCreator() {
 	return (
 	  <div className="flex flex-col w-screen h-screen">
 			<NavBar />
