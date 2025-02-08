@@ -1,6 +1,6 @@
 "use client";
 
-import ProductForm from "./ProductForm.js";
+import ProductForm from "./ProductForm.jsx";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button.jsx";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
