@@ -1,18 +1,88 @@
-import React from "react";
-import ProductRegistration from "../components/ProductRegistration";
-import SideBarComponent from "../components/SideBarComponent";
-import NavBar from "../components/NavBar";
+"use client";
+
+import React, { useState, useEffect } from "react";
+import NavBar from "@/components/NavBar";
+import SalesChart from "@/components/SalesChart";
+import ProductPieChart from "@/components/ProductPieChart"
+import SideBarComponent from "@/components/SideBarComponent";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { QrCodeIcon, Package2Icon, ScanIcon } from "lucide-react";
+
+const NumberAnimation = ({ initialValue, finalValue }) => {
+    const [count, setCount] = useState(initialValue);
+    const duration = 1000;
+    const frameRate = 30;
+
+    useEffect(() => {
+        let startValue = initialValue;
+        const totalFrames = (duration / 1000) * frameRate;
+        const step = Math.ceil((finalValue - initialValue) / totalFrames);
+
+        const interval = setInterval(() => {
+            startValue = Math.min(finalValue, startValue + step);
+            setCount(startValue);
+            if (startValue >= finalValue) {
+                clearInterval(interval);
+            }
+        }, 1000 / frameRate);
+
+        return () => clearInterval(interval);
+    }, [initialValue, finalValue]);
+
+    return (<div className="text-right bg-none">
+        <span className="text-white text-2xl">{count.toLocaleString()}</span>
+    </div>);
+};
+
 
 export default function Home() {
     return (
-      <div className="flex flex-col w-screen h-screen">
+        <div className="flex flex-col w-screen h-screen">
             <NavBar />
-            <div className="container flex w-full flex-grow min-h-0">
-              <SideBarComponent />
-                  <div className="flex-1 p-4 overflow-auto">
-                    <ProductRegistration />		
-              </div>
+            <div className="flex flex-grow w-full h-full">
+                <SideBarComponent />
+                
+                {/* Main Grid Layout */}
+                <div className="grid grid-rows-[1fr,1fr,1fr,1fr,1fr,1fr] grid-cols-3 gap-4 flex-1 p-4">
+                    
+                    <div className="col-span-3 grid grid-cols-3 gap-4 row-span-1">
+                        <Card className="bg-blue-500 border-none">
+                            <CardHeader>
+                                <CardTitle className="flex s-center text-white">
+                                    <QrCodeIcon className="w-5 h-5 mr-3" /> Total QR Codes Generated
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <NumberAnimation initialValue={0} finalValue={10000}/>
+                            </CardContent>
+                        </Card>
+                        <Card className="bg-red-500 border-none">
+                            <CardHeader>
+                                <CardTitle className="flex items-center text-white">
+                                    <Package2Icon className="w-5 h-5 mr-3" /> Types of Products
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <NumberAnimation initialValue={0} finalValue={250} />
+                            </CardContent>
+                        </Card>
+                        <Card className="bg-pink-500 border-none">
+                            <CardHeader>
+                                <CardTitle className="flex items-center text-white">
+                                    <ScanIcon className="w-5 h-5 mr-3" /> QR Codes Scanned
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <NumberAnimation initialValue={0} finalValue={14000} />
+                            </CardContent>
+                        </Card>
+                    </div>
+
+                    <SalesChart className="col-span-2 row-span-4" />
+                    <ProductPieChart className="col-span-1 row-span-4" />
+
+                </div>
             </div>
-      </div>
+        </div>
     );
 }

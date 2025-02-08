@@ -1,7 +1,7 @@
 import React from "react";
-import ProductRegistration from "../components/ProductRegistration";
-import SideBarComponent from "../components/SideBarComponent";
-import NavBar from "../components/NavBar";
+import ProductRegistration from "@/components/ProductRegistration";
+import SideBarComponent from "@/components/SideBarComponent";
+import NavBar from "@/components/NavBar";
 
 export default function QRCreator() {
 	return (
