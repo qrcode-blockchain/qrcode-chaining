@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
 import NavBar from "@/components/NavBar";
 import SalesChart from "@/components/SalesChart";
+import React, { useState, useEffect } from "react";
 import ProductPieChart from "@/components/ProductPieChart"
 import SideBarComponent from "@/components/SideBarComponent";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { QrCodeIcon, Package2Icon, ScanIcon } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableRow, TableHeader, TableHead } from "@/components/ui/table";
 
 const NumberAnimation = ({ initialValue, finalValue }) => {
     const [count, setCount] = useState(initialValue);
@@ -33,7 +34,8 @@ const NumberAnimation = ({ initialValue, finalValue }) => {
         <span className="text-white text-2xl">{count.toLocaleString()}</span>
     </div>);
 };
-
+const topProducts = [{name: 'Parle-G', amount: 1287},{name: 'Sprite', amount: 4000}, {name: 'Slice', amount: 3900}]
+topProducts.sort((a,b) => (a.amount - b.amount)).reverse();
 
 export default function Home() {
     return (
@@ -42,7 +44,6 @@ export default function Home() {
             <div className="flex flex-grow w-full h-full">
                 <SideBarComponent />
                 
-                {/* Main Grid Layout */}
                 <div className="grid grid-rows-[1fr,1fr,1fr,1fr,1fr,1fr] grid-cols-3 gap-4 flex-1 p-4">
                     
                     <div className="col-span-3 grid grid-cols-3 gap-4 row-span-1">
@@ -81,6 +82,24 @@ export default function Home() {
                     <SalesChart className="col-span-2 row-span-4" />
                     <ProductPieChart className="col-span-1 row-span-4" />
 
+                    <div className="col-span-3">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Product Name</TableHead>
+                                    <TableHead>Amount Scanned</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {topProducts.map((p, index) => (
+                                    <TableRow key={index}>
+                                        <TableCell>{ p.name }</TableCell>
+                                        <TableCell>{ p.amount }</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </div>
                 </div>
             </div>
         </div>
