@@ -6,7 +6,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 const options = {
-  chart: { type: "radialBar", toolbar: { show: false } }, label: ["QR Codes"]
+  chart: { type: "pie", toolbar: { show: false } }, 
+  labels: ["Sprite", "Slice", "Parle-G", "GoodDay", "Marie-gold"],
+  legend: {
+    position: 'bottom',
+  }
 };
 
 export default function ProductPieChart({ className }) {
@@ -16,7 +20,7 @@ export default function ProductPieChart({ className }) {
         <CardTitle>Sales Overview</CardTitle>
       </CardHeader>
       <CardContent>
-        <Chart options={options} series={[70]} type="radialBar" height={300} />
+        <Chart options={options} series={[1000, 2400, 1350, 1050, 1849]} type="pie" height={290} />
       </CardContent>
     </Card>
   );
