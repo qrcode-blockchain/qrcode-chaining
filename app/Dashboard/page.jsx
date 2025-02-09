@@ -1,6 +1,5 @@
 "use client";
 
-import NavBar from "@/components/NavBar";
 import SalesChart from "@/components/SalesChart";
 import React, { useState, useEffect } from "react";
 import ProductPieChart from "@/components/ProductPieChart"
@@ -31,7 +30,7 @@ const NumberAnimation = ({ initialValue, finalValue }) => {
     }, [initialValue, finalValue]);
 
     return (<div className="text-right bg-none">
-        <span className="text-white text-2xl">{count.toLocaleString()}</span>
+        <span className="text-2xl">{count.toLocaleString()}</span>
     </div>);
 };
 const topProducts = [{name: 'Parle-G', amount: 1287},{name: 'Sprite', amount: 4000}, {name: 'Slice', amount: 3900}]
@@ -39,51 +38,59 @@ topProducts.sort((a,b) => (a.amount - b.amount)).reverse();
 
 export default function Home() {
     return (
-        <div className="flex flex-col w-screen h-screen">
-            <NavBar />
-            <div className="flex flex-grow w-full h-full">
+        <div className="flex flex-col w-screen h-screen bg-blue-50">
+            <div className="bg-blue-600 z-10 h-1/3 absolute w-full"></div>
+            <div className="flex flex-grow z-20 w-full h-full">
                 <SideBarComponent />
-                
                 <div className="grid grid-rows-[1fr,1fr,1fr,1fr,1fr,1fr] grid-cols-3 gap-4 flex-1 p-4">
-                    
-                    <div className="col-span-3 grid grid-cols-3 gap-4 row-span-1">
-                        <Card className="bg-blue-500 border-none">
+                    <div className="col-span-3 grid grid-cols-4 gap-4 row-span-1">
+                        <Card className="bg-white border-none shadow">
                             <CardHeader>
-                                <CardTitle className="flex s-center text-white">
-                                    <QrCodeIcon className="w-5 h-5 mr-3" /> Total QR Codes Generated
+                                <CardTitle className="flex items-center">
+                                    <QrCodeIcon className="w-7 h-7 mr-3 bg-blue-600 text-white rounded-md" /> Total QR Codes Generated
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <NumberAnimation initialValue={0} finalValue={10000}/>
                             </CardContent>
                         </Card>
-                        <Card className="bg-red-500 border-none">
+                        <Card className="bg-white border-none shadow">
                             <CardHeader>
-                                <CardTitle className="flex items-center text-white">
-                                    <Package2Icon className="w-5 h-5 mr-3" /> Types of Products
+                                <CardTitle className="flex items-center">
+                                    <Package2Icon className="w-7 h-7 mr-3 bg-blue-600 text-white rounded-md" /> Types of Products
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <NumberAnimation initialValue={0} finalValue={250} />
                             </CardContent>
                         </Card>
-                        <Card className="bg-pink-500 border-none">
+                        <Card className="bg-white border-none shadow">
                             <CardHeader>
-                                <CardTitle className="flex items-center text-white">
-                                    <ScanIcon className="w-5 h-5 mr-3" /> QR Codes Scanned
+                                <CardTitle className="flex items-center">
+                                    <ScanIcon className="w-7 h-7 mr-3 bg-blue-600 text-white rounded-md" /> QR Codes Scanned
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <NumberAnimation initialValue={0} finalValue={14000} />
                             </CardContent>
                         </Card>
+                        <Card className="bg-white border-none shadow">
+                            <CardHeader>
+                                <CardTitle className="flex items-center">
+                                    <ScanIcon className="w-7 h-7 mr-3 bg-blue-600 text-white rounded-md" /> Revenue
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <NumberAnimation initialValue={0} finalValue={1400} />
+                            </CardContent>
+                        </Card>
                     </div>
 
-                    <SalesChart className="col-span-2 row-span-4" />
-                    <ProductPieChart className="col-span-1 row-span-4" />
+                    <SalesChart className="col-span-2 row-span-4 border-none shadow" />
+                    <ProductPieChart className="col-span-1 row-span-4 border-none shadow" />
 
-                    <div className="col-span-3">
-                        <Table>
+                    <div className="col-span-3 bg-white rounded-md">
+                        <Table className=''>
                             <TableHeader>
                                 <TableRow>
                                     <TableHead>Product Name</TableHead>
