@@ -2,6 +2,7 @@
 
 import ProductForm from "./ProductForm.jsx";
 import { useState, useEffect } from "react";
+import { TableProperties } from "lucide-react";
 import { Button } from "@/components/ui/button.jsx";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AlertDialog, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, 
@@ -53,13 +54,14 @@ export default function ProductRegistration() {
         console.log(products)
     }
 
-    return (<div className="flex flex-col">
-    <h1 className="text-2xl font-bold">Product Registration</h1>
+    return (<div className="flex flex-col bg-white/10 backdrop-blur-lg border border-white/20 shadow-lg rounded-lg p-2">
+    <div className="w-full flex gap-2">
+        <TableProperties className="text-white bg-none" size={32}/>
+        <h1 className="text-2xl font-semibold text-white">Product Registration</h1>
+    </div>
     <div className="grid grid-cols-3 gap-2 p-6 space-y-6 w-full">
-
         <ProductForm onSave={ handleSaveProduct } selectedProduct={ selectedProduct } onCancel={ handleCancel } onDelete={ handleDelete } className=""/>
-
-        <div className="col-span-2 border rounded-md p-4">
+        <div className="col-span-2 border rounded-md p-4 bg-white">
             <Table>
                 <TableHeader>
                     <TableRow>
