@@ -1,7 +1,12 @@
 {
   "compilerOptions": {
+    "jsx": "react",
+    "allowJs": true,
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@shadcn/*": ["./node_modules/shadcn"]
     }
-  }
+  },
+  "include": ["./**/*"]
 }
