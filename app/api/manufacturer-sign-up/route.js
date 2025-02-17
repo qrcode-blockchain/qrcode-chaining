@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
-import dbConnect from "../lib/dbConnect";
-import { sendVerificationEmail } from '../helpers/sendVerification';
+import dbConnect from "@/lib/dbConnect";
+import { sendVerificationEmail } from '@/helpers/sendVerification';
 import bcrypt from 'bcryptjs';
-import manufacturerModel from '../model/Manufacturer';
-
+import manufacturerModel from '@/model/Manufacturer';
 
 // Utility function to convert File to Buffer
 async function fileToBuffer(formData, fieldName) {

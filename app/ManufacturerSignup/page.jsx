@@ -591,9 +591,9 @@ import Link from "next/link";
 import { useToast } from "@/hooks/useToast";
 import { useRouter } from "next/navigation";
 import axios from 'axios';
-
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button } from "@/components/ui/button";
+import { Button } from "../../components/ui/button";
+// import { Button } from "@/components/ui/button";
 import { Loader2, Shield, Building2, Globe, Mail, Phone, Lock, FileText, CreditCard, Briefcase, Upload } from "lucide-react";
  import { ManufacturerSignUpSchema } from "@/Schema/manufacturerSchema";
  
@@ -604,8 +604,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+} from "../../components/ui/form"
+import { Input } from "../../components/ui/input"
 
 const ManufacturerSignup = () => {
   const [previewLogo, setPreviewLogo] = useState(null);
