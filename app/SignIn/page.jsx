@@ -12,13 +12,13 @@ import {
   FormControl,
   FormMessage,
   useFormField,
-} from '@/components/ui/form';
+} from '../../components/ui/form';
 import { Button } from '../../components/ui/button'
 import { Input } from '../../components/ui/input';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useToast } from '@/hooks/use-toast';
-import { signInSchema } from '@/Schema/signInSchema';
+import { useToast } from '../../hooks/use-toast';
+import { signInSchema } from '../../Schema/signInSchema';
 import { Loader2, Mail, Lock } from 'lucide-react';
 import { useState } from 'react';
 

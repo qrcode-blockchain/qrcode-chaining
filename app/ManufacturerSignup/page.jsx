@@ -588,14 +588,14 @@ import { useForm } from "react-hook-form";
 import { useState } from "react";
 // import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { useToast } from "@/hooks/useToast";
+import { useToast } from "../../hooks/useToast";
 import { useRouter } from "next/navigation";
 import axios from 'axios';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from "../../components/ui/button";
 // import { Button } from "@/components/ui/button";
 import { Loader2, Shield, Building2, Globe, Mail, Phone, Lock, FileText, CreditCard, Briefcase, Upload } from "lucide-react";
- import { ManufacturerSignUpSchema } from "@/Schema/manufacturerSchema";
+ import { ManufacturerSignUpSchema } from "../../Schema/manufacturerSchema";
  
 import {
   Form,
