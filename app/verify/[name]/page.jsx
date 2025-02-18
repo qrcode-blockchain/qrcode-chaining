@@ -1,10 +1,10 @@
 'use client'
 import React from "react";
 import { useParams, useRouter } from "next/navigation";
-import { useToast } from "../../hooks/useToast";
+import { useToast } from "../../../hooks/useToast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { verifySchema } from "../../Schema/verifySchema";
+import { verifySchema } from "../../../Schema/verifySchema";
 
 import axios from "axios";
 import { Shield } from 'lucide-react';
