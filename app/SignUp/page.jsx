@@ -1,4 +1,4 @@
-import UserTypeSelection from "@/components/Signup";
+import UserTypeSelection from "../../components/Signup";
 export default function Home() {
   return (
     <>
