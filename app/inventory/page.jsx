@@ -7,6 +7,20 @@ import ProductPieChart from "@/components/ProductPieChart";
 import SideBarComponent from "@/components/SideBarComponent";
 import { Table, TableBody, TableCell, TableRow, TableHeader, TableHead } from "@/components/ui/table";
 
+
+const series = [
+    { name: "year 1", data: [1000, 2400, 1350, 1050, 1849, 1900] },
+    { name: 'year 2', data: [1200, 1789, 1400, 1378, 2070, 1789] }
+];
+
+const options = {
+    chart: { toolbar: { show: false }},
+    xaxis: { categories: ['Jan', 'Feb', 'Mar', 'Apr', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'], labels: { style: { colors: '#fff' } }},
+    yaxis: { labels: { style: { colors: '#fff' }}},
+    stroke: { curve: 'smooth' },
+    dataLabels: { enabled: false }
+};
+
 export default function Inventory() {
     const [products, setProducts] = useState([]);
     const [shippedUnits, setShippedUnits] = useState({});
@@ -39,8 +53,7 @@ export default function Inventory() {
                         </div>
                     </div>
                     <div className="grid grid-cols-3 w-full gap-2 pr-2">
-                        <SalesChart className="col-span-2 row-span-4 border-none shadow" />
-                        <ProductPieChart className="col-span-1 row-span-4 border-none shadow" />
+                        <SalesChart className="col-span-2 row-span-4 border-none shadow" series={series} options={options} type={'area'} title={"Products Manufactured"}/>
                     </div>
                     <div className="mt-2 w-full bg-blue-900/30 p-2 rounded-lg shadow-lg border border-blue-400/20 hover:shadow-xl transition-all text-white">
                         <Table>
