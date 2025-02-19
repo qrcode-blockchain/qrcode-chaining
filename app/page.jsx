@@ -7,10 +7,10 @@ export default function Home() {
     <div className="container">
         <div className="flex flex-col items-center">
             <Button asChild>
-                <Link href='/Dashboard'>Dashboard</Link>
+                <Link href='/dashboard'>Dashboard</Link>
             </Button>
             <Button asChild>
-                <Link href="/Products_Form">Product Form</Link>
+                <Link href="/products_Form">Product Form</Link>
             </Button>
         </div>
     </div>

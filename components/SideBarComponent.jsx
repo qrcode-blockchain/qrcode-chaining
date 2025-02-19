@@ -2,37 +2,35 @@
 
 import React from "react";
 import Link from "next/link";
-import { QrCodeIcon, PieChartIcon, QrCode } from "lucide-react";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { LinkIcon, Factory, Shield, BarChart2, QrCode, Users, Settings, ScanLine } from "lucide-react";
 
 const services = [
-    { link: "/Dashboard", title: "Dashboard", icon: PieChartIcon },
-    { link: "/Products_Form", title: "QR Code Generator", icon: QrCodeIcon }
+    { name: "Overview", icon: <BarChart2 className="w-5 h-5" />, link: '/dashboard'},
+    { name: "QR Management", icon: <QrCode className="w-5 h-5" />, link: '/products_Form' },
+    { name: "Security", icon: <Shield className="w-5 h-5" />, link: '/dashboard'},
+    { name: "Blockchain", icon: <LinkIcon className="w-5 h-5" />, link: '/dashboard' },
+    { name: "Manufacturing", icon: <Factory className="w-5 h-5" />, link: '/inventory' },
+    { name: "Scans", icon: <ScanLine className="w-5 h-5" />, link: '/scan_Overview'},
+    { name: "Users", icon: <Users className="w-5 h-5" />, link: '/users' },
+    { name: "Settings", icon: <Settings className="w-5 h-5" />, link: '/settings' }
 ];
 
 export default function SideBarComponent() {
     return (
-        <Card className="m-3 shadow">
-            <CardHeader>
-                <div className="flex gap-2 items-center">
-                    <QrCode className="w-8 h-8 text-blue-600"/><span>QR Chain</span>
-                </div>
-            </CardHeader>
-            <CardContent>
-                <div className="flex flex-row w-full">
-                    <div className="w-full bg-white text-black flex items-center gap-2 p-2 hover:bg-gray-200 rounded">
-                        <PieChartIcon className="w-5 h-5 text-blue-600" />
-                        <Link href="/Dashboard">Dashboard</Link>
-                    </div>
-                </div>
-                <div className="flex flex-row w-full">
-                    <div className="w-full bg-white text-black flex items-center gap-2 p-2 hover:bg-gray-200 rounded">
-                        <QrCodeIcon className="w-5 h-5 text-blue-600" />
-                        <Link href="/Products_Form">QR Code Generator</Link>
-                    </div>
-                </div>
-            </CardContent>
-            <CardFooter></CardFooter>
-        </Card>
+        <aside className="w-64 bg-blue-900/30 backdrop-blur-lg p-6 fixed h-full border-r border-blue-400/20">
+            <h2 className="text-2xl font-bold text-blue-400">Industry 4.0</h2>
+            <nav className="mt-8 space-y-2">
+                {services.map((item, index) => (
+                    <Link 
+                        key={index} 
+                        href={item.link}
+                        className="flex items-center space-x-3 w-full px-4 py-2 text-left hover:bg-blue-500/20 rounded-lg transition"
+                    >
+                        {item.icon}
+                        <span>{item.name}</span>
+                    </Link>
+                ))}
+            </nav>
+        </aside>
     );
 }

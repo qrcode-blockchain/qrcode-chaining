@@ -20,7 +20,7 @@ const series = [
 
 export default function SalesChart({ className }) {
     return (
-        <Card className={`${ className } bg-slate-900 text-white`}>
+        <Card className={`${ className } bg-blue-900/30 p-4 rounded-lg shadow-lg border border-blue-400/20 hover:shadow-xl transition-all text-white`}>
             <CardHeader>
                 <CardTitle>Product Manufactured</CardTitle>
             </CardHeader>

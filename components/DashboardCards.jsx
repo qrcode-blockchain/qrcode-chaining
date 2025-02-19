@@ -25,7 +25,7 @@ const NumberAnimation = ({ initialValue, finalValue }) => {
         return () => clearInterval(interval);
     }, [initialValue, finalValue]);
 
-    return (<div className="text-right bg-none">
+    return (<div className="text-right text-white bg-none">
         <span className="text-lg font-semibold">{count.toLocaleString()}</span>
     </div>);
 };
@@ -40,15 +40,15 @@ export default function DashboardCards() {
     return (
         <div className="grid grid-cols-4 gap-1 w-full">
             { cards.map(({ title, value, Icon }, index) => (
-                <Card key={index} className="w-full max-w-[300px] p-2 rounded-2xl shadow-lg">
+                <Card key={index} className="bg-blue-900/30 p-4 rounded-lg shadow-lg border border-blue-400/20 hover:shadow-xl transition-all text-white">
                     <CardContent className="flex flex-col gap-2 p-0 ">
                         <p className="text-md uppercase opacity-80">{ title }</p>
                         <div className="flex items-center justify-between">
                             <NumberAnimation initialValue={0} finalValue={ value } />
                             <Icon size={32} />
                         </div>
-                        <p className="text-sm text-green-300">
-                            +3.48% <span className="opacity-70 text-gray-400">Since last month</span>
+                        <p className="text-sm text-green-500">
+                            +3.48% <span className="opacity-70 text-white">Since last month</span>
                         </p>
                     </CardContent>
                 </Card>

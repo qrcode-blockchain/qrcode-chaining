@@ -1,6 +1,5 @@
 "use client";
 
-import { z } from "zod";
 import React from "react";
 import InfoTip from "./InfoTip";
 import { cn } from "@/lib/utils";
@@ -11,34 +10,27 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { productSchema } from "@/Schema/productSchema";
 import { useForm, FormProvider } from "react-hook-form";
 import { Card, CardContent } from "@/components/ui/card";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { FormField, FormLabel, FormControl, FormItem, FormMessage } from "@/components/ui/form";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
-const productSchema = z.object({
-    name: z.string().min(2, { message: "Product name must be at least 2 characters." }),
-    batchNo: z.string().min(1, { message: "Batch No. is required." }),
-    serialNo: z.string().min(1, { message: "Serial No. is required." }),
-    expiryDate: z.string({ required_error: "Expiry Date is required." }),
-    manufacturingDate: z.string({ required_error: "Manufacturing Date is required." }),
-    amount: z.string({ invalid_type_error: "Amount must be a number." }).min(1, { message: "Amount must be at least 1." }),
-    location: z.string().min(3, { message: "Location must be at least 3 characters." }),
-});
+const emptyValues = {
+    name: "",
+    batchNo: "",
+    serialNo: 0,
+    price: 0,
+    date: null,
+    amount: 0,
+    location: ""
+}
 
 export default function ProductForm({ onSave, selectedProduct, onCancel, onDelete}) {
     const methods = useForm({
         resolver: zodResolver(productSchema), 
-        defaultValues:  selectedProduct || {
-            name: "",
-            batchNo: "",
-            serialNo: "",
-            expiryDate: null,
-            manufacturingDate: null,
-            amount: 0,
-            location: ""
-        }
+        defaultValues:  selectedProduct || emptyValues
     });
 
     const { reset, handleSubmit } = methods;
@@ -51,42 +43,18 @@ export default function ProductForm({ onSave, selectedProduct, onCancel, onDelet
 
     const handleSubmitForm = (data) => { 
         onSave(data);
-        methods.reset({
-            name: "",
-            batchNo: "",
-            serialNo: "",
-            expiryDate: null,
-            manufacturingDate: null,
-            amount: 0,
-            location: ""
-        });
+        methods.reset(emptyValues);
     };
 
     const handleCancelEvent = () => {
         onCancel();
-        methods.reset({
-            name: "",
-            batchNo: "",
-            serialNo: "",
-            expiryDate: null,
-            manufacturingDate: null,
-            amount: 0,
-            location: ""
-        });
+        methods.reset(emptyValues);
     };
 
     const handleDeleteEvent = () => {
         if (!selectedProduct) return;
         onDelete(selectedProduct.serialNo);
-        methods.reset({
-            name: "",
-            batchNo: "",
-            serialNo: "",
-            expiryDate: null,
-            manufacturingDate: null,
-            amount: 0,
-            location: ""
-        });
+        methods.reset(emptyValues);
     };
 
 
@@ -116,42 +84,25 @@ export default function ProductForm({ onSave, selectedProduct, onCancel, onDelet
                         <FormItem>
                             <FormLabel>Serial No</FormLabel>
                             <FormControl>
-                                <InfoTip Component={ <Input placeholder="Enter Serial No." {...field} /> } message={ <p>Serial No. of Product</p> }/>
+                                <InfoTip Component={ <Input type="number" placeholder="Enter Serial No." {...field} /> } message={ <p>Serial No. of Product</p> }/>
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )} />
+
+                    <FormField control={methods.control} name="price" render={({ field }) => ( 
+                        <FormItem>
+                            <FormLabel>Price</FormLabel>
+                            <FormControl>
+                                <InfoTip Component={ <Input type="number" placeholder="Enter Price" {...field} /> } message={ <p>Price of Products to be Manufactured</p> }/>
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )} />
                         
-                    <FormField control={methods.control} name="expiryDate" render={({ field }) => ( 
+                    <FormField control={methods.control} name="date" render={({ field }) => ( 
                         <FormItem>
-                            <FormLabel>Expiry Date</FormLabel>
-                            <FormControl>
-                                <TooltipProvider>
-                                    <Tooltip>
-                                        <TooltipTrigger asChild>
-                                            <Popover>
-                                                <PopoverTrigger asChild>
-                                                    <Button variant={"outline"} className={cn( "w-full justify-start text-left font-normal", !field.value && "text-muted-foreground")}>
-                                                        <Calendar1Icon /> { field.value ? format(new Date(field.value), "PPP") : <span>Pick a date</span> }
-                                                    </Button>
-                                                </PopoverTrigger>
-                                                <PopoverContent className="w-auto p-0" align="start">
-                                                    <Calendar mode="single" selected={ new Date(field.value) } onSelect={(date) => field.onChange(date.toISOString())} initialFocus />
-                                                </PopoverContent>
-                                            </Popover>
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                            <p>Expiry Date of Product</p>
-                                        </TooltipContent>
-                                    </Tooltip>
-                                </TooltipProvider>
-                            </FormControl>
-                        </FormItem>
-                    )} />
-                        
-                    <FormField control={methods.control} name="manufacturingDate" render={({ field }) => ( 
-                        <FormItem>
-                            <FormLabel>Manufacturing Date</FormLabel>
+                            <FormLabel>Date</FormLabel>
                             <FormControl>
                                 <TooltipProvider>
                                     <Tooltip>

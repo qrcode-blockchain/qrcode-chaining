@@ -15,7 +15,7 @@ const options = {
 
 export default function ProductPieChart({ className }) {
   return (
-    <Card className={`p-2 ${ className }`}>
+    <Card className={`bg-blue-900/30 p-2 rounded-lg shadow-lg border border-blue-400/20 hover:shadow-xl transition-all text-white ${ className }`}>
       <CardHeader>
         <CardTitle>Sales Overview</CardTitle>
       </CardHeader>
