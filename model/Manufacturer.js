@@ -48,11 +48,11 @@ const ManufacturerSchema = new mongoose.Schema({
         required: [true, "Type of Products Manufactured is required"]
     },
     companyLogo: {
-        type: String,  // Store the URL/path of the uploaded file
+        type: Buffer,  // Store the URL/path of the uploaded file
         required: true
     },
     businessCertificate: {
-        type: String,  // Store the URL/path of the uploaded file
+        type: Buffer,  // Store the URL/path of the uploaded file
         required: true
     },
     website: {

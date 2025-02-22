@@ -31,7 +31,7 @@ export async function POST(request) {
     const cinNumber = formData.get('cinNumber');
     const productsManufactured = formData.get('productsManufactured');
     const website = formData.get('website');
-
+    
     // Basic validation
     if (!name || !email || !password || !phoneNumber || !address || !gstNumber || 
         !manufacturingLicenseNumber || !panNumber || !cinNumber || !productsManufactured) {
@@ -90,14 +90,16 @@ export async function POST(request) {
       existingUnverifiedManufacturer.cinNumber = cinNumber;
       existingUnverifiedManufacturer.productsManufactured = productsManufactured;
       existingUnverifiedManufacturer.website = website || '';
-      existingUnverifiedManufacturer.companyLogo = companyLogoBuffer;
-      existingUnverifiedManufacturer.businessCertificate = businessCertificateBuffer;
+      existingUnverifiedManufacturer.companyLogo =  companyLogoBuffer.toString('base64');
+      existingUnverifiedManufacturer.businessCertificate = businessCertificateBuffer.toString('base64');
       existingUnverifiedManufacturer.verifyCode = verifyCode;
       existingUnverifiedManufacturer.verifyCodeExpiry = verifyCodeExpiry;
 
       await existingUnverifiedManufacturer.save();
     } else {
       // Create new manufacturer
+      const expiryDate = new Date();
+      expiryDate.setHours(expiryDate.getHours() + 1);
       const newManufacturer = new manufacturerModel({
         name,
         email,
@@ -110,10 +112,10 @@ export async function POST(request) {
         cinNumber,
         productsManufactured,
         website: website || '',
-        companyLogo: companyLogoBuffer,
-        businessCertificate: businessCertificateBuffer,
+        companyLogo: companyLogoBuffer.toString('base64'),
+        businessCertificate: businessCertificateBuffer.toString('base64'),
         verifyCode,
-        verifyCodeExpiry,
+        verifyCodeExpiry:expiryDate,
         isVerified: false
       });
 
