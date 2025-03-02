@@ -1,7 +1,7 @@
 import React from "react";
-import { MoonIcon, Settings } from "lucide-react";
-import ProductRegistration from "@/components/ProductRegistration";
-import SideBarComponent from "@/components/SideBarComponent";
+import { MoonIcon } from "lucide-react";
+import ProductRegistration from "../../components/ProductRegistration";
+import SideBarComponent from "../../components/SideBarComponent";
 
 export default function QRCreator() {
 	return (

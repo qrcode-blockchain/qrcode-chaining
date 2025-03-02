@@ -1,11 +1,11 @@
 "use client";
 
-import { MoonIcon, Settings } from "lucide-react";
-import React, { useState, useEffect } from "react";
-import SalesChart from "@/components/SalesChart";
-import ProductPieChart from "@/components/ProductPieChart";
-import SideBarComponent from "@/components/SideBarComponent";
-import { Table, TableBody, TableCell, TableRow, TableHeader, TableHead } from "@/components/ui/table";
+import { MoonIcon } from "lucide-react";
+import React from "react";
+import SalesChart from "../../components/SalesChart";
+import ProductPieChart from "../../components/ProductPieChart";
+import SideBarComponent from "../../components/SideBarComponent";
+import { Table, TableBody, TableCell, TableRow, TableHeader, TableHead } from "../../components/ui/table";
 
 const topProducts = [{name: 'Parle-G', amount: 1287},{name: 'Sprite', amount: 4000}, {name: 'Slice', amount: 3900}]
 topProducts.sort((a,b) => (a.amount - b.amount)).reverse();

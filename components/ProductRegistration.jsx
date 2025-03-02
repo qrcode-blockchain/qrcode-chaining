@@ -3,8 +3,8 @@
 import ProductForm from "./ProductForm.jsx";
 import { useState, useEffect } from "react";
 import { TableProperties } from "lucide-react";
-import { Button } from "@/components/ui/button.jsx";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Button } from "./ui/button.jsx";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 import { 
     AlertDialog, 
     AlertDialogDescription, 
@@ -15,7 +15,7 @@ import {
     AlertDialogTitle, 
     AlertDialogTrigger, 
     AlertDialogCancel 
-} from "@/components/ui/alert-dialog.jsx";
+} from "./ui/alert-dialog.jsx";
 
 export default function ProductRegistration() {
     const [products, setProducts] = useState([]);

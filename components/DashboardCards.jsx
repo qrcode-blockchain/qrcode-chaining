@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "./ui/card";
 import { QrCode, Package, Scan, IndianRupee } from "lucide-react";
 
 const NumberAnimation = ({ initialValue, finalValue }) => {

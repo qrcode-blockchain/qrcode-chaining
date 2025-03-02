@@ -1,11 +1,10 @@
 "use client";
 
-import SalesChart from "@/components/SalesChart";
+import SalesChart from "../../components/SalesChart";
 import { MoonIcon, Settings } from "lucide-react";
 import React, { useState, useEffect } from "react";
-import ProductPieChart from "@/components/ProductPieChart";
-import SideBarComponent from "@/components/SideBarComponent";
-import { Table, TableBody, TableCell, TableRow, TableHeader, TableHead } from "@/components/ui/table";
+import SideBarComponent from "../../components/SideBarComponent";
+import { Table, TableBody, TableCell, TableRow, TableHeader, TableHead } from "../../components/ui/table";
 
 
 const series = [
@@ -53,7 +52,7 @@ export default function Inventory() {
                         </div>
                     </div>
                     <div className="grid grid-cols-3 w-full gap-2 pr-2">
-                        <SalesChart className="col-span-2 row-span-4 border-none shadow" series={series} options={options} type={'area'} title={"Products Manufactured"}/>
+                        <SalesChart className="col-span-3 row-span-4 border-none shadow" series={series} options={options} type={'area'} title={"Products Manufactured"}/>
                     </div>
                     <div className="mt-2 w-full bg-blue-900/30 p-2 rounded-lg shadow-lg border border-blue-400/20 hover:shadow-xl transition-all text-white">
                         <Table>

@@ -2,20 +2,20 @@
 
 import React from "react";
 import InfoTip from "./InfoTip";
-import { cn } from "@/lib/utils";
+import { cn } from "../lib/utils";
 import { format } from "date-fns";
 import { useEffect } from "react";
 import { Calendar1Icon } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
+import { Calendar } from "./ui/calendar";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { productSchema } from "@/Schema/productSchema";
+import { productSchema } from "../Schema/productSchema";
 import { useForm, FormProvider } from "react-hook-form";
-import { Card, CardContent } from "@/components/ui/card";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { FormField, FormLabel, FormControl, FormItem, FormMessage } from "@/components/ui/form";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Card, CardContent } from "./ui/card";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { FormField, FormLabel, FormControl, FormItem, FormMessage } from "./ui/form";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 
 const emptyValues = {
     name: "",
