@@ -87,16 +87,16 @@ const Footer = () => {
               <a href="mailto:contact@qrchain.com" 
                  className="flex items-center space-x-3 text-gray-300 hover:text-white transition-colors">
                 <Mail className="w-5 h-5" />
-                <span>contact@qrchain.com</span>
+                <span>mayaggarwal@gmail.com</span>
               </a>
               <a href="tel:+1234567890" 
                  className="flex items-center space-x-3 text-gray-300 hover:text-white transition-colors">
                 <Phone className="w-5 h-5" />
-                <span>+1 (234) 567-890</span>
+                <span>+91 9867219955</span>
               </a>
               <div className="flex items-center space-x-3 text-gray-300">
                 <MapPin className="w-5 h-5 flex-shrink-0" />
-                <span>123 Manufacturing Hub, Innovation District, CA 94103</span>
+                <span>Fr. Agnel Ashram, Bandstand Promenade, Mount Mary, Bandra West, Mumbai, Maharashtra 400050</span>
               </div>
             </div>
           </div>
