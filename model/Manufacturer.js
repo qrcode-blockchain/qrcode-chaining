@@ -29,19 +29,35 @@ const ManufacturerSchema = new mongoose.Schema({
         required: [true, "GST Number is required"],
         match: [/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/, "Please enter a valid GST number"]
     },
+    gstCertificate: {
+        type: Buffer,  // Store the URL/path of the uploaded file
+        required: true
+    },
     manufacturingLicenseNumber: {
         type: String,
         required: [true, "Manufacturing License Number is required"]
+    },
+    manufacturingLicenseCertificate: {
+        type: Buffer,  // Store the URL/path of the uploaded file
+        required: true
     },
     panNumber: {
         type: String,
         required: [true, "PAN Number is required"],
         match: [/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, "Please enter a valid PAN number"]
     },
+    panNumberCertificate: {
+        type: Buffer,  // Store the URL/path of the uploaded file
+        required: true
+    },
     cinNumber: {
         type: String,
         required: [true, "CIN Number is required"],
         match: [/^[A-Z]{1}[0-9]{5}[A-Z]{2}[0-9]{4}[A-Z]{3}[0-9]{6}$/, "Please enter a valid CIN number (21 characters)"]
+    },
+    cinCertificate: {
+        type: Buffer,  // Store the URL/path of the uploaded file
+        required: true
     },
     productsManufactured: {
         type: [String],
