@@ -87,7 +87,7 @@ const Footer = () => {
               <a href="mailto:contact@qrchain.com" 
                  className="flex items-center space-x-3 text-gray-300 hover:text-white transition-colors">
                 <Mail className="w-5 h-5" />
-                <span>mayaggarwal@gmail.com</span>
+                <span>info@qrcipher.in</span>
               </a>
               <a href="tel:+1234567890" 
                  className="flex items-center space-x-3 text-gray-300 hover:text-white transition-colors">
@@ -96,7 +96,7 @@ const Footer = () => {
               </a>
               <div className="flex items-center space-x-3 text-gray-300">
                 <MapPin className="w-5 h-5 flex-shrink-0" />
-                <span>Fr. Agnel Ashram, Bandstand Promenade, Mount Mary, Bandra West, Mumbai, Maharashtra 400050</span>
+                <span>Bandra West, Mumbai, Maharashtra 400050</span>
               </div>
             </div>
           </div>

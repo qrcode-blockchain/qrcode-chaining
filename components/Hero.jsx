@@ -127,9 +127,9 @@ const Hero = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 py-8 border-t border-blue-400/20">
           {[
             { label: "Success Rate", value: "99.9%" },
-            { label: "Secured Products", value: "1M+" },
+            { label: "Secured Products", value: "5K+" },
             { label: "Trust Score", value: "98%" },
-            { label: "Global Manufacturers", value: "500+" }
+            { label: "Global Manufacturers", value: "5+" }
           ].map((stat, index) => (
             <div key={index} className="text-center">
               <p className="text-3xl font-bold text-blue-400">{stat.value}</p>
