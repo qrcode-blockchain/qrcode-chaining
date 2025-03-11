@@ -5,12 +5,12 @@ import Link from "next/link";
 import { LinkIcon, Factory, Shield, BarChart2, QrCode, Users, Settings, ScanLine } from "lucide-react";
 
 const services = [
-    { name: "Overview", icon: <BarChart2 className="w-5 h-5" />, link: '/dashboard'},
-    { name: "QR Management", icon: <QrCode className="w-5 h-5" />, link: '/products_Form' },
-    { name: "Security", icon: <Shield className="w-5 h-5" />, link: '/dashboard'},
-    { name: "Blockchain", icon: <LinkIcon className="w-5 h-5" />, link: '/dashboard' },
-    { name: "Manufacturing", icon: <Factory className="w-5 h-5" />, link: '/inventory' },
-    { name: "Scans", icon: <ScanLine className="w-5 h-5" />, link: '/scan_Overview'},
+    { name: "Overview", icon: <BarChart2 className="w-5 h-5" />, link: '/Dashboard'},
+    { name: "QR Management", icon: <QrCode className="w-5 h-5" />, link: '/Products_Form' },
+    { name: "Security", icon: <Shield className="w-5 h-5" />, link: '/Dashboard'},
+    { name: "Blockchain", icon: <LinkIcon className="w-5 h-5" />, link: '/Dashboard' },
+    { name: "Manufacturing", icon: <Factory className="w-5 h-5" />, link: '/Inventory' },
+    { name: "Scans", icon: <ScanLine className="w-5 h-5" />, link: '/Scan_Overview'},
     { name: "Users", icon: <Users className="w-5 h-5" />, link: '/users' },
     { name: "Settings", icon: <Settings className="w-5 h-5" />, link: '/settings' }
 ];

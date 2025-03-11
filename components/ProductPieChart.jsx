@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-
+//change for staging purposes
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 export default function ProductPieChart({ className, options, series, type }) {

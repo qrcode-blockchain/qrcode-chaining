@@ -1,13 +1,11 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { Mona_Sans } from "next/font/google";
 import "./globals.css";
+import Navbar from '../components/Navbar'
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+import { Toaster } from "../components/ui/toaster";
+import AuthProvider from "../context/AuthProvider";
+const monaSans = Mona_Sans({
+  variable: "--font-mona-sans",
   subsets: ["latin"],
 });
 
@@ -19,11 +17,22 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      {/* <body
+        className={monaSans.className}
       >
+        <Navbar />
+        
         {children}
+      </body> */}
+       <AuthProvider>
+    <body
+        className={monaSans.className}
+      >
+        <Navbar />
+        {children}
+        <Toaster />
       </body>
+      </AuthProvider>
     </html>
   );
 }
