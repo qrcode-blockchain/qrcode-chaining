@@ -3,10 +3,11 @@
 // import React, { useState } from 'react';
 // import { useForm } from 'react-hook-form';
 // import { Upload, Shield, Building2, Globe, Mail, Phone, Lock, FileText, CreditCard, Briefcase } from 'lucide-react';
-// import { useToast } from "@/hooks/useToast";
+// import { useToast } from "../../hooks/useToast"
 // import { useRouter } from "next/navigation";
 // import { zodResolver } from '@hookform/resolvers/zod';
 // import { ManufacturerSignUpSchema } from '@/Schema/manufacturerSchema';
+
 // import axios from 'axios';
 
 // const ManufacturerSignup = () => {
@@ -356,7 +357,7 @@
 // import { Button } from "../../components/ui/button";
 // // import { Button } from "@/components/ui/button";
 // import { Loader2, Shield, Building2, Globe, Mail, Phone, Lock, FileText, CreditCard, Briefcase, Upload } from "lucide-react";
-//  import { ManufacturerSignUpSchema } from "../../Schema/manufacturerSchema";
+//  import {ManufacturerClientSchema} from "../../Schema/manufacturerClientShema"
  
 // import {
 //   Form,
@@ -382,7 +383,7 @@
 //   const router = useRouter();
   
 //   const form = useForm({
-//     resolver: zodResolver(ManufacturerSignUpSchema),
+//     resolver: zodResolver(ManufacturerClientSchema),
 //     defaultValues: {
 //       name: '',
 //       email: '',
@@ -390,17 +391,23 @@
 //       password: '',
 //       address: '',
 //       gstNumber: '',
-//       gstCertificate:undefined,
+    
 //       manufacturingLicenseNumber: '',
-//       manufacturingLicenseCertificate:undefined,
+    
 //       panNumber: '',
-//       panNumberCertificate:undefined,
+   
 //       cinNumber: '',
-//       cinCertificate:undefined,
+      
 //       productsManufactured: '',
+  
+      
+//       website: '',
+//       gstCertificate:undefined,
+//       manufacturingLicenseCertificate:undefined,
+//       panNumberCertificate:undefined,
+//       cinCertificate:undefined,
 //       companyLogo: undefined,
 //       businessCertificate: undefined,
-//       website: ''
 //     }
 //   });
 
@@ -542,403 +549,403 @@
 //             </div>
 
 //             {/* Contact and Security */}
-            // <div className="grid md:grid-cols-2 gap-6">
-            //   <FormField
-            //     control={form.control}
-            //     name="phoneNumber"
-            //     render={({ field }) => (
-            //       <FormItem>
-            //         <FormLabel className="text-white flex items-center">
-            //           <Phone className="mr-2 text-blue-400" size={20} />
-            //           Phone Number
-            //         </FormLabel>
-            //         <FormControl>
-            //           <Input 
-            //             placeholder="10-digit phone number" 
-            //             {...field}
-            //             className="bg-white/10 border border-blue-400/20 text-white" 
-            //           />
-            //         </FormControl>
-            //         <FormMessage />
-            //       </FormItem>
-            //     )}
-            //   />
+//             <div className="grid md:grid-cols-2 gap-6">
+//               <FormField
+//                 control={form.control}
+//                 name="phoneNumber"
+//                 render={({ field }) => (
+//                   <FormItem>
+//                     <FormLabel className="text-white flex items-center">
+//                       <Phone className="mr-2 text-blue-400" size={20} />
+//                       Phone Number
+//                     </FormLabel>
+//                     <FormControl>
+//                       <Input 
+//                         placeholder="10-digit phone number" 
+//                         {...field}
+//                         className="bg-white/10 border border-blue-400/20 text-white" 
+//                       />
+//                     </FormControl>
+//                     <FormMessage />
+//                   </FormItem>
+//                 )}
+//               />
 
-            //   <FormField
-            //     control={form.control}
-            //     name="password"
-            //     render={({ field }) => (
-            //       <FormItem>
-            //         <FormLabel className="text-white flex items-center">
-            //           <Lock className="mr-2 text-blue-400" size={20} />
-            //           Password
-            //         </FormLabel>
-            //         <FormControl>
-            //           <Input 
-            //             type="password"
-            //             placeholder="Strong password" 
-            //             {...field}
-            //             className="bg-white/10 border border-blue-400/20 text-white" 
-            //           />
-            //         </FormControl>
-            //         <FormMessage />
-            //       </FormItem>
-            //     )}
-            //   />
-            // </div>
+//               <FormField
+//                 control={form.control}
+//                 name="password"
+//                 render={({ field }) => (
+//                   <FormItem>
+//                     <FormLabel className="text-white flex items-center">
+//                       <Lock className="mr-2 text-blue-400" size={20} />
+//                       Password
+//                     </FormLabel>
+//                     <FormControl>
+//                       <Input 
+//                         type="password"
+//                         placeholder="Strong password" 
+//                         {...field}
+//                         className="bg-white/10 border border-blue-400/20 text-white" 
+//                       />
+//                     </FormControl>
+//                     <FormMessage />
+//                   </FormItem>
+//                 )}
+//               />
+//             </div>
 
-            // {/* Address */}
-            // <FormField
-            //   control={form.control}
-            //   name="address"
-            //   render={({ field }) => (
-            //     <FormItem>
-            //       <FormLabel className="text-white flex items-center">
-            //         <Building2 className="mr-2 text-blue-400" size={20} />
-            //         Business Address
-            //       </FormLabel>
-            //       <FormControl>
-            //         <textarea 
-            //           {...field}
-            //           className="w-full bg-white/10 border border-blue-400/20 rounded-lg p-3 text-white"
-            //           placeholder="Complete business address"
-            //           rows={3}
-            //         />
-            //       </FormControl>
-            //       <FormMessage />
-            //     </FormItem>
-            //   )}
-            // />
+//             {/* Address */}
+//             <FormField
+//               control={form.control}
+//               name="address"
+//               render={({ field }) => (
+//                 <FormItem>
+//                   <FormLabel className="text-white flex items-center">
+//                     <Building2 className="mr-2 text-blue-400" size={20} />
+//                     Business Address
+//                   </FormLabel>
+//                   <FormControl>
+//                     <textarea 
+//                       {...field}
+//                       className="w-full bg-white/10 border border-blue-400/20 rounded-lg p-3 text-white"
+//                       placeholder="Complete business address"
+//                       rows={3}
+//                     />
+//                   </FormControl>
+//                   <FormMessage />
+//                 </FormItem>
+//               )}
+//             />
 
 //             {/* Registration Numbers */}
 //             <div className="grid md:grid-cols-2 gap-6">
-              // <FormField
-              //   control={form.control}
-              //   name="gstNumber"
-              //   render={({ field }) => (
-              //     <FormItem>
-              //       <FormLabel className="text-white flex items-center">
-              //         <FileText className="mr-2 text-blue-400" size={20} />
-              //         GST Number
-              //       </FormLabel>
-              //       <FormControl>
-              //         <Input 
-              //           placeholder="15-digit GST number" 
-              //           {...field}
-              //           className="bg-white/10 border border-blue-400/20 text-white" 
-              //         />
-              //       </FormControl>
-              //       <FormMessage />
-              //     </FormItem>
-              //   )}
-              // />
-              // {/* gst certificate */}
-              // <FormField
-              //   control={form.control}
-              //   name="gstCertificate"
-              //   render={({ field }) => (
-              //     <FormItem>
-              //       <FormLabel className="text-white flex items-center">
-              //         <Upload className="mr-2 text-blue-400" size={20} />
-              //         Gst Certificate
-              //       </FormLabel>
-              //       <FormControl>
-              //         <div className="space-y-2">
-              //           <Input 
-              //             type="file"
-              //             accept="image/*"
-              //             onChange={(e) => handleFileChange(e, 'gstCertificate')}
-              //             className="bg-white/10 border border-blue-400/20 text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-blue-400/20 file:text-white"
-              //           />
+//               <FormField
+//                 control={form.control}
+//                 name="gstNumber"
+//                 render={({ field }) => (
+//                   <FormItem>
+//                     <FormLabel className="text-white flex items-center">
+//                       <FileText className="mr-2 text-blue-400" size={20} />
+//                       GST Number
+//                     </FormLabel>
+//                     <FormControl>
+//                       <Input 
+//                         placeholder="15-digit GST number" 
+//                         {...field}
+//                         className="bg-white/10 border border-blue-400/20 text-white" 
+//                       />
+//                     </FormControl>
+//                     <FormMessage />
+//                   </FormItem>
+//                 )}
+//               />
+//               {/* gst certificate */}
+//               <FormField
+//                 control={form.control}
+//                 name="gstCertificate"
+//                 render={({ field }) => (
+//                   <FormItem>
+//                     <FormLabel className="text-white flex items-center">
+//                       <Upload className="mr-2 text-blue-400" size={20} />
+//                       Gst Certificate
+//                     </FormLabel>
+//                     <FormControl>
+//                       <div className="space-y-2">
+//                         <Input 
+//                           type="file"
+//                           accept="image/*"
+//                           onChange={(e) => handleFileChange(e, 'gstCertificate')}
+//                           className="bg-white/10 border border-blue-400/20 text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-blue-400/20 file:text-white"
+//                         />
                         
-              //           {previewgst && (
-              //             <img 
-              //               src={previewgst} 
-              //               alt="Logo Preview" 
-              //               className="mt-2 w-20 h-20 object-cover rounded-lg"
-              //             />
-              //           )}
-              //         </div>
-              //       </FormControl>
-              //       <FormMessage />
-              //     </FormItem>
-              //   )}
+//                         {previewgst && (
+//                           <img 
+//                             src={previewgst} 
+//                             alt="Logo Preview" 
+//                             className="mt-2 w-20 h-20 object-cover rounded-lg"
+//                           />
+//                         )}
+//                       </div>
+//                     </FormControl>
+//                     <FormMessage />
+//                   </FormItem>
+//                 )}
 //               />
 //               {/* manufacturing license number */}
-            //   <FormField
-            //     control={form.control}
-            //     name="manufacturingLicenseNumber"
-            //     render={({ field }) => (
-            //       <FormItem>
-            //         <FormLabel className="text-white flex items-center">
-            //           <Shield className="mr-2 text-blue-400" size={20} />
-            //           Manufacturing License Number
-            //         </FormLabel>
-            //         <FormControl>
-            //           <Input 
-            //             placeholder="License number" 
-            //             {...field}
-            //             className="bg-white/10 border border-blue-400/20 text-white" 
-            //           />
-            //         </FormControl>
-            //         <FormMessage />
-            //       </FormItem>
-            //     )}
-            //   />
-            //     {/* manufacturing license certificate */}
-            //     <FormField
-            //     control={form.control}
-            //     name="manufacturingLicenseCertificate"
-            //     render={({ field }) => (
-            //       <FormItem>
-            //         <FormLabel className="text-white flex items-center">
-            //           <Upload className="mr-2 text-blue-400" size={20} />
-            //         Manufacturing License Certificate
-            //         </FormLabel>
-            //         <FormControl>
-            //           <div className="space-y-2">
-            //             <Input 
-            //               type="file"
-            //               accept="image/*"
-            //               onChange={(e) => handleFileChange(e, 'manufacturingLicenseCertificate')}
-            //               className="bg-white/10 border border-blue-400/20 text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-blue-400/20 file:text-white"
-            //             />
+//               <FormField
+//                 control={form.control}
+//                 name="manufacturingLicenseNumber"
+//                 render={({ field }) => (
+//                   <FormItem>
+//                     <FormLabel className="text-white flex items-center">
+//                       <Shield className="mr-2 text-blue-400" size={20} />
+//                       Manufacturing License Number
+//                     </FormLabel>
+//                     <FormControl>
+//                       <Input 
+//                         placeholder="License number" 
+//                         {...field}
+//                         className="bg-white/10 border border-blue-400/20 text-white" 
+//                       />
+//                     </FormControl>
+//                     <FormMessage />
+//                   </FormItem>
+//                 )}
+//               />
+//                 {/* manufacturing license certificate */}
+//                 <FormField
+//                 control={form.control}
+//                 name="manufacturingLicenseCertificate"
+//                 render={({ field }) => (
+//                   <FormItem>
+//                     <FormLabel className="text-white flex items-center">
+//                       <Upload className="mr-2 text-blue-400" size={20} />
+//                     Manufacturing License Certificate
+//                     </FormLabel>
+//                     <FormControl>
+//                       <div className="space-y-2">
+//                         <Input 
+//                           type="file"
+//                           accept="image/*"
+//                           onChange={(e) => handleFileChange(e, 'manufacturingLicenseCertificate')}
+//                           className="bg-white/10 border border-blue-400/20 text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-blue-400/20 file:text-white"
+//                         />
                         
-            //             {previewManLicense && (
-            //               <img 
-            //                 src={previewManLicense} 
-            //                 alt="Logo Preview" 
-            //                 className="mt-2 w-20 h-20 object-cover rounded-lg"
-            //               />
-            //             )}
-            //           </div>
-            //         </FormControl>
-            //         <FormMessage />
-            //       </FormItem>
-            //     )}
-            //   />
-            // </div>
+//                         {previewManLicense && (
+//                           <img 
+//                             src={previewManLicense} 
+//                             alt="Logo Preview" 
+//                             className="mt-2 w-20 h-20 object-cover rounded-lg"
+//                           />
+//                         )}
+//                       </div>
+//                     </FormControl>
+//                     <FormMessage />
+//                   </FormItem>
+//                 )}
+//               />
+//             </div>
 
-            // <div className="grid md:grid-cols-2 gap-6">
-              // <FormField
-              //   control={form.control}
-              //   name="panNumber"
-              //   render={({ field }) => (
-              //     <FormItem>
-              //       <FormLabel className="text-white flex items-center">
-              //         <CreditCard className="mr-2 text-blue-400" size={20} />
-              //         PAN Number
-              //       </FormLabel>
-              //       <FormControl>
-              //         <Input 
-              //           placeholder="10-character PAN" 
-              //           {...field}
-              //           className="bg-white/10 border border-blue-400/20 text-white" 
-              //         />
-              //       </FormControl>
-              //       <FormMessage />
-              //     </FormItem>
-              //   )}
-            //   />
-            //    {/* pan number certificate */}
-              //  <FormField
-              //   control={form.control}
-              //   name="panNumberCertificate"
-              //   render={({ field }) => (
-              //     <FormItem>
-              //       <FormLabel className="text-white flex items-center">
-              //         <Upload className="mr-2 text-blue-400" size={20} />
-              //         Pan Certificate
-              //       </FormLabel>
-              //       <FormControl>
-              //         <div className="space-y-2">
-              //           <Input 
-              //             type="file"
-              //             accept="image/*"
-              //             onChange={(e) => handleFileChange(e, 'panNumberCertificate')}
-              //             className="bg-white/10 border border-blue-400/20 text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-blue-400/20 file:text-white"
-              //           />
+//             <div className="grid md:grid-cols-2 gap-6">
+//               <FormField
+//                 control={form.control}
+//                 name="panNumber"
+//                 render={({ field }) => (
+//                   <FormItem>
+//                     <FormLabel className="text-white flex items-center">
+//                       <CreditCard className="mr-2 text-blue-400" size={20} />
+//                       PAN Number
+//                     </FormLabel>
+//                     <FormControl>
+//                       <Input 
+//                         placeholder="10-character PAN" 
+//                         {...field}
+//                         className="bg-white/10 border border-blue-400/20 text-white" 
+//                       />
+//                     </FormControl>
+//                     <FormMessage />
+//                   </FormItem>
+//                 )}
+//               />
+//                {/* pan number certificate */}
+//                <FormField
+//                 control={form.control}
+//                 name="panNumberCertificate"
+//                 render={({ field }) => (
+//                   <FormItem>
+//                     <FormLabel className="text-white flex items-center">
+//                       <Upload className="mr-2 text-blue-400" size={20} />
+//                       Pan Certificate
+//                     </FormLabel>
+//                     <FormControl>
+//                       <div className="space-y-2">
+//                         <Input 
+//                           type="file"
+//                           accept="image/*"
+//                           onChange={(e) => handleFileChange(e, 'panNumberCertificate')}
+//                           className="bg-white/10 border border-blue-400/20 text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-blue-400/20 file:text-white"
+//                         />
                         
-              //           {previewpan && (
-              //             <img 
-              //               src={previewpan} 
-              //               alt="Logo Preview" 
-              //               className="mt-2 w-20 h-20 object-cover rounded-lg"
-              //             />
-              //           )}
-              //         </div>
-              //       </FormControl>
-              //       <FormMessage />
-              //     </FormItem>
-              //   )}
-              // />
-            //   <FormField
-            //     control={form.control}
-            //     name="cinNumber"
-            //     render={({ field }) => (
-            //       <FormItem>
-            //         <FormLabel className="text-white flex items-center">
-            //           <Briefcase className="mr-2 text-blue-400" size={20} />
-            //           CIN Number
-            //         </FormLabel>
-            //         <FormControl>
-            //           <Input 
-            //             placeholder="21-digit CIN" 
-            //             {...field}
-            //             className="bg-white/10 border border-blue-400/20 text-white" 
-            //           />
-            //         </FormControl>
-            //         <FormMessage />
-            //       </FormItem>
-            //     )}
-            //   />
-              //  <FormField
-              //   control={form.control}
-              //   name="cinCertificate"
-              //   render={({ field }) => (
-              //     <FormItem>
-              //       <FormLabel className="text-white flex items-center">
-              //         <Upload className="mr-2 text-blue-400" size={20} />
-              //         Cin Certificate
-              //       </FormLabel>
-              //       <FormControl>
-              //         <div className="space-y-2">
-              //           <Input 
-              //             type="file"
-              //             accept="image/*"
-              //             onChange={(e) => handleFileChange(e, 'cinCertificate')}
-              //             className="bg-white/10 border border-blue-400/20 text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-blue-400/20 file:text-white"
-              //           />
+//                         {previewpan && (
+//                           <img 
+//                             src={previewpan} 
+//                             alt="Logo Preview" 
+//                             className="mt-2 w-20 h-20 object-cover rounded-lg"
+//                           />
+//                         )}
+//                       </div>
+//                     </FormControl>
+//                     <FormMessage />
+//                   </FormItem>
+//                 )}
+//               />
+//               <FormField
+//                 control={form.control}
+//                 name="cinNumber"
+//                 render={({ field }) => (
+//                   <FormItem>
+//                     <FormLabel className="text-white flex items-center">
+//                       <Briefcase className="mr-2 text-blue-400" size={20} />
+//                       CIN Number
+//                     </FormLabel>
+//                     <FormControl>
+//                       <Input 
+//                         placeholder="21-digit CIN" 
+//                         {...field}
+//                         className="bg-white/10 border border-blue-400/20 text-white" 
+//                       />
+//                     </FormControl>
+//                     <FormMessage />
+//                   </FormItem>
+//                 )}
+//               />
+//                <FormField
+//                 control={form.control}
+//                 name="cinCertificate"
+//                 render={({ field }) => (
+//                   <FormItem>
+//                     <FormLabel className="text-white flex items-center">
+//                       <Upload className="mr-2 text-blue-400" size={20} />
+//                       Cin Certificate
+//                     </FormLabel>
+//                     <FormControl>
+//                       <div className="space-y-2">
+//                         <Input 
+//                           type="file"
+//                           accept="image/*"
+//                           onChange={(e) => handleFileChange(e, 'cinCertificate')}
+//                           className="bg-white/10 border border-blue-400/20 text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-blue-400/20 file:text-white"
+//                         />
                         
-              //           {previewcin && (
-              //             <img 
-              //               src={previewcin} 
-              //               alt="Logo Preview" 
-              //               className="mt-2 w-20 h-20 object-cover rounded-lg"
-              //             />
-              //           )}
-              //         </div>
-              //       </FormControl>
-              //       <FormMessage />
-              //     </FormItem>
-              //   )}
-              // />
-            // </div>
+//                         {previewcin && (
+//                           <img 
+//                             src={previewcin} 
+//                             alt="Logo Preview" 
+//                             className="mt-2 w-20 h-20 object-cover rounded-lg"
+//                           />
+//                         )}
+//                       </div>
+//                     </FormControl>
+//                     <FormMessage />
+//                   </FormItem>
+//                 )}
+//               />
+//             </div>
 
 //             {/* Products and Website */}
-            // <div className="grid md:grid-cols-2 gap-6">
-            //   <FormField
-            //     control={form.control}
-            //     name="productsManufactured"
-            //     render={({ field }) => (
-            //       <FormItem>
-            //         <FormLabel className="text-white flex items-center">
-            //           <Briefcase className="mr-2 text-blue-400" size={20} />
-            //           Products Manufactured
-            //         </FormLabel>
-            //         <FormControl>
-            //           <Input 
-            //             placeholder="Comma-separated list of products" 
-            //             {...field}
-            //             className="bg-white/10 border border-blue-400/20 text-white" 
-            //           />
-            //         </FormControl>
-            //         <FormMessage />
-            //       </FormItem>
-            //     )}
-            //   />
+//             <div className="grid md:grid-cols-2 gap-6">
+//               <FormField
+//                 control={form.control}
+//                 name="productsManufactured"
+//                 render={({ field }) => (
+//                   <FormItem>
+//                     <FormLabel className="text-white flex items-center">
+//                       <Briefcase className="mr-2 text-blue-400" size={20} />
+//                       Products Manufactured
+//                     </FormLabel>
+//                     <FormControl>
+//                       <Input 
+//                         placeholder="Comma-separated list of products" 
+//                         {...field}
+//                         className="bg-white/10 border border-blue-400/20 text-white" 
+//                       />
+//                     </FormControl>
+//                     <FormMessage />
+//                   </FormItem>
+//                 )}
+//               />
 
-            //   <FormField
-            //     control={form.control}
-            //     name="website"
-            //     render={({ field }) => (
-            //       <FormItem>
-            //         <FormLabel className="text-white flex items-center">
-            //           <Globe className="mr-2 text-blue-400" size={20} />
-            //           Website (Optional)
-            //         </FormLabel>
-            //         <FormControl>
-            //           <Input 
-            //             placeholder="https://your-company.com" 
-            //             {...field}
-            //             className="bg-white/10 border border-blue-400/20 text-white" 
-            //           />
-            //         </FormControl>
-            //         <FormMessage />
-            //       </FormItem>
-            //     )}
-            //   />
-            // </div>
+//               <FormField
+//                 control={form.control}
+//                 name="website"
+//                 render={({ field }) => (
+//                   <FormItem>
+//                     <FormLabel className="text-white flex items-center">
+//                       <Globe className="mr-2 text-blue-400" size={20} />
+//                       Website (Optional)
+//                     </FormLabel>
+//                     <FormControl>
+//                       <Input 
+//                         placeholder="https://your-company.com" 
+//                         {...field}
+//                         className="bg-white/10 border border-blue-400/20 text-white" 
+//                       />
+//                     </FormControl>
+//                     <FormMessage />
+//                   </FormItem>
+//                 )}
+//               />
+//             </div>
 
-            // {/* File Uploads */}
-            // <div className="grid md:grid-cols-2 gap-6">
-            //   <FormField
-            //     control={form.control}
-            //     name="companyLogo"
-            //     render={({ field }) => (
-            //       <FormItem>
-            //         <FormLabel className="text-white flex items-center">
-            //           <Upload className="mr-2 text-blue-400" size={20} />
-            //           Company Logo
-            //         </FormLabel>
-            //         <FormControl>
-            //           <div className="space-y-2">
-            //             <Input 
-            //               type="file"
-            //               accept="image/*"
-            //               onChange={(e) => handleFileChange(e, 'companyLogo')}
-            //               className="bg-white/10 border border-blue-400/20 text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-blue-400/20 file:text-white"
-            //             />
+//             {/* File Uploads */}
+//             <div className="grid md:grid-cols-2 gap-6">
+//               <FormField
+//                 control={form.control}
+//                 name="companyLogo"
+//                 render={({ field }) => (
+//                   <FormItem>
+//                     <FormLabel className="text-white flex items-center">
+//                       <Upload className="mr-2 text-blue-400" size={20} />
+//                       Company Logo
+//                     </FormLabel>
+//                     <FormControl>
+//                       <div className="space-y-2">
+//                         <Input 
+//                           type="file"
+//                           accept="image/*"
+//                           onChange={(e) => handleFileChange(e, 'companyLogo')}
+//                           className="bg-white/10 border border-blue-400/20 text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-blue-400/20 file:text-white"
+//                         />
                         
-            //             {previewLogo && (
-            //               <img 
-            //                 src={previewLogo} 
-            //                 alt="Logo Preview" 
-            //                 className="mt-2 w-20 h-20 object-cover rounded-lg"
-            //               />
-            //             )}
-            //           </div>
-            //         </FormControl>
-            //         <FormMessage />
-            //       </FormItem>
-            //     )}
-            //   />
+//                         {previewLogo && (
+//                           <img 
+//                             src={previewLogo} 
+//                             alt="Logo Preview" 
+//                             className="mt-2 w-20 h-20 object-cover rounded-lg"
+//                           />
+//                         )}
+//                       </div>
+//                     </FormControl>
+//                     <FormMessage />
+//                   </FormItem>
+//                 )}
+//               />
 
-            //   <FormField
-            //     control={form.control}
-            //     name="businessCertificate"
-            //     render={({ field }) => (
-            //       <FormItem>
-            //         <FormLabel className="text-white flex items-center">
-            //           <Upload className="mr-2 text-blue-400" size={20} />
-            //           Business Certificate
-            //         </FormLabel>
-            //         <FormControl>
+//               <FormField
+//                 control={form.control}
+//                 name="businessCertificate"
+//                 render={({ field }) => (
+//                   <FormItem>
+//                     <FormLabel className="text-white flex items-center">
+//                       <Upload className="mr-2 text-blue-400" size={20} />
+//                       Business Certificate
+//                     </FormLabel>
+//                     <FormControl>
 
 
                     
-            //         <div className="space-y-2">
-            //             <Input 
-            //               type="file"
-            //               accept=".pdf,.jpg,.jpeg,.png"
-            //               onChange={(e) => handleFileChange(e, 'businessCertificate')}
-            //               className="bg-white/10 border border-blue-400/20 text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-blue-400/20 file:text-white"
-            //             />
+//                     <div className="space-y-2">
+//                         <Input 
+//                           type="file"
+//                           accept=".pdf,.jpg,.jpeg,.png"
+//                           onChange={(e) => handleFileChange(e, 'businessCertificate')}
+//                           className="bg-white/10 border border-blue-400/20 text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-blue-400/20 file:text-white"
+//                         />
                        
-            //             {previewCertificate && (
-            //               <img 
-            //                 src={previewCertificate} 
-            //                 alt="Certificate Preview" 
-            //                 className="mt-2 w-20 h-20 object-cover rounded-lg"
-            //               />
-            //             )}
-            //           </div>
-            //         </FormControl>
-            //         <FormMessage />
-            //       </FormItem>
-            //     )}
-            //   />
-            // </div>
+//                         {previewCertificate && (
+//                           <img 
+//                             src={previewCertificate} 
+//                             alt="Certificate Preview" 
+//                             className="mt-2 w-20 h-20 object-cover rounded-lg"
+//                           />
+//                         )}
+//                       </div>
+//                     </FormControl>
+//                     <FormMessage />
+//                   </FormItem>
+//                 )}
+//               />
+//             </div>
 
 //             <div className="text-center mt-8">
 //               <Button 
@@ -973,6 +980,8 @@
 // };
 
 // export default ManufacturerSignup;
+// my code
+
 'use client'
 import React, { useState } from 'react';
 import { useForm } from "react-hook-form";
@@ -981,7 +990,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useToast } from "../../hooks/useToast";
 import axios from 'axios';
-import { ManufacturerSignUpSchema } from "../../Schema/manufacturerSchema";
+import {ManufacturerClientSchema} from "../../Schema/manuFacturerClientShema";
 import {
    Mail, Phone, Lock,  
    ArrowRight, ArrowLeft,
@@ -1959,7 +1968,7 @@ const ManufacturerSignup = () => {
   const router = useRouter();
   
   const form = useForm({
-    resolver: zodResolver(ManufacturerSignUpSchema),
+    resolver: zodResolver(ManufacturerClientSchema),
     defaultValues: {
       name: '',
       email: '',
@@ -2019,16 +2028,56 @@ const ManufacturerSignup = () => {
     }
   };
 
+  // const validateStep = async () => {
+  //   const fields = getFieldsForStep(currentStep);
+  //   const result = await form.trigger(fields);
+  //   if (result) {
+  //     setCompletedSteps(prev => [...new Set([...prev, currentStep])]);
+  //     return true;
+  //   }
+  //   return false;
+  // };
+
   const validateStep = async () => {
-    const fields = getFieldsForStep(currentStep);
-    const result = await form.trigger(fields);
-    if (result) {
+    // For the review step (step 4), no validation is needed
+    if (currentStep === 4) {
       setCompletedSteps(prev => [...new Set([...prev, currentStep])]);
       return true;
     }
-    return false;
+  
+    // Get fields for the current step
+    const fields = getFieldsForStep(currentStep);
+    console.log("Fields to validate:", fields);
+    
+    try {
+      // Get the current errors
+      const currentErrors = form.formState.errors;
+      
+      // Manually validate each field without using form.trigger
+      let hasErrors = false;
+      
+      // Trigger all fields at once - this is different from field-by-field validation
+      await form.trigger();
+      
+      // Now check if any field in our step has errors
+      for (const field of fields) {
+        if (form.formState.errors[field]) {
+          console.log(`Field ${field} has error:`, form.formState.errors[field]);
+          hasErrors = true;
+        }
+      }
+      
+      if (!hasErrors) {
+        setCompletedSteps(prev => [...new Set([...prev, currentStep])]);
+        return true;
+      }
+      
+      return false;
+    } catch (error) {
+      console.error("Validation error:", error);
+      return false;
+    }
   };
-
   const nextStep = async () => {
     if (await validateStep()) {
       setCurrentStep(prev => Math.min(prev + 1, steps.length));

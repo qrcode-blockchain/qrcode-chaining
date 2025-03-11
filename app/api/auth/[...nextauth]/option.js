@@ -1,6 +1,6 @@
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from 'bcryptjs';
-import dbConnect from "../../../../lib/dbConnect";
+import {dbConnect} from "../../../../lib/dbConnect";
 import manufacturerModel from "../../../../model/Manufacturer";
 import GoogleProvider from "next-auth/providers/google";
 
