@@ -4,7 +4,6 @@ import { QrCode, Shield, Link, Factory, BarChart2, Users, Settings } from "lucid
 const Dashboard = () => {
   return (
     <div className="min-h-screen bg-gray-900 text-white">
-      {/* Sidebar */}
       <aside className="w-64 bg-blue-900/30 backdrop-blur-lg p-6 fixed h-full border-r border-blue-400/20">
         <h2 className="text-2xl font-bold text-blue-400">Industry 4.0</h2>
         <nav className="mt-8 space-y-4">
