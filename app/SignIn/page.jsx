@@ -70,7 +70,7 @@ export default function SignInForm() {
           });
         }
       } else if (result?.url) {
-        router.replace('/dashboard');
+        router.replace('/Dashboard');
       }
     } catch (error) {
       toast({
