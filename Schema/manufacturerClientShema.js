@@ -28,7 +28,7 @@ export const ManufacturerClientSchema = z.object({
         .regex(/^[A-Z]{1}[0-9]{5}[A-Z]{2}[0-9]{4}[A-Z]{3}[0-9]{6}$/, {
             message: "Invalid CIN number format",
         }),
-    productsManufactured: z.string().min(1),
+    productsManufactured:  z.array(z.string()).min(1, "At least one product must be selected"),
     website: z.string().url().optional(),
 
     // ✅ Handle file uploads as File objects instead of strings/ObjectId
