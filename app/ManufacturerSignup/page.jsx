@@ -2392,7 +2392,8 @@ const ManufacturerSignup = () => {
         duration: 5000,
       });
       
-      router.replace(`/verify/${data.name}`);
+      // router.replace(`/verify/${data.name}`);
+      router.replace(`/verify/${data.email}`);
     } catch (error) {
       toast({
         title: "Registration Failed",

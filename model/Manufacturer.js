@@ -1,5 +1,31 @@
 import mongoose from "mongoose";
 
+//line manager schema
+const LineManagerSchema=new mongoose.Schema({
+    name:{
+        type:String,
+        required:[true,"Line Managers name is required"],
+        trim:true
+    },
+    email:{
+        type:String,
+        reuired:[true,"Email is rquired"],
+        unique:true,
+        match: [/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, "Please use a valid email address"]
+    },
+    password: {
+        type: String,
+        required: [true, "Password is required"]
+    },
+    isSet:{
+        type:Boolean,
+        default:false,
+       },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    }
+})
 const ManufacturerSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -94,6 +120,12 @@ const ManufacturerSchema = new mongoose.Schema({
         type:Boolean,
         default:false,
        },
+
+       //now add line managers
+       lineManagers:{
+        type:[LineManagerSchema],
+        default:[] //Initialize an empty array if no line managers
+       }
 }, {
     timestamps: true
 });

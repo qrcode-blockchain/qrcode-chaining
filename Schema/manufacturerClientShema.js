@@ -1,5 +1,9 @@
 import { z } from "zod";
-
+export const LineManagerSchema = z.object({
+    name: z.string().min(1, { message: "Name is required" }),
+    email: z.string().email({ message: "Invalid email address" })
+  });
+  
 export const ManufacturerClientSchema = z.object({
     name: z.string().min(1, { message: "Name is required" }),
     email: z.string().email({ message: "Invalid email address" }),
@@ -38,4 +42,14 @@ export const ManufacturerClientSchema = z.object({
     cinCertificate:z.any().optional(),
     companyLogo: z.any().optional(),
     businessCertificate: z.any().optional(),
+
+    //option to add line managers
+    lineManagers: z
+    .array(
+        z.object({
+            name: z.string().min(1, { message: "Line Manager's name is required" }),
+            email: z.string().email({ message: "Invalid email address" }),
+        })
+    )
+    .optional(),
 });

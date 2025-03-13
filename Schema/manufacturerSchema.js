@@ -87,7 +87,10 @@
 // });
 import {z} from "zod";
 import { ObjectId } from "mongodb";
-
+export const LineManagerSchema = z.object({
+    name: z.string().min(1, { message: "Name is required" }),
+    email: z.string().email({ message: "Invalid email address" })
+  });
 export const ManufacturerServerSchema = z.object({
     name: z.string().min(1, { message: "Name is required" }),
     email: z.string().email({ message: "Invalid email address" }),
@@ -126,4 +129,13 @@ export const ManufacturerServerSchema = z.object({
     cinCertificate: z.string().refine((id) => ObjectId.isValid(id), { message: "Invalid GridFS ObjectId" }),
     companyLogo: z.string().refine((id) => ObjectId.isValid(id), { message: "Invalid GridFS ObjectId" }),
     businessCertificate: z.string().refine((id) => ObjectId.isValid(id), { message: "Invalid GridFS ObjectId" }),
+//line manager
+    lineManagers: z
+    .array(
+        z.object({
+            name: z.string().min(1, { message: "Line Manager's name is required" }),
+            email: z.string().email({ message: "Invalid email address" }),
+        })
+    )
+    .optional(),
 });
