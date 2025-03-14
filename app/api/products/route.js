@@ -7,11 +7,15 @@ import { writeFile } from "fs/promises";
 
 dbConnect();
 
-const generateHash = (input) => crypto.createHash("sha256").update(input).digest("hex");
+const generateHash = (input) => 
+    crypto.createHash("sha256").update(input).digest("hex");
 
 export async function GET() {
     try {
-        const response = NextResponse.json({ success: true, message: "Processing in background" }, { status: 202 });
+        const response = NextResponse.json(
+            { success: true, message: "Processing in background" }, 
+            { status: 202 }
+        );
 
         setTimeout(async () => {
             try {
@@ -19,11 +23,14 @@ export async function GET() {
                 today.setUTCHours(0, 0, 0, 0);
 
                 const products = await Product.find(
-                    { createdAt: { $gte: today } },
+                    { 
+                        createdAt: { $gte: today },
+                        hashGenerated: { $ne: true }
+                    },
                     "_id name location date batchNo serialNo amount"
                 );
 
-                console.log("Products found: ",products)
+                console.log("Products found: ", products);
 
                 const allUnits = await Promise.all(
                     products.map(async (product) => {
@@ -35,6 +42,11 @@ export async function GET() {
 
                         const filePath = path.join(process.cwd(), "data.txt");
                         await writeFile(filePath, JSON.stringify(unitIds, null, 2));
+
+                        await Product.updateOne(
+                            { _id },
+                            { $set: { hashGenerated: true } }
+                        );
 
                         return { productId: _id, unitIds };
                     })
@@ -65,7 +77,13 @@ export async function POST(request) {
             );
         }
 
-        const result = await Product.insertMany(productsList);
+        const result = await Product.insertMany(
+            productsList.map((product) => ({
+                ...product,
+                hashGenerated: false
+            }))
+        );
+
         return NextResponse.json(
             { success: true, data: result },
             { status: 201 }
