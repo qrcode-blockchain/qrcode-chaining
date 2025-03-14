@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -18,104 +18,136 @@ import {
 import { Input } from "../../../components/ui/input";
 import { Button } from "../../../components/ui/button";
 
-// Simplified schemas for debugging
+// Login Schema
 const LoginSchema = z.object({
-  email: z.string().min(1, "Email is required"),
-  password: z.string().min(1, "Password is required")
+  email: z.string().email({ message: "Invalid email address" }),
+  password: z.string().min(1, { message: "Password is required" })
 });
 
+// Temp Password Schema - Simplified
 const TempPasswordSchema = z.object({
-  email: z.string().min(1, "Email is required"),
-  tempPassword: z.string().min(1, "Temporary password is required"),
-  newPassword: z.string().optional(),
-  confirmPassword: z.string().optional()
+  email: z.string().email({ message: "Invalid email address" }),
+  tempPassword: z.string().min(1, { message: "Temporary password is required" })
+});
+
+// New Password Schema
+const NewPasswordSchema = z.object({
+  email: z.string().email({ message: "Invalid email address" }),
+  newPassword: z.string()
+    .min(8, { message: "Password must be at least 8 characters" })
+    .regex(/[A-Z]/, { message: "Must contain at least one uppercase letter" })
+    .regex(/[a-z]/, { message: "Must contain at least one lowercase letter" })
+    .regex(/[0-9]/, { message: "Must contain at least one number" })
+    .regex(/[^A-Za-z0-9]/, { message: "Must contain at least one special character" }),
+  confirmPassword: z.string().min(1, { message: "Confirm password is required" })
+}).refine((data) => data.newPassword === data.confirmPassword, {
+  message: "Passwords do not match",
+  path: ["confirmPassword"]
 });
 
 const LineManagerAuth = () => {
   const [mode, setMode] = useState('login');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isVerified, setIsVerified] = useState(false);
-  const [debugInfo, setDebugInfo] = useState({ formValues: {}, formState: {} });
-  
   const { toast } = useToast();
 
   // Login Form
   const loginForm = useForm({
     resolver: zodResolver(LoginSchema),
-    defaultValues: { email: '', password: '' },
-    mode: 'onChange'
+    defaultValues: { email: '', password: '' }
   });
 
-  // Temporary Password Form - with simplified validation
+  // Temporary Password Form
   const tempPassForm = useForm({
     resolver: zodResolver(TempPasswordSchema),
-    defaultValues: { email: '', tempPassword: '', newPassword: '', confirmPassword: '' },
-    mode: 'onChange'
+    defaultValues: { email: '', tempPassword: '' }
   });
 
-  // Debug monitoring
-  useEffect(() => {
-    const subscription = tempPassForm.watch((value) => {
-      setDebugInfo(prev => ({
-        ...prev,
-        formValues: value,
-        formState: {
-          isDirty: tempPassForm.formState.isDirty,
-          isValid: tempPassForm.formState.isValid,
-          errors: tempPassForm.formState.errors
-        }
-      }));
-    });
-    
-    return () => subscription.unsubscribe();
-  }, [tempPassForm, tempPassForm.watch]);
+  // New Password Form
+  const newPasswordForm = useForm({
+    resolver: zodResolver(NewPasswordSchema),
+    defaultValues: { email: '', newPassword: '', confirmPassword: '' }
+  });
 
-  // Direct value handler for debugging
-  const handleDirectInput = (e) => {
-    tempPassForm.setValue('tempPassword', e.target.value, { shouldValidate: true });
-  };
-
+  // Handle mode switching with proper form reset
   const switchToLogin = () => {
-    loginForm.reset({ email: '', password: '' });
-    setMode('login');
-  };
-
-  const switchToTempPassword = () => {
-    tempPassForm.reset({ email: 'test@example.com', tempPassword: '', newPassword: '', confirmPassword: '' });
-    setIsVerified(false);
-    setMode('tempPassword');
-  };
-
-  // Simplified handlers for debugging
-  const onLoginSubmit = (data) => {
-    toast({ title: "Login attempt", description: JSON.stringify(data) });
-    // Simulate success
-    tempPassForm.reset();
-    tempPassForm.setValue('email', data.email);
-    setMode('tempPassword');
-  };
-
-  const onTempPassSubmit = (data) => {
-    toast({ title: "Temp password verification", description: JSON.stringify(data) });
-    // Simulate success
-    setIsVerified(true);
-  };
-
-  const onNewPasswordSubmit = (data) => {
-    toast({ title: "New password set", description: JSON.stringify(data) });
-    // Simulate success
     loginForm.reset();
     setMode('login');
   };
 
+  const switchToTempPassword = () => {
+    tempPassForm.reset();
+    setMode('tempPassword');
+  };
+
+  // Handle Login
+  const onLoginSubmit = async (data) => {
+    setIsSubmitting(true);
+    try {
+      const response = await axios.post('/api/lineManagers/login', data);
+      if (response.data.needsTempPassword) {
+        tempPassForm.setValue('email', data.email);
+        setMode('tempPassword');
+        toast({ title: 'Temporary password required', description: 'Enter your temp password to continue.' });
+      } else {
+        window.location.href = '/lineManager/lineManagerDash';
+      }
+    } catch (error) {
+      toast({ title: "Login failed", description: error.response?.data?.message || "Invalid credentials", variant: 'destructive' });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Handle Temporary Password Verification
+  const onTempPassSubmit = async (data) => {
+    setIsSubmitting(true);
+    try {
+      const response = await axios.post('/api/lineManagers/verify-temp-password', {
+        email: data.email,
+        tempPassword: data.tempPassword
+      });
+
+      // Transfer email to new password form
+      newPasswordForm.setValue('email', data.email);
+      setMode('newPassword');
+      toast({ title: 'Verification successful', description: 'You can now set a new password.' });
+    } catch (error) {
+      toast({ title: "Verification failed", description: error.response?.data?.message || "Invalid temporary password", variant: 'destructive' });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Handle New Password Submission
+  const onNewPasswordSubmit = async (data) => {
+    setIsSubmitting(true);
+    try {
+      await axios.post('/api/lineManagers/set-new-password', {
+        email: data.email,
+        tempPassword: tempPassForm.getValues().tempPassword, // Pass the temp password from previous form
+        newPassword: data.newPassword,
+        confirmPassword: data.confirmPassword
+      });
+      toast({ title: 'Password updated', description: 'You can now log in with your new password.' });
+      loginForm.reset();
+      setMode('login');
+    } catch (error) {
+      toast({ title: "Password update failed", description: error.response?.data?.message || "Could not update password", variant: 'destructive' });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white p-4">
-      <div className="bg-blue-900 p-8 rounded-lg w-full max-w-md mb-4">
+    <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
+      <div className="bg-blue-900 p-8 rounded-lg w-full max-w-md">
         <h1 className="text-2xl font-bold text-center mb-6">
-          {mode === 'login' ? "Line Manager Login" : "Verify & Set Password"}
+          {mode === 'login' ? "Line Manager Login" : 
+           mode === 'tempPassword' ? "Verify Temporary Password" : 
+           "Set New Password"}
         </h1>
 
-        {mode === 'login' ? (
+        {mode === 'login' && (
           <Form {...loginForm}>
             <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
               <FormField
@@ -124,9 +156,7 @@ const LineManagerAuth = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
+                    <FormControl><Input {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -138,16 +168,14 @@ const LineManagerAuth = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input type="password" {...field} />
-                    </FormControl>
+                    <FormControl><Input type="password" {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              <Button type="submit" className="w-full mt-6">
-                Login
+              <Button type="submit" className="w-full mt-6" disabled={isSubmitting}>
+                {isSubmitting ? "Logging in..." : "Login"}
               </Button>
 
               <p className="mt-4 text-sm text-gray-300 text-center">
@@ -162,109 +190,110 @@ const LineManagerAuth = () => {
               </p>
             </form>
           </Form>
-        ) : (
-          <>
-            <Form {...tempPassForm}>
-              <form onSubmit={tempPassForm.handleSubmit(isVerified ? onNewPasswordSubmit : onTempPassSubmit)} className="space-y-4">
-                <FormField
-                  name="email"
-                  control={tempPassForm.control}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+        )}
 
-                {/* Regular Form Field for temp password */}
-                <FormField
-                  name="tempPassword"
-                  control={tempPassForm.control}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Temporary Password (Regular Field)</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Native input for debugging */}
-                <div className="mt-4">
-                  <label className="block text-sm font-medium mb-2">
-                    Temporary Password (Direct Input)
-                  </label>
-                  <input
-                    type="text"
-                    className="bg-gray-800 text-white p-2 w-full rounded"
-                    value={tempPassForm.watch('tempPassword')}
-                    onChange={handleDirectInput}
-                  />
-                  <span className="text-sm text-gray-400 mt-1 block">
-                    Try typing here if the above field doesn't work
-                  </span>
-                </div>
-
-                {isVerified && (
-                  <>
-                    <FormField
-                      name="newPassword"
-                      control={tempPassForm.control}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>New Password</FormLabel>
-                          <FormControl>
-                            <Input type="password" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      name="confirmPassword"
-                      control={tempPassForm.control}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Confirm Password</FormLabel>
-                          <FormControl>
-                            <Input type="password" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </>
+        {mode === 'tempPassword' && (
+          <Form {...tempPassForm}>
+            <form onSubmit={tempPassForm.handleSubmit(onTempPassSubmit)} className="space-y-4">
+              <FormField
+                name="email"
+                control={tempPassForm.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl><Input {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
+              />
 
-                <Button type="submit" className="w-full mt-6">
-                  {isVerified ? "Set Password" : "Verify"}
-                </Button>
+              <FormField
+                name="tempPassword"
+                control={tempPassForm.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Temporary Password</FormLabel>
+                    <FormControl><Input type="password" {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-                <p className="mt-4 text-sm text-gray-300 text-center">
-                  Already have credentials?{" "}
-                  <button 
-                    type="button"
-                    className="text-blue-400 hover:underline" 
-                    onClick={switchToLogin}
-                  >
-                    Login here
-                  </button>
-                </p>
-              </form>
-            </Form>
-          </>
+              <Button type="submit" className="w-full mt-6" disabled={isSubmitting}>
+                {isSubmitting ? "Verifying..." : "Verify"}
+              </Button>
+
+              <p className="mt-4 text-sm text-gray-300 text-center">
+                Already have credentials?{" "}
+                <button 
+                  type="button"
+                  className="text-blue-400 hover:underline" 
+                  onClick={switchToLogin}
+                >
+                  Login here
+                </button>
+              </p>
+            </form>
+          </Form>
+        )}
+
+        {mode === 'newPassword' && (
+          <Form {...newPasswordForm}>
+            <form onSubmit={newPasswordForm.handleSubmit(onNewPasswordSubmit)} className="space-y-4">
+              <FormField
+                name="email"
+                control={newPasswordForm.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl><Input {...field} readOnly /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                name="newPassword"
+                control={newPasswordForm.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>New Password</FormLabel>
+                    <FormControl><Input type="password" {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                name="confirmPassword"
+                control={newPasswordForm.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Confirm Password</FormLabel>
+                    <FormControl><Input type="password" {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <Button type="submit" className="w-full mt-6" disabled={isSubmitting}>
+                {isSubmitting ? "Setting Password..." : "Set Password"}
+              </Button>
+
+              <p className="mt-4 text-sm text-gray-300 text-center">
+                Already have credentials?{" "}
+                <button 
+                  type="button"
+                  className="text-blue-400 hover:underline" 
+                  onClick={switchToLogin}
+                >
+                  Login here
+                </button>
+              </p>
+            </form>
+          </Form>
         )}
       </div>
-      
-      {/* Debug Panel */}
-      
     </div>
   );
 };
