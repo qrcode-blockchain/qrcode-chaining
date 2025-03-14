@@ -2,7 +2,7 @@ import crypto from "crypto";
 import path from "path";
 import { NextResponse } from "next/server";
 import dbConnect from "../../../lib/dbConnect";
-import Product from "../../../models/Product";
+import Product from "../../../model/Product";
 import { writeFile } from "fs/promises";
 
 dbConnect();
