@@ -29,13 +29,13 @@ export async function middleware(request) {
   ) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
-  // if (token && url.pathname === '/') {
-  //   return NextResponse.redirect(new URL('/dashboard', request.url));
-  // }
+  if (token && url.pathname === '/') {
+    return NextResponse.redirect(new URL('/dashboard', request.url));
+  }
   // Redirect unauthenticated users trying to access protected routes
-  // if (!token && url.pathname.startsWith('/dashboard')) {
-  //   return NextResponse.redirect(new URL('/SignUp', request.url));
-  // }
+  if (!token && url.pathname.startsWith('/dashboard')) {
+    return NextResponse.redirect(new URL('/SignUp', request.url));
+  }
 
   // Allow access by default for other cases
   return NextResponse.next();
