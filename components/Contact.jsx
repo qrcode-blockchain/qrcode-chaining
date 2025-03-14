@@ -16,7 +16,7 @@ import {
 const MapComponent = () => {
   return (
     <iframe
-      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3152.9390558210313!2d-122.41941482393491!3d37.77492901975435!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8085809c6c8f4459%3A0xb10ed6d9b5050fa5!2sTwitter+HQ!5e0!3m2!1sen!2sin!4v1523265661673"
+      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15090.376606395626!2d72.8193545!3d19.0544788!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7c8e123f8d27b%3A0x437996b49a236a78!2s400050!5e0!3m2!1sen!2sin!4v1696496014971!5m2!1sen!2sin"
       className="w-full h-full rounded-lg"
       style={{ border: 0 }}
       allowFullScreen=""
@@ -157,7 +157,7 @@ const ContactPage = () => {
 
                 <div className="flex items-center space-x-3 text-gray-600">
                   <Mail className="w-5 h-5 text-blue-600" />
-                  <p>contact@qrblockchain.com</p>
+                  <p>info@qrcipher.in</p>
                 </div>
               </div>
 

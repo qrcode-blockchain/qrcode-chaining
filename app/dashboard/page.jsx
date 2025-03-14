@@ -1,68 +1,4 @@
-// import React from "react";
-// import { QrCode, Shield, Link, Factory, BarChart2, Users, Settings } from "lucide-react";
 
-// const Dashboard = () => {
-//   return (
-//     <div className="min-h-screen bg-gray-900 text-white">
-//       {/* Sidebar */}
-//       <aside className="w-64 bg-blue-900/30 backdrop-blur-lg p-6 fixed h-full border-r border-blue-400/20">
-//         <h2 className="text-2xl font-bold text-blue-400">Industry 4.0</h2>
-//         <nav className="mt-8 space-y-4">
-//           {[
-//             { name: "Overview", icon: <BarChart2 className="w-5 h-5" /> },
-//             { name: "QR Management", icon: <QrCode className="w-5 h-5" /> },
-//             { name: "Security", icon: <Shield className="w-5 h-5" /> },
-//             { name: "Blockchain", icon: <Link className="w-5 h-5" /> },
-//             { name: "Manufacturing", icon: <Factory className="w-5 h-5" /> },
-//             { name: "Users", icon: <Users className="w-5 h-5" /> },
-//             { name: "Settings", icon: <Settings className="w-5 h-5" /> }
-//           ].map((item, index) => (
-//             <button key={index} className="flex items-center space-x-3 w-full px-4 py-2 text-left hover:bg-blue-500/20 rounded-lg transition">
-//               {item.icon}
-//               <span>{item.name}</span>
-//             </button>
-//           ))}
-//         </nav>
-//       </aside>
-
-//       {/* Main Content */}
-//       <main className="ml-64 p-10">
-//         <h1 className="text-3xl font-bold">Dashboard Overview</h1>
-//         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
-//           {[{
-//             label: "Active QR Codes",
-//             value: "12,530",
-//             icon: <QrCode className="w-10 h-10 text-blue-400" />
-//           }, {
-//             label: "Security Breaches",
-//             value: "3",
-//             icon: <Shield className="w-10 h-10 text-red-400" />
-//           }, {
-//             label: "Blockchain Transactions",
-//             value: "124K",
-//             icon: <Link className="w-10 h-10 text-green-400" />
-//           }, {
-//             label: "Manufacturers",
-//             value: "500+",
-//             icon: <Factory className="w-10 h-10 text-yellow-400" />
-//           }].map((stat, index) => (
-//             <div key={index} className="bg-blue-900/30 p-6 rounded-lg shadow-lg border border-blue-400/20 hover:shadow-xl transition-all">
-//               <div className="flex items-center space-x-4">
-//                 {stat.icon}
-//                 <div>
-//                   <p className="text-xl font-bold">{stat.value}</p>
-//                   <p className="text-sm text-gray-300">{stat.label}</p>
-//                 </div>
-//               </div>
-//             </div>
-//           ))}
-//         </div>
-//       </main>
-//     </div>
-//   );
-// };
-
-// export default Dashboard;
 'use client'
 import React from "react";
 import { useState,useEffect } from "react";
@@ -84,6 +20,57 @@ import {
 import { Input } from "../../components/ui/input";  // Ensure Input component exists
 import { Button } from "../../components/ui/button";
 import { QrCode, Shield, Link, Factory, BarChart2, Users, Settings,Plus,Building2,Loader2 } from "lucide-react";
+import SalesChart from "../../components/SalesChart";
+import { LucideTableCellsSplit, MoonIcon } from "lucide-react";
+
+import DashboardCards from "../../components/DashboardCards";
+import ProductPieChart from "../../components/ProductPieChart";
+import SideBarComponent from "../../components/SideBarComponent";
+
+const series = [
+    { name: "year 1", data: [1000, 2400, 1350, 1050, 1849, 1900] },
+    { name: "year 2", data: [1200, 1789, 1400, 1378, 2070, 1789] }
+];
+
+const options = {
+    chart: { toolbar: { show: false } },
+    xaxis: {
+        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'],
+        labels: { style: { colors: '#fff' } }
+    },
+    yaxis: { labels: { style: { colors: '#fff' } } },
+    stroke: { curve: "smooth" },
+    dataLabels: { enabled: false }
+};
+
+const productData = [20, 35, 25, 15, 30];
+const labelList = ['Slice', 'Parle-G', 'MarieGold', 'Sprite', 'Oreo']
+const pieOptions = {
+    chart: {
+        type: 'pie',
+    },
+    labels: labelList,
+    colors: ['#FF4560', '#008FFB', '#00E396', '#FEB019', '#775DD0'],
+    legend: {
+        position: 'bottom',
+        labels: {
+            colors: '#ffffff'
+        }
+    },
+    tooltip: {
+        style: {
+            fontSize: '12px',
+            color: '#000'
+        }
+    }
+};
+
+const topProducts = [...[
+    { name: "Parle-G", amount: 1287 },
+    { name: "Sprite", amount: 4000 },
+    { name: "Slice", amount: 3900 }
+]].sort((a, b) => b.amount - a.amount);
+
 // Create a simpler schema just for the line manager form
 const LineManagerSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
@@ -174,149 +161,169 @@ const onSubmit = async (data) => {
   }
 };
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
-      {/* Sidebar */}
-      <aside className="w-64 bg-blue-900/30 backdrop-blur-lg p-6 fixed h-full border-r border-blue-400/20">
-        <h2 className="text-2xl font-bold text-blue-400">Industry 4.0</h2>
-        <nav className="mt-8 space-y-4">
-          {[{ name: "Overview", icon: <BarChart2 className="w-5 h-5" /> },
-            { name: "QR Management", icon: <QrCode className="w-5 h-5" /> },
-            { name: "Security", icon: <Shield className="w-5 h-5" /> },
-            { name: "Blockchain", icon: <Link className="w-5 h-5" /> },
-            { name: "Manufacturing", icon: <Factory className="w-5 h-5" /> },
-            { name: "Users", icon: <Users className="w-5 h-5" /> },
-            { name: "Settings", icon: <Settings className="w-5 h-5" /> }].map((item, index) => (
-            <button key={index} className="flex items-center space-x-3 w-full px-4 py-2 text-left hover:bg-blue-500/20 rounded-lg transition">
-              {item.icon}
-              <span>{item.name}</span>
-            </button>
-          ))}
-        </nav>
-      </aside>
-
-      {/* Main Content */}
-      <main className="ml-64 p-10">
-        <h1 className="text-3xl font-bold">Dashboard Overview</h1>
-        <button onClick={() => setShowModal(true)} className="mt-6 px-4 py-2 bg-blue-600 hover:bg-blue-700 transition rounded-lg flex items-center space-x-2">
-          <Plus className="w-5 h-5" />
-          <span>Add Line Manager</span>
-        </button>
-
-        {/* List of Line Managers */}
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {isLoading ? (
-            <div className="col-span-full flex justify-center items-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
-              <span className="ml-2">Loading line managers...</span>
-            </div>
-          ) : lineManagers.length > 0 ? (
-            lineManagers.map((manager, index) => (
-              <div key={index} className="bg-blue-900/30 p-4 rounded-lg border border-blue-400/20">
-                <p className="text-lg font-bold">{manager.name}</p>
-                <p className="text-sm text-gray-300">{manager.email}</p>
-              </div>
-            ))
-          ) : (
-            <div className="col-span-full text-center py-8 text-gray-400">
-              No line managers found. Add your first one!
-            </div>
-          )}
-        </div>
-        {/* Modal Popup */}
-        {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-        <div className="bg-white p-6 rounded-lg w-96">
-          <h2 className="text-xl font-bold mb-4 text-gray-900">Add Line Manager</h2>
-          {tempPassword ? (
-                <div className="text-center">
-                  <p className="text-gray-800 font-semibold">Line Manager added successfully!</p>
-                  <p className="mt-2 text-gray-700">Temporary Password:</p>
-                  <div className="mt-2 px-4 py-2 bg-gray-200 text-gray-900 rounded-md text-lg font-bold">
-                    {tempPassword}
-                  </div>
-                  <button 
-                    onClick={() => setShowModal(false)} 
-                    className="mt-4 w-full text-center text-gray-600 hover:text-gray-900"
-                  >
-                    Close
-                  </button>
+   
+          <div className="min-h-screen bg-gray-900 text-white flex">
+            {/* Sidebar */}
+            <SideBarComponent />
+      
+            {/* Main Content */}
+            <main className="ml-64 p-10 flex-1">
+              <div className="flex flex-col h-full">
+                {/* Header */}
+                <div className="flex items-center justify-between">
+                  <h1 className="text-lg font-semibold">Dashboard</h1>
+                  <MoonIcon className="text-white cursor-pointer" size={24} />
                 </div>
-              ) : (
-          <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-           <FormField
-             control={form.control}
-             name="name"
-             render={({ field }) => (
-               <FormItem>
-                 <FormLabel className="text-gray-700 flex items-center">
-                   <Building2 className="mr-2 text-blue-500" size={20} />
-                   Name 
-                 </FormLabel>
-                 <FormControl>
-                   <Input 
-                     placeholder="Enter Line Manager name" 
-                     {...field}
-                     className="bg-gray-100 border border-gray-300 text-gray-900 focus:border-blue-500 
-                                transition-all duration-300 placeholder-gray-500" 
-                   />
-                 </FormControl>
-                 <FormMessage className="text-blue-500" />
-               </FormItem>
-             )}
-           />
-            <FormField
-             control={form.control}
-             name="email"
-             render={({ field }) => (
-               <FormItem>
-                 <FormLabel className="text-gray-700 flex items-center">
-                   <Building2 className="mr-2 text-blue-500" size={20} />
-                   Email
-                 </FormLabel>
-                 <FormControl>
-                   <Input 
-                     placeholder="Enter line manager's email" 
-                     {...field}
-                     className="bg-gray-100 border border-gray-300 text-gray-900 focus:border-blue-500 
-                                transition-all duration-300 placeholder-gray-500" 
-                   />
-                 </FormControl>
-                 <FormMessage className="text-blue-500" />
-               </FormItem>
-             )}
-           />
-           <Button 
-              type="submit" 
-              disabled={isSubmitting}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                 Adding...
-                </>
-              ) : (
-                'Add'
-              )}
-            </Button>
-            {/* cancel the button */}
-            <button 
-                onClick={() => setShowModal(false)} 
-                className="mt-4 w-full text-center text-gray-600 hover:text-gray-900"
-              >
-                Cancel
-              </button>
-            </form>
-            </Form>
-              )}
-            
-           </div>
-           </div>
-        )}
-      </main>
-    </div>
-  );
-};
+      
+                {/* Dashboard Cards */}
+                <div className="w-full my-4">
+                  <DashboardCards />
+                </div>
+      
+                {/* Sales and Product Charts */}
+                <div className="grid grid-cols-3 gap-4">
+                  <SalesChart 
+                    className="col-span-2 row-span-4 border-none shadow" 
+                    series={series} 
+                    options={options} 
+                    type={'area'} 
+                    title={"Products Manufactured"} 
+                  />
+                  <ProductPieChart 
+                    className="col-span-1 row-span-4 border-none shadow" 
+                    series={productData} 
+                    options={pieOptions} 
+                    type={'pie'} 
+                  />
+                </div>
+      
+                {/* Line Managers Section */}
+                <div className="mt-8">
+                  <h1 className="text-3xl font-bold">Line Managers</h1>
+                  <button 
+                    onClick={() => setShowModal(true)} 
+                    className="mt-6 px-4 py-2 bg-blue-600 hover:bg-blue-700 transition rounded-lg flex items-center space-x-2"
+                  >
+                    <Plus className="w-5 h-5" />
+                    <span>Add Line Manager</span>
+                  </button>
+                  
+                  {/* List of Line Managers */}
+                  <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {isLoading ? (
+                      <div className="col-span-full flex justify-center items-center py-12">
+                        <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
+                        <span className="ml-2">Loading line managers...</span>
+                      </div>
+                    ) : lineManagers.length > 0 ? (
+                      lineManagers.map((manager, index) => (
+                        <div key={index} className="bg-blue-900/30 p-4 rounded-lg border border-blue-400/20">
+                          <p className="text-lg font-bold">{manager.name}</p>
+                          <p className="text-sm text-gray-300">{manager.email}</p>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="col-span-full text-center py-8 text-gray-400">
+                        No line managers found. Add your first one!
+                      </div>
+                    )}
+                  </div>
+                </div>
+      
+                {/* Modal Popup */}
+                {showModal && (
+                  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="bg-white p-6 rounded-lg w-96">
+                      <h2 className="text-xl font-bold mb-4 text-gray-900">Add Line Manager</h2>
+                      {tempPassword ? (
+                        <div className="text-center">
+                          <p className="text-gray-800 font-semibold">Line Manager added successfully!</p>
+                          <p className="mt-2 text-gray-700">Temporary Password:</p>
+                          <div className="mt-2 px-4 py-2 bg-gray-200 text-gray-900 rounded-md text-lg font-bold">
+                            {tempPassword}
+                          </div>
+                          <button 
+                            onClick={() => setShowModal(false)} 
+                            className="mt-4 w-full text-center text-gray-600 hover:text-gray-900"
+                          >
+                            Close
+                          </button>
+                        </div>
+                      ) : (
+                        <Form {...form}>
+                          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                            <FormField
+                              control={form.control}
+                              name="name"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-gray-700 flex items-center">
+                                    <Building2 className="mr-2 text-blue-500" size={20} />
+                                    Name 
+                                  </FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      placeholder="Enter Line Manager name" 
+                                      {...field}
+                                      className="bg-gray-100 border border-gray-300 text-gray-900 focus:border-blue-500 transition-all duration-300 placeholder-gray-500" 
+                                    />
+                                  </FormControl>
+                                  <FormMessage className="text-blue-500" />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="email"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-gray-700 flex items-center">
+                                    <Building2 className="mr-2 text-blue-500" size={20} />
+                                    Email
+                                  </FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      placeholder="Enter line manager's email" 
+                                      {...field}
+                                      className="bg-gray-100 border border-gray-300 text-gray-900 focus:border-blue-500 transition-all duration-300 placeholder-gray-500" 
+                                    />
+                                  </FormControl>
+                                  <FormMessage className="text-blue-500" />
+                                </FormItem>
+                              )}
+                            />
+                            <Button 
+                              type="submit" 
+                              disabled={isSubmitting}
+                              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              {isSubmitting ? (
+                                <>
+                                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                  Adding...
+                                </>
+                              ) : (
+                                'Add'
+                              )}
+                            </Button>
+                            <button 
+                              onClick={() => setShowModal(false)} 
+                              className="mt-4 w-full text-center text-gray-600 hover:text-gray-900"
+                            >
+                              Cancel
+                            </button>
+                          </form>
+                        </Form>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </main>
+          </div>
+        
+      
+  )
+}
 
 export default Dashboard;

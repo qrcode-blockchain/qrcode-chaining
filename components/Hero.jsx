@@ -16,9 +16,7 @@ const Hero = () => {
 
       {/* Content Container */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-24">
-        {/* Main Content */}
         <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Left Text Content */}
           <div className="space-y-8 animate-fade-in">
             <span className="inline-block px-4 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm font-semibold backdrop-blur-sm">
                    Industry 4.0 Ready
@@ -127,9 +125,9 @@ const Hero = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 py-8 border-t border-blue-400/20">
           {[
             { label: "Success Rate", value: "99.9%" },
-            { label: "Secured Products", value: "1M+" },
+            { label: "Secured Products", value: "5K+" },
             { label: "Trust Score", value: "98%" },
-            { label: "Global Manufacturers", value: "500+" }
+            { label: "Global Manufacturers", value: "5+" }
           ].map((stat, index) => (
             <div key={index} className="text-center">
               <p className="text-3xl font-bold text-blue-400">{stat.value}</p>
