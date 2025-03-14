@@ -145,7 +145,7 @@ useEffect(() => {
 const onSubmit = async (data) => {
   setIsSubmitting(true);
   try {
-    const response = await axios.post('/api/lineManager/add-line-manager', data, {
+    const response = await axios.post('/api/lineManagers/add-line-manager', data, {
       headers: { 'Content-Type': 'application/json' }
     });
 
