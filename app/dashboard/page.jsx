@@ -13,7 +13,7 @@ const topProducts = [...[
     { name: "Slice", amount: 3900 }
 ]].sort((a, b) => b.amount - a.amount);
 
-export default function Home() {
+export default function Dashboard() {
     return (
         <div className="min-h-screen bg-gray-900 text-white flex">
             {/* Sidebar */}

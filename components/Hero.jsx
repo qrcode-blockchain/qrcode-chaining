@@ -16,9 +16,7 @@ const Hero = () => {
 
       {/* Content Container */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-24">
-        {/* Main Content */}
         <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Left Text Content */}
           <div className="space-y-8 animate-fade-in">
             <span className="inline-block px-4 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm font-semibold backdrop-blur-sm">
                    Industry 4.0 Ready
