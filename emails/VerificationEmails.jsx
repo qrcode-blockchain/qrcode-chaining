@@ -1,4 +1,5 @@
 //this is the template made using react email and integrating resend
+//this is necessary
 import {
     Html,
     Head,

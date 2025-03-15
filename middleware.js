@@ -47,7 +47,7 @@ export const config = {
   matcher: ['/sign-in',
     '/ManufacturerSignup',
     '/',
-    '/dashboard/:path*',
+     '/dashboard/:path*',
     '/verify/:path*'
   ]
 

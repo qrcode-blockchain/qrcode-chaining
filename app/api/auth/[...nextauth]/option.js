@@ -1,6 +1,6 @@
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from 'bcryptjs';
-import dbConnect from "../../../../lib/dbConnect";
+import {dbConnect} from "../../../../lib/dbConnect";
 import manufacturerModel from "../../../../model/Manufacturer";
 import GoogleProvider from "next-auth/providers/google";
 
@@ -66,7 +66,19 @@ export const authOptions = {
             // }
         })
     ],
-    callbacks: {
+    callbacks: {  // Add this redirect callback
+        async redirect({ url, baseUrl }) {
+          // If the URL is already a relative URL (starts with /), prefix it with baseUrl
+          if (url.startsWith('/')) {
+            return `${baseUrl}${url}`;
+          }
+          // If the URL is already an absolute URL on the same origin, return it as-is
+          else if (url.startsWith(baseUrl)) {
+            return url;
+          }
+          // Default to redirecting to the dashboard
+          return `${baseUrl}/dashboard`;
+        },
         async signIn({ user, account, profile }) {
             await dbConnect();
 

@@ -52,9 +52,14 @@ export default function SignInForm() {
         redirect: false,
         email: data.identifier,
         password: data.password,
+        callbackUrl: '/dashboard' 
       });
         console.log((result));
-        
+        // Then check if authentication was successful before redirecting
+if (!result?.error) {
+  // Use the URL from the result if available, otherwise fallback to dashboard
+  router.replace(result?.url || '/dashboard');
+}
       if (result?.error) {
         if (result.error === 'CredentialsSignin') {
           toast({
@@ -70,6 +75,8 @@ export default function SignInForm() {
           });
         }
       } else if (result?.url) {
+        console.log("The  result url is",result?.url);
+        
         router.replace('/dashboard');
       }
     } catch (error) {

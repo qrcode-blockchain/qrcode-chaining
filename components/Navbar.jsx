@@ -133,7 +133,8 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { data: session } = useSession();
   const manufacturer = session?.manufacturer;
-
+  console.log("The manufacturer is",manufacturer);
+  
   return (
     <nav className='bg-white shadow-md'>
       <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-5 flex justify-between items-center h-16">

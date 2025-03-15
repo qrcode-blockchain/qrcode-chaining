@@ -1,17 +1,19 @@
-import dbConnect from "../../../lib/dbConnect";
+import {dbConnect} from "../../../lib/dbConnect";
 
-import manufacturerModel from '../../../model/Manufacturer'
+import Manufacturer from '../../../model/Manufacturer'
 export async function POST(request){
     await dbConnect()
 
     try {
-       const {name,code} =await request.json()
+       const {email,code} =await request.json()
 
-      const decodedname= decodeURIComponent(name)
-     console.log("The decoded name is",decodedname);
-     
-      const manufacturer=await manufacturerModel.findOne({
-        name:decodedname
+    //   const decodedname= decodeURIComponent(name)
+    //  console.log("The decoded name is",decodedname);
+     console.log("The meial in api is",email);
+        const decodedemail= decodeURIComponent(email);
+        console.log("The decode in api is",email);
+      const manufacturer=await Manufacturer.findOne({
+        email:decodedemail
       })
       if(!manufacturer){
         return Response.json({
@@ -22,8 +24,14 @@ export async function POST(request){
         })
       }
       const isCodeValid=manufacturer.verifyCode===code
-      const isCodeNotExpired=new Date(manufacturer.verifyCodeExpiry)>new Date()
-
+      const currentTime = Date.now();
+      const expiryTime = new Date(manufacturer.verifyCodeExpiry).getTime();
+      const isCodeNotExpired = expiryTime > currentTime;
+      console.log({
+        currentTime: new Date().toISOString(),
+        expiryTime: new Date(manufacturer.verifyCodeExpiry).toISOString(),
+        isExpired: new Date(manufacturer.verifyCodeExpiry).getTime() <= Date.now()
+      });
       if(isCodeValid && isCodeNotExpired){
         manufacturer.isVerified=true
         await manufacturer.save()

@@ -1,5 +1,31 @@
 import mongoose from "mongoose";
 
+//line manager schema
+const LineManagerSchema=new mongoose.Schema({
+    name:{
+        type:String,
+        required:[true,"Line Managers name is required"],
+        trim:true
+    },
+    email:{
+        type:String,
+        reuired:[true,"Email is rquired"],
+        unique:true,
+        match: [/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, "Please use a valid email address"]
+    },
+    password: {
+        type: String,
+        required: [true, "Password is required"]
+    },
+    isSet:{
+        type:Boolean,
+        default:false,
+       },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    }
+})
 const ManufacturerSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -29,30 +55,52 @@ const ManufacturerSchema = new mongoose.Schema({
         required: [true, "GST Number is required"],
         match: [/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/, "Please enter a valid GST number"]
     },
+    gstCertificate: {
+        type: mongoose.Schema.Types.ObjectId,  // Store the URL/path of the uploaded file
+        ref:"uploads.files",
+        required: true
+    },
     manufacturingLicenseNumber: {
         type: String,
         required: [true, "Manufacturing License Number is required"]
+    },
+    manufacturingLicenseCertificate: {
+        type: mongoose.Schema.Types.ObjectId,  // Store the URL/path of the uploaded file
+        ref:"uploads.files",
+        required: true
     },
     panNumber: {
         type: String,
         required: [true, "PAN Number is required"],
         match: [/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, "Please enter a valid PAN number"]
     },
+    panNumberCertificate: {
+        type: mongoose.Schema.Types.ObjectId,  // Store the URL/path of the uploaded file
+        ref:"uploads.files",
+        required: true
+    },
     cinNumber: {
         type: String,
         required: [true, "CIN Number is required"],
         match: [/^[A-Z]{1}[0-9]{5}[A-Z]{2}[0-9]{4}[A-Z]{3}[0-9]{6}$/, "Please enter a valid CIN number (21 characters)"]
+    },
+    cinCertificate: {
+        type: mongoose.Schema.Types.ObjectId,  // Store the URL/path of the uploaded file
+        ref:"uploads.files",
+        required: true
     },
     productsManufactured: {
         type: [String],
         required: [true, "Type of Products Manufactured is required"]
     },
     companyLogo: {
-        type: Buffer,  // Store the URL/path of the uploaded file
+        type: mongoose.Schema.Types.ObjectId,  
+        ref:"uploads.files",
         required: true
     },
     businessCertificate: {
-        type: Buffer,  // Store the URL/path of the uploaded file
+        type: mongoose.Schema.Types.ObjectId,  
+        ref:"uploads.files",
         required: true
     },
     website: {
@@ -72,6 +120,12 @@ const ManufacturerSchema = new mongoose.Schema({
         type:Boolean,
         default:false,
        },
+
+       //now add line managers
+       lineManagers:{
+        type:[LineManagerSchema],
+        default:[] //Initialize an empty array if no line managers
+       }
 }, {
     timestamps: true
 });

@@ -28,10 +28,10 @@ const VerifyAccount = () => {
 
   const onSubmit = async (data) => {
     try {
-      console.log('The name is ',params.name);
+      console.log('The name is ',params.email);
       
       const response = await axios.post(`/api/verify-code`, {
-        name: params.name,
+        email: params.email,
         code: data.code,
       });
 
