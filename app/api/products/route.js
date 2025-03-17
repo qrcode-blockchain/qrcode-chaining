@@ -1,11 +1,11 @@
 import crypto from "crypto";
 import path from "path";
 import { NextResponse } from "next/server";
-import dbConnect from "../../../lib/dbConnect";
+import {dbConnect} from "../../../lib/dbConnect";
 import Product from "../../../model/Product";
 import { writeFile } from "fs/promises";
 
-dbConnect();
+await dbConnect();
 
 const generateHash = (input) => 
     crypto.createHash("sha256").update(input).digest("hex");
