@@ -33,10 +33,14 @@ export async function middleware(request) {
   //   return NextResponse.redirect(new URL('/dashboard', request.url));
   // }
   // Redirect unauthenticated users trying to access protected routes
-  if (!token && url.pathname.startsWith('/dashboard')) {
+  if (!token && url.pathname.startsWith('/dashboard')
+    || url.pathname.startsWith('/Products_Form')
+  ) {
     return NextResponse.redirect(new URL('/SignUp', request.url));
   }
-
+  if (!token && url.pathname.startsWith('/lineManager/lineManagerDash')) {
+    return NextResponse.redirect(new URL('/lineManager/lineManagerLogin', request.url));
+  }
   // Allow access by default for other cases
   return NextResponse.next();
 }
@@ -48,7 +52,8 @@ export const config = {
     '/ManufacturerSignup',
     '/',
      '/dashboard/:path*',
-    '/verify/:path*'
+    '/verify/:path*',
+    '/lineManager/lineManagerDash'
   ]
 
 }

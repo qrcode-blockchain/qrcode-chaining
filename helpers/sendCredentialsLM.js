@@ -6,7 +6,7 @@ import CredentialsEmail from "../emails/CredentialsEmail";
 export async function sendCredentialsLM(
     name,
     email,
-    tempPassword
+    //tempPassword
 ){
   try {
    const response= await resend.emails.send({

@@ -17,13 +17,13 @@ export async function POST(request){
     //authenticate manufacturer
     const session=await getServerSession(authOptions);
     console.log("The session is",session);
-    if (!session || !session.manufacturer || !session.manufacturer._id) {
+    if (!session || !session.user || !session.user._id) {
         return NextResponse.json(
             { success: false, message: "Not Authenticated or user ID missing" },
             { status: 400 }
         );
     }
-    const manufacturerId=new mongoose.Types.ObjectId(session.manufacturer._id);
+    const manufacturerId=new mongoose.Types.ObjectId(session.user._id);
 
     try {
         const data=await request.json();
@@ -66,6 +66,7 @@ const tempPassword = generateTempPassword();
             email,
             password: hashedPassword,
             isSet: false, // Ensures they reset password on first login
+            location,
         };
      // Store the Line Manager under the authenticated Manufacturer
      const updatedManufacturer = await Manufacturer.findByIdAndUpdate(
@@ -82,7 +83,8 @@ const tempPassword = generateTempPassword();
     }
    //send verification email
    const emailResponse=await sendCredentialsLM(
-    name,email,tempPassword
+    name,email
+    // tempPassword
    )
    if (!emailResponse.success) {
     return NextResponse.json({

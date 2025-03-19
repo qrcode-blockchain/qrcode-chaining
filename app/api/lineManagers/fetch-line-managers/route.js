@@ -11,7 +11,7 @@ export async function GET(request) {
     // Authenticate manufacturer
     const session = await getServerSession(authOptions);
     
-    if (!session || !session.manufacturer || !session.manufacturer._id) {
+    if (!session || !session.user || !session.user._id) {
         return NextResponse.json(
             { success: false, message: "Not authenticated or user ID missing" },
             { status: 401 }
@@ -19,7 +19,7 @@ export async function GET(request) {
     }
     
     try {
-        const manufacturerId = new mongoose.Types.ObjectId(session.manufacturer._id);
+        const manufacturerId = new mongoose.Types.ObjectId(session.user._id);
         
         // Find the manufacturer and retrieve their line managers
         const manufacturer = await Manufacturer.findById(manufacturerId);

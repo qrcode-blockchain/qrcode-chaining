@@ -120,7 +120,7 @@ import React, { useState } from 'react';
 import { QrCode, Menu, X } from 'lucide-react';
 import Link from 'next/link';
 import { useSession, signOut } from "next-auth/react";
-
+import { usePathname } from 'next/navigation';
 const handleSignOut = async () => {
   await signOut({
     redirect: true,
@@ -132,9 +132,12 @@ const handleSignOut = async () => {
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { data: session } = useSession();
-  const manufacturer = session?.manufacturer;
+  const manufacturer = session?.user;
   console.log("The manufacturer is",manufacturer);
-  
+  const pathname=usePathname();
+
+  const hiddenPaths=['/lineManager/lineManagerLogin','/SignIn'];
+  if (hiddenPaths.includes(pathname)) return null;
   return (
     <nav className='bg-white shadow-md'>
       <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-5 flex justify-between items-center h-16">
