@@ -4,7 +4,6 @@ import { authOptions } from "../../auth/[...nextauth]/option";
 import { dbConnect } from "../../../../lib/dbConnect";
 import mongoose from "mongoose";
 import Manufacturer from '../../../../model/Manufacturer';
-
 export async function GET(request) {
     await dbConnect();
     
@@ -35,7 +34,8 @@ export async function GET(request) {
         const lineManagers = manufacturer.lineManagers.map(manager => ({
             name: manager.name,
             email: manager.email,
-            _id: manager._id
+            _id: manager._id,
+            location:manager.location || ""
         }));
         
         return NextResponse.json({

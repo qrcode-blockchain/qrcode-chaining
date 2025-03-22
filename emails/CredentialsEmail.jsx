@@ -72,7 +72,7 @@ import {
     Container,
   } from "@react-email/components";
   
-  export default function VerificationEmail({ name, tempPassword }) {
+  export default function VerificationEmail({ name }) {
     return (
       <Html lang="en" dir="ltr">
         <Head>
@@ -119,7 +119,7 @@ import {
                 margin: "15px 0",
               }}
             >
-              {tempPassword}
+              Your temp passowrd is with your supervisor
             </Text>
   
             <Text style={{ fontSize: "16px", color: "#555" }}>

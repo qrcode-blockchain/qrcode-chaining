@@ -23,7 +23,7 @@ export default function ProductRegistration() {
 
     // Save or update product in state and localStorage
     const handleSaveProduct = (product) => {
-        setProducts((prevProducts) => {
+        setProducts((prevProducts) => {  //if no previous product then null
             const existingIndex = prevProducts.findIndex((p) => p.serialNo === product.serialNo);
             let updatedProducts;
     

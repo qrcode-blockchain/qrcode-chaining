@@ -13,7 +13,7 @@ export async function sendCredentialsLM(
         from: 'onboarding@resend.dev',
         to: email,
         subject: 'QRChain:Credentials of your acount',
-        react: <CredentialsEmail name={name} tempPassword={tempPassword} />
+        react: <CredentialsEmail name={name}  />
         
       });
       console.log('Resend API Response:', response);

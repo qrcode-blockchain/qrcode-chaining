@@ -27,7 +27,7 @@ export async function POST(request){
 
     try {
         const data=await request.json();
-        const { name, email } = data;
+        const { name, email,location } = data;
 
         //basic validation
         if(!name || !email){
