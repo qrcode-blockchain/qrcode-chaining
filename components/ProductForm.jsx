@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect } from "react";
+import { useState } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { productSchema } from "../Schema/productSchema";
@@ -8,7 +9,8 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { FormField, FormLabel, FormControl, FormItem, FormMessage } from "./ui/form";
 import { Calendar1Icon } from "lucide-react";
-
+import axios from "axios";
+import { useToast } from "../hooks/useToast";
 const emptyValues = {
     name: "",
     batchNo: "",
@@ -19,36 +21,121 @@ const emptyValues = {
     location: ""
 };
 
-export default function ProductForm({ onSave, selectedProduct, onCancel, onDelete }) {
+export default function ProductForm({ onSave, selectedProduct, onCancel, onDelete ,taskId,role}) {
+    const {toast}=useToast();
     const methods = useForm({
         resolver: zodResolver(productSchema), 
         defaultValues: selectedProduct || emptyValues
     });
-
-    const { reset, handleSubmit } = methods;
-
+    const [taskData,setTaskData]=useState(null);
+    
+    const { reset, handleSubmit,setValue } = methods;
+    const [loading,setLoading]=useState(false);
     useEffect(() => {
         if (selectedProduct) {
             reset(selectedProduct);
         }
     }, [selectedProduct, reset]);
 
+useEffect(()=>{
+    const fetchTaskData = async () => {
+        if (role === "lineManager" && taskId) {
+            setLoading(true);
+            try {
+                const response = await axios.get('/api/lineManagers/fetch-assigned-task');
+                if (response.data.success) {
+                    // Find the specific task with matching taskId
+                    const task = response.data.tasks.find(t => t._id === taskId);
+                    console.log("The task data is",task);
+                    
+                    if (task) {
+                        setTaskData(task);
+                        
+                        // Pre-populate form with task data
+                        if (task.productName) setValue("name", task.productName);
+                        if (task.productPrice) setValue("price", task.productPrice);
+                        if (task.NoOfUnits) setValue("amount", task.NoOfUnits);
+                        if(task.location) setValue("location",task.location);
+                    } else {
+                        toast({
+                            title: "Task not found",
+                            description: "Could not find the specified task",
+                            variant: 'destructive',
+                            duration: 5000,
+                        });
+                    }
+                } else {
+                    toast({
+                        title: "Failed to fetch tasks",
+                        description: response.data.message || "An error occurred",
+                        variant: 'destructive',
+                        duration: 5000,
+                    });
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                toast({
+                    title: "Failed to find tasks",
+                    description: error.response?.data?.message || "An error occurred while fetching line tasks",
+                    variant: 'destructive',
+                    duration: 5000,
+                });
+            } finally {
+                setLoading(false);
+            }
+        } else {
+            setLoading(false);
+        }
+    };
+    
+    fetchTaskData();
+},[taskId,role,setValue])
+
+const getPreservedValues = () => {
+    const preservedValues = { ...emptyValues };
+    
+    if (role === "lineManager" && taskId && taskData) {
+        if ('productName' in taskData) preservedValues.name = taskData.productName;
+        if ('productPrice' in taskData) preservedValues.price = taskData.productPrice;
+        if ('NoOfUnits' in taskData) preservedValues.amount = taskData.NoOfUnits;
+        if ('location' in taskData) preservedValues.location = taskData.location;
+    }
+    
+    return preservedValues;
+};
+
     const handleSubmitForm = (data) => { 
         onSave(data);
-        methods.reset(emptyValues);
+        methods.reset(getPreservedValues());
     };
 
     const handleCancelEvent = () => {
         onCancel();
-        methods.reset(emptyValues);
+        methods.reset(getPreservedValues());
     };
 
     const handleDeleteEvent = () => {
         if (!selectedProduct) return;
         onDelete(selectedProduct.serialNo);
-        methods.reset(emptyValues);
+        methods.reset(getPreservedValues());
     };
-
+        //to determivne if a feld is ready only
+        const isFieldReadOnly = (fieldName) => {
+            if (role !== "lineManager" || !taskId || !taskData) return false;
+            
+            // Map task fields to form fields
+            const readOnlyFieldMap = {
+                "name": "productName" in taskData,
+                "price": "productPrice" in taskData,
+                "amount": "NoOfUnits" in taskData,
+                "location":"location" in taskData,
+            };
+            
+            return readOnlyFieldMap[fieldName] || false;
+        };
+        if (loading) {
+            return <div className="p-4 text-center">Loading form data...</div>;
+        }
     return (
         <div className="bg-blue-900/30 p-4 rounded-lg shadow-lg border border-blue-400/20 hover:shadow-xl transition-all text-white">
             <FormProvider {...methods}>
@@ -58,7 +145,10 @@ export default function ProductForm({ onSave, selectedProduct, onCancel, onDelet
                         <FormItem>
                             <FormLabel>Product Name</FormLabel>
                             <FormControl>
-                                <Input placeholder="Enter Product Name" {...field} />
+                                <Input placeholder="Enter Product Name" {...field}
+                                readOnly={isFieldReadOnly("name")}
+                                className={isFieldReadOnly("name") ? "bg-gray-500 cursor-not-allowed" : ""}
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -91,7 +181,13 @@ export default function ProductForm({ onSave, selectedProduct, onCancel, onDelet
                         <FormItem>
                             <FormLabel>Price</FormLabel>
                             <FormControl>
-                                <Input type="number" placeholder="Enter Price" {...field} />
+                            <Input 
+                                    type="number" 
+                                    placeholder="Enter Price" 
+                                    {...field} 
+                                    readOnly={isFieldReadOnly("price")}
+                                    className={isFieldReadOnly("price") ? "bg-gray-500 cursor-not-allowed" : ""}
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -122,7 +218,13 @@ export default function ProductForm({ onSave, selectedProduct, onCancel, onDelet
                         <FormItem>
                             <FormLabel>Amount of Products</FormLabel>
                             <FormControl>
-                                <Input type="number" placeholder="Enter Amount" {...field} />
+                            <Input 
+                                    type="number" 
+                                    placeholder="Enter Amount" 
+                                    {...field} 
+                                    readOnly={isFieldReadOnly("amount")}
+                                    className={isFieldReadOnly("amount") ? "bg-gray-500 cursor-not-allowed" : ""}
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -133,7 +235,13 @@ export default function ProductForm({ onSave, selectedProduct, onCancel, onDelet
                         <FormItem>
                             <FormLabel>Location</FormLabel>
                             <FormControl>
-                                <Input placeholder="Enter Location" {...field} />
+                            <Input 
+                                    type="string" 
+                                    placeholder="Enter Location" 
+                                    {...field} 
+                                    readOnly={isFieldReadOnly("location")}
+                                    className={isFieldReadOnly("location") ? "bg-gray-500 cursor-not-allowed" : ""}
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -143,7 +251,7 @@ export default function ProductForm({ onSave, selectedProduct, onCancel, onDelet
                     <div className="grid grid-cols-3 col-span-2 gap-1">
                         {/* Save Button */}
                         <Button type="submit" className="bg-blue-600 hover:bg-blue-400">
-                            Save Product
+                            Create QRCodes
                         </Button>
 
                         {/* Cancel Button */}

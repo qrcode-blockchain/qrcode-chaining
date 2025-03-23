@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '../../../hooks/useToast';
-
+import { useRouter } from 'next/navigation';
 import { 
   ArrowUpDown, 
   Calendar, 
@@ -62,6 +62,11 @@ const LineManagerDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [tasks,setTasks]=useState([]);
   const [selectedTasks,setSelectedTasks]=useState(null);
+  const router=useRouter();
+  //to handle complete task
+  const handleCompleteTask = (taskId) => {
+    router.push(`/AssignProducts?taskId=${taskId}`);
+};
   //to check if logged in otherwise load
 
   // Simulated data - replace with actual API calls
@@ -337,7 +342,7 @@ const LineManagerDashboard = () => {
                             <span>Units: {task.NoOfUnits?.toLocaleString() || 0}</span>
                           </div>
                           <div className='space-y-96'>
-                          <Button>Complete Task</Button>
+                          <Button onClick={()=>{handleCompleteTask(task._id)}}>Comple Task</Button>
                         </div>
                         </div>
                       </CardContent>

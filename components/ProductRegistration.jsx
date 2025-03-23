@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { TableProperties } from "lucide-react";
 import { Button } from "./ui/button.jsx";
 
-export default function ProductRegistration() {
+export default function ProductRegistration({taskId,role}) {
     const [products, setProducts] = useState([]);
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -118,6 +118,8 @@ export default function ProductRegistration() {
                     selectedProduct={selectedProduct} 
                     onCancel={handleCancel} 
                     onDelete={handleDelete} 
+                    taskId={taskId}
+                    role={role}
                 />
                 
                 {/* Table */}

@@ -71,7 +71,7 @@ const AssignTaskModal = ({ isOpen, onClose }) => {
   }, [isOpen, session]);
 
   // Fetch location of line manager now
-  const selectedLineManager = form.watch('lineManager');
+  const selectedLineManager = form.watch('lineManager'); //this contains the id
   
   useEffect(() => {
     if (selectedLineManager) {
