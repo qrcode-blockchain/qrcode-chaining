@@ -20,35 +20,52 @@ export const authOptions = {
 
                 await dbConnect();
                 try {
-                    const manufacturer = await manufacturerModel.findOne({
+                    let user = await manufacturerModel.findOne({
                         email: credentials.email
                     });
-
-                    if (!manufacturer) {
-                        throw new Error('No user found with this email');
+            
+                    let role = "manufacturer";
+            
+                    if (!user) {
+                        const manufacturer = await manufacturerModel.findOne({
+                            "lineManagers.email": credentials.email
+                        });
+            
+                        if (!manufacturer) {
+                            throw new Error("No user found with this email");
+                        }
+            
+                        user = manufacturer.lineManagers.find(
+                            (lm) => lm.email === credentials.email
+                        );
+            
+                        role = "lineManager";
                     }
-
-                    if (!manufacturer.isVerified) {
-                        throw new Error('Please verify your account before login');
+            
+                    if (role === "manufacturer" && !user.isVerified) {
+                        throw new Error("Please verify your account before login");
                     }
-
+            
+                    if (role === "lineManager" && !user.isSet) {
+                        throw new Error("Your password has not been set yet");
+                    }
+            
                     const isPasswordCorrect = await bcrypt.compare(
                         credentials.password,
-                        manufacturer.password
+                        user.password
                     );
-
+            
                     if (!isPasswordCorrect) {
-                        throw new Error('Password is incorrect');
+                        throw new Error("Password is incorrect");
                     }
-
-                    // Return only the necessary data
+            
                     return {
-                        id: manufacturer._id.toString(),
-                        email: manufacturer.email,
-                        name: manufacturer.name,
-                        isVerified: manufacturer.isVerified
+                        id: user._id.toString(),
+                        email: user.email,
+                        name: user.name,
+                        role,
+                        ...(role==='manufacturer'?{isVerified:user.isVerified}:{isSet:user.isSet})
                     };
-
                 } catch (err) {
                     throw new Error(err.message);
                 }
@@ -67,45 +84,52 @@ export const authOptions = {
         })
     ],
     callbacks: {  // Add this redirect callback
-        async redirect({ url, baseUrl }) {
-          // If the URL is already a relative URL (starts with /), prefix it with baseUrl
-          if (url.startsWith('/')) {
-            return `${baseUrl}${url}`;
-          }
-          // If the URL is already an absolute URL on the same origin, return it as-is
-          else if (url.startsWith(baseUrl)) {
-            return url;
-          }
-          // Default to redirecting to the dashboard
-          return `${baseUrl}/dashboard`;
-        },
-        async signIn({ user, account, profile }) {
-            await dbConnect();
+    //     async redirect({ url, baseUrl }) {
+    //       // If the URL is already a relative URL (starts with /), prefix it with baseUrl
+    //       if (url.startsWith('/')) {
+    //         return `${baseUrl}${url}`;
+    //       }
+    //       // If the URL is already an absolute URL on the same origin, return it as-is
+    //       else if (url.startsWith(baseUrl)) {
+    //         return url;
+    //       }
+    //       // Default to redirecting to the dashboard
+    //       return `${baseUrl}/dashboard`;
+    //     },
+    //     async signIn({ user, account, profile }) {
+    //         await dbConnect();
 
-            if (account?.provider === "google") {
-                 //allowing google to authenticate users without storing in database
-            return true;
-        }return true;
-    },
+    //         if (account?.provider === "google") {
+    //              //allowing google to authenticate users without storing in database
+    //         return true;
+    //     }return true;
+    // },
         async jwt({ token, user, account }) {
             if (user) {
                 token.id = user.id;
                 token.name = user.name;
                 token.email = user.email;
-                token.isVerified = user.isVerified;
+                token.role=user.role
                 token.provider = account?.provider || "credentials";
+                //you need to store the correct verification based on the role
+                if(user.role==='manufacturer'){
+                    token.isVerified=user.isVerified
+                }else if(user.role==='lineManager'){
+                    token.isSet=user.isSet;
+                }
             }
             return token;
         },
         async session({ session, token }) {
             if (token) {
                 // Initialize the manufacturer object
-                session.manufacturer = {
+                session.user = {
                     _id: token.id,
                     email: token.email,
                     name: token.name,
-                    isVerified: token.isVerified,
-                    provider: token.provider
+                    role: token.role,
+                    provider: token.provider,
+                    ...(token.role==='manufacturer'?{isVerified:token.isVerified}:{isSet:token.isSet})
                 };
             }
             return session;
@@ -116,7 +140,7 @@ export const authOptions = {
     },
     session: {
         strategy: "jwt",
-        maxAge: 30 * 24 * 60 * 60 // 30 days
+        maxAge: 24 * 60 * 60 // 30 days
     },
     secret: process.env.NEXTAUTH_SECRET,
     debug: process.env.NODE_ENV === 'development'

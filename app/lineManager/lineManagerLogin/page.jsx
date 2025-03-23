@@ -1,11 +1,12 @@
 'use client'
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 import axios from "axios";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useToast } from '../../../hooks/useToast';
 import * as z from 'zod';
-
+import { signIn } from "next-auth/react";
 import {
   Form,
   FormControl,
@@ -80,24 +81,64 @@ const LineManagerAuth = () => {
   };
 
   // Handle Login
+  // const onLoginSubmit = async (data) => {
+  //   setIsSubmitting(true);
+  //   try {
+  //     const response = await axios.post('/api/lineManagers/login', data);
+  //     if (response.data.needsTempPassword) {
+  //       tempPassForm.setValue('email', data.email);
+  //       setMode('tempPassword');
+  //       toast({ title: 'Temporary password required', description: 'Enter your temp password to continue.' });
+  //     } else {
+  //       window.location.href = '/lineManager/lineManagerDash';
+  //     }
+  //   } catch (error) {
+  //     toast({ title: "Login failed", description: error.response?.data?.message || "Invalid credentials", variant: 'destructive' });
+  //   } finally {
+  //     setIsSubmitting(false);
+  //   }
+  // };
+  const router=useRouter();
   const onLoginSubmit = async (data) => {
     setIsSubmitting(true);
     try {
-      const response = await axios.post('/api/lineManagers/login', data);
-      if (response.data.needsTempPassword) {
-        tempPassForm.setValue('email', data.email);
-        setMode('tempPassword');
-        toast({ title: 'Temporary password required', description: 'Enter your temp password to continue.' });
-      } else {
-        window.location.href = '/lineManager/lineManagerDash';
-      }
+     console.log("The data in line manager signIn is",data);
+     const result=await signIn('credentials',{
+      redirect:false,
+      email:data.email,
+      password:data.password,
+      //callbackUrl:'/lineManager/lineManagerDash'
+     });
+     console.log((result));
+     if (!result?.error) {
+      // Use the URL from the result if available, otherwise fallback to dashboard
+      router.replace(result?.url || '/lineManager/lineManagerDash');
+    }
+          if (result?.error) {
+            if (result.error === 'CredentialsSignin') {
+              toast({
+                title: 'Login Failed',
+                description: 'Incorrect username or password',
+                variant: 'destructive',
+              });
+            } else {
+              toast({
+                title: 'Error',
+                description: result.error,
+                variant: 'destructive',
+              });
+            }
+          } else if (result?.url) {
+            console.log("The  result url is",result?.url);
+            
+            router.replace('/lineManager/lineManagerDash');
+          }
     } catch (error) {
       toast({ title: "Login failed", description: error.response?.data?.message || "Invalid credentials", variant: 'destructive' });
     } finally {
       setIsSubmitting(false);
     }
   };
-
   // Handle Temporary Password Verification
   const onTempPassSubmit = async (data) => {
     setIsSubmitting(true);

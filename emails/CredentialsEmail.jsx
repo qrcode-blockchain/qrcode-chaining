@@ -88,7 +88,7 @@ import {
             fontStyle="normal"
           />
         </Head>
-        <Preview>Here are your login credentials: {tempPassword}</Preview>
+        {/* <Preview>Here are your login credentials: {tempPassword}</Preview> */}
   
         <Section style={{ backgroundColor: "#f4f4f4", padding: "20px" }}>
           <Container
@@ -104,8 +104,7 @@ import {
               Welcome, {name}!
             </Heading>
             <Text style={{ fontSize: "16px", color: "#555" }}>
-              You have been registered successfully. Please use the temporary
-              password below to log in to your account.
+              You have been registered successfully. Please ask your supervisor for the temporary password to log in to your account.
             </Text>
   
             <Text

@@ -25,7 +25,7 @@ import { useState } from 'react';
 export default function SignInForm() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+ 
   const form = useForm({
     resolver: zodResolver(signInSchema),
     defaultValues: {
@@ -76,7 +76,10 @@ if (!result?.error) {
         }
       } else if (result?.url) {
         console.log("The  result url is",result?.url);
-        
+        toast({
+          title:'Success',
+          desciption:'You hhave successfully logged in!',
+        })
         router.replace('/dashboard');
       }
     } catch (error) {

@@ -73,7 +73,8 @@ const topProducts = [...[
 // Create a simpler schema just for the line manager form
 const LineManagerSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
-  email: z.string().email({ message: "Invalid email address" })
+  email: z.string().email({ message: "Invalid email address" }),
+  location:z.string()
 });
 
 const Dashboard = () => {
@@ -86,7 +87,8 @@ const Dashboard = () => {
     resolver:zodResolver(LineManagerSchema),
     defaultValues:{
       name:'',
-      email:''
+      email:'',
+      location:'',
     }
 });
   // const addLineManager = () => {
@@ -219,6 +221,7 @@ const onSubmit = async (data) => {
                         <div key={index} className="bg-blue-900/30 p-4 rounded-lg border border-blue-400/20">
                           <p className="text-lg font-bold">{manager.name}</p>
                           <p className="text-sm text-gray-300">{manager.email}</p>
+                          <p className="text-sm text-gray-300">{manager.location}</p>
                         </div>
                       ))
                     ) : (
@@ -283,6 +286,26 @@ const onSubmit = async (data) => {
                                   <FormControl>
                                     <Input 
                                       placeholder="Enter line manager's email" 
+                                      {...field}
+                                      className="bg-gray-100 border border-gray-300 text-gray-900 focus:border-blue-500 transition-all duration-300 placeholder-gray-500" 
+                                    />
+                                  </FormControl>
+                                  <FormMessage className="text-blue-500" />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="location"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-gray-700 flex items-center">
+                                    <Building2 className="mr-2 text-blue-500" size={20} />
+                                    Location
+                                  </FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      placeholder="Enter line manager's Location" 
                                       {...field}
                                       className="bg-gray-100 border border-gray-300 text-gray-900 focus:border-blue-500 transition-all duration-300 placeholder-gray-500" 
                                     />

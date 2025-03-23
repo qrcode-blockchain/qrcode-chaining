@@ -21,6 +21,10 @@ const LineManagerSchema=new mongoose.Schema({
         type:Boolean,
         default:false,
        },
+       location:{
+        type:String,
+        required:true,
+       },
     createdAt: {
         type: Date,
         default: Date.now
