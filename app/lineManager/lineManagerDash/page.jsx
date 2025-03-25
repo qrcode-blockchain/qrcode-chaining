@@ -57,8 +57,7 @@ const LineManagerDashboard = () => {
   console.log("The line manager is",lineManager);
   const {toast}=useToast();
   const [user, setUser] = useState(null);
-  const [employees, setEmployees] = useState([]);
-  const [pendingRequests, setPendingRequests] = useState([]);
+
   const [loading, setLoading] = useState(true);
   const [tasks,setTasks]=useState([]);
   const [selectedTasks,setSelectedTasks]=useState(null);
@@ -69,47 +68,7 @@ const LineManagerDashboard = () => {
 };
   //to check if logged in otherwise load
 
-  // Simulated data - replace with actual API calls
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // In a real application, replace with actual API calls
-        // const userResponse = await axios.get('/api/lineManagers/me');
-        // const employeesResponse = await axios.get('/api/lineManagers/employees');
-        // const requestsResponse = await axios.get('/api/lineManagers/pending-requests');
-        
-        // Simulated data
-        setUser({
-          id: 1,
-          name: 'Sarah Johnson',
-          email: 'sarah.johnson@company.com',
-          department: 'Engineering',
-          role: 'Senior Manager'
-        });
-        
-        setEmployees([
-          { id: 1, name: 'John Doe', position: 'Software Engineer', department: 'Engineering', status: 'Active' },
-          { id: 2, name: 'Jane Smith', position: 'UX Designer', department: 'Design', status: 'Active' },
-          { id: 3, name: 'Mike Brown', position: 'Frontend Developer', department: 'Engineering', status: 'On Leave' },
-          { id: 4, name: 'Lisa Jones', position: 'Backend Developer', department: 'Engineering', status: 'Active' },
-          { id: 5, name: 'David Wilson', position: 'Product Manager', department: 'Product', status: 'Active' },
-        ]);
-        
-        setPendingRequests([
-          { id: 101, employeeName: 'John Doe', type: 'Time Off', submitted: '2025-03-10', status: 'Pending' },
-          { id: 102, employeeName: 'Jane Smith', type: 'Equipment', submitted: '2025-03-11', status: 'Pending' },
-          { id: 103, employeeName: 'Mike Brown', type: 'Remote Work', submitted: '2025-03-12', status: 'Pending' },
-        ]);
-        
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching dashboard data:', error);
-        setLoading(false);
-      }
-    };
-    
-    fetchData();
-  }, []);
+
 
   useEffect(()=>{
     if(status==="authenticated"){
@@ -245,14 +204,10 @@ const LineManagerDashboard = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        {/* User Welcome */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-800">Welcome, {user?.name}</h2>
-          <p className="text-gray-600">{user?.role} • {user?.department}</p>
-        </div>
+
 
         {/* Dashboard Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Card>
             <CardHeader className="pb-2">
               <CardTitle>Team Members</CardTitle>
@@ -285,7 +240,7 @@ const LineManagerDashboard = () => {
               <div className="text-sm text-muted-foreground">Team meetings & reviews</div>
             </CardContent>
           </Card>
-        </div>
+        </div> */}
 
        {/* assign task */}
        <div className="mb-8">
@@ -411,120 +366,7 @@ const LineManagerDashboard = () => {
               )}
             </TabsContent>
 
-            <TabsContent value="completed">
-              {tasks.filter(task => task.status?.toLowerCase() === 'completed').length === 0 ? (
-                <Card>
-                  <CardContent className="pt-6 text-center text-gray-500">
-                    No completed tasks.
-                  </CardContent>
-                </Card>
-              ) : (
-                <div className="grid gap-4">
-                  {tasks.filter(task => task.status?.toLowerCase() === 'completed').map((task) => (
-                    <Card 
-                      key={task._id} 
-                      className="overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
-                      onClick={() => setSelectedTasks(task)}
-                    >
-                      {/* Same card structure as above */}
-                      <CardHeader className="pb-2">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <CardTitle className="flex items-center">
-                              <Package className="mr-2 h-5 w-5 text-blue-600" />
-                              {task.productName}
-                            </CardTitle>
-                            <CardDescription className="mt-1">
-                              Location: {task.location}
-                            </CardDescription>
-                          </div>
-                          <Badge className={getStatusColor(task.status)}>
-                            {task.status.charAt(0).toUpperCase() + task.status.slice(1)}
-                          </Badge>
-                        </div>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="flex items-center">
-                            <DollarSign className="mr-2 h-4 w-4 text-gray-500" />
-                            <span>Price: ₹{task.productPrice}</span>
-                          </div>
-                          <div className="flex items-center">
-                            <Truck className="mr-2 h-4 w-4 text-gray-500" />
-                            <span>Units: {task.NoOfUnits?.toLocaleString() || 0}</span>
-                          </div>
-                        </div>
-                      </CardContent>
-                      <CardFooter className="bg-gray-50 py-2 px-6 text-sm text-gray-600 flex items-center">
-                        <Clock className="mr-2 h-4 w-4" />
-                        <span>Assigned: {formatDate(task.assignedAt)}</span>
-                      </CardFooter>
-                    </Card>
-                  ))}
-                </div>
-              )}
-            </TabsContent>
-
-
-            <TabsContent value="in-progress">
-              {tasks.filter(task => 
-                task.status?.toLowerCase() === 'in progress' || 
-                task.status?.toLowerCase() === 'inprogress'
-              ).length === 0 ? (
-                <Card>
-                  <CardContent className="pt-6 text-center text-gray-500">
-                    No tasks in progress.
-                  </CardContent>
-                </Card>
-              ) : (
-                <div className="grid gap-4">
-                  {tasks.filter(task => 
-                    task.status?.toLowerCase() === 'in progress' || 
-                    task.status?.toLowerCase() === 'inprogress'
-                  ).map((task) => (
-                    <Card 
-                      key={task._id} 
-                      className="overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
-                      onClick={() => setSelectedTasks(task)}
-                    >
-                      {/* Same card structure as above */}
-                      <CardHeader className="pb-2">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <CardTitle className="flex items-center">
-                              <Package className="mr-2 h-5 w-5 text-blue-600" />
-                              {task.productName}
-                            </CardTitle>
-                            <CardDescription className="mt-1">
-                              Location: {task.location}
-                            </CardDescription>
-                          </div>
-                          <Badge className={getStatusColor(task.status)}>
-                            {task.status.charAt(0).toUpperCase() + task.status.slice(1)}
-                          </Badge>
-                        </div>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="flex items-center">
-                            <DollarSign className="mr-2 h-4 w-4 text-gray-500" />
-                            <span>Price: ₹{task.productPrice}</span>
-                          </div>
-                          <div className="flex items-center">
-                            <Truck className="mr-2 h-4 w-4 text-gray-500" />
-                            <span>Units: {task.NoOfUnits?.toLocaleString() || 0}</span>
-                          </div>
-                        </div>
-                      </CardContent>
-                      <CardFooter className="bg-gray-50 py-2 px-6 text-sm text-gray-600 flex items-center">
-                        <Clock className="mr-2 h-4 w-4" />
-                        <span>Assigned: {formatDate(task.assignedAt)}</span>
-                      </CardFooter>
-                    </Card>
-                  ))}
-                </div>
-              )}
-            </TabsContent>
+            
              
             </Tabs>
             </div>
