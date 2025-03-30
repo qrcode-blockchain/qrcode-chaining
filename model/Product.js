@@ -10,7 +10,11 @@ const ProductSchema = new mongoose.Schema({
         type: String,
         required: [true, "Batch number is required"],
     },
-    serialNo: {
+    startSerialNo: {
+        type: Number,
+        required: [true, "Serial number is required"],
+    },
+    endSerialNo: {
         type: Number,
         required: [true, "Serial number is required"],
     },
@@ -23,7 +27,7 @@ const ProductSchema = new mongoose.Schema({
         type: Date,
         required: [true, "Date is required"],
     },
-    amount: {
+    NoOfUnits: {
         type: Number,
         required: [true, "Amount is required"],
         min: [1, "Amount must be at least 1"]

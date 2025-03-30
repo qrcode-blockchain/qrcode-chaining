@@ -5,6 +5,8 @@ import { NextResponse } from 'next/server'
 // This function can be marked `async` if using `await` inside
 export async function middleware(request) {
   const token = await getToken({ req: request });
+  console.log("The token is middle ware is",token);
+  
   const url = request.nextUrl;
 
   // Allow unauthenticated access to specific public routes
@@ -20,7 +22,7 @@ export async function middleware(request) {
 
   // Redirect authenticated users away from public routes
   if (
-    token &&
+    token?.role==="manufacturer" &&
     (url.pathname.startsWith('/SignUp') ||
       url.pathname.startsWith('/ManufacturerSignup') ||
       url.pathname.startsWith('/verify')||
@@ -28,6 +30,15 @@ export async function middleware(request) {
     )
   ) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
+  }
+  if (
+    token?.role==="lineManager" &&
+    (url.pathname.startsWith('/SignUp') ||
+      url.pathname==='/' ||
+      url.pathname==='/lineManager/lineManagerLogin'
+    )
+  ) {
+    return NextResponse.redirect(new URL('/lineManager/lineManagerDash', request.url));
   }
   // if (token && url.pathname === '/') {
   //   return NextResponse.redirect(new URL('/dashboard', request.url));

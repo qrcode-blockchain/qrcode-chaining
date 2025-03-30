@@ -78,6 +78,7 @@ export async function POST(request) {
         const hashedNewPassword = await bcrypt.hash(newPassword, 10);
 
         // Update the line manager's password and set isSet to true
+
         manufacturer.lineManagers[lineManagerIndex].password = hashedNewPassword;
         manufacturer.lineManagers[lineManagerIndex].isSet = true;
 

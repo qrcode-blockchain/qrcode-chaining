@@ -2,10 +2,12 @@
 import React from "react";
 import { useState,useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { useSession } from "next-auth/react";
 import axios from "axios";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useToast } from '../../hooks/useToast';
 import * as z from 'zod';
+import AssignTaskModal from '../../components/AssignTask'
 //import {ManufacturerClientSchema} from '../../Schema/manufacturerClientShema'
 import {
   Form,
@@ -78,11 +80,15 @@ const LineManagerSchema = z.object({
 });
 
 const Dashboard = () => {
+  const {data:session,status}=useSession();
+  const manufacturer=session?.user;
   const [showModal, setShowModal] = useState(false);
   const [lineManagers, setLineManagers] = useState([]);
   const [isLoading,setIsLoading]=useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tempPassword,setTempPassword]=useState(null);
+  const [showAssignModal,setShowAssignModal]=useState(false);
+
   const form=useForm({
     resolver:zodResolver(LineManagerSchema),
     defaultValues:{
@@ -102,34 +108,51 @@ const Dashboard = () => {
 const {toast} = useToast();
 // Fetch line managers on component mount
 useEffect(() => {
-  const fetchLineManagers = async () => {
-    try {
-      const response = await axios.get('/api/lineManagers/fetch-line-managers');
-      if (response.data.success) {
-        setLineManagers(response.data.lineManagers);
-      } else {
+  if(status==="authenticated"){
+    const fetchLineManagers = async () => {
+      try {
+        const response = await axios.get('/api/lineManagers/fetch-line-managers');
+        if (response.data.success) {
+          setLineManagers(response.data.lineManagers);
+        } else {
+          toast({
+            title: "Failed to load line managers",
+            description: response.data.message || "An error occurred",
+            variant: 'destructive',
+            duration: 5000,
+          });
+        }
+      } catch (error) {
         toast({
           title: "Failed to load line managers",
-          description: response.data.message || "An error occurred",
+          description: error.response?.data?.message || "An error occurred while fetching line managers",
           variant: 'destructive',
           duration: 5000,
         });
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      toast({
-        title: "Failed to load line managers",
-        description: error.response?.data?.message || "An error occurred while fetching line managers",
-        variant: 'destructive',
-        duration: 5000,
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    };
 
-  fetchLineManagers();
-}, []); // Empty dependency array means this runs once on component mount
-
+    fetchLineManagers();
+  }
+  
+}, [status]); // Empty dependency array means this runs once on component mount
+if(status==="loading"){
+  return (
+    <div className="flex justify-center items-center min-h-screen bg-gray-900 text-white">
+    <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
+    <span className="ml-2">Loading...</span>
+  </div>
+  )
+}
+if (!session) {
+  return (
+    <div className="flex justify-center items-center min-h-screen bg-gray-900 text-white">
+      <h1 className="text-2xl font-bold">Please log in to access the dashboard.</h1>
+    </div>
+  );
+}
 const onSubmit = async (data) => {
   setIsSubmitting(true);
   try {
@@ -202,13 +225,22 @@ const onSubmit = async (data) => {
                 <div className="mt-8">
                   <h1 className="text-3xl font-bold">Line Managers</h1>
                   <button 
+                     onClick={() => setShowAssignModal(true)} 
+                    className="mt-6 px-4 py-2 bg-blue-600 hover:bg-blue-700 transition rounded-lg flex items-center space-x-2"
+                  >
+                    <Plus className="w-5 h-5" />
+                    <span>Assign task to Line Manager</span>
+                  </button>
+                  <button 
                     onClick={() => setShowModal(true)} 
                     className="mt-6 px-4 py-2 bg-blue-600 hover:bg-blue-700 transition rounded-lg flex items-center space-x-2"
                   >
                     <Plus className="w-5 h-5" />
                     <span>Add Line Manager</span>
                   </button>
-                  
+                  {/* Assign Task Modal */}
+                  <AssignTaskModal isOpen={showAssignModal} onClose={()=>setShowAssignModal(false)} />
+
                   {/* List of Line Managers */}
                   <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {isLoading ? (

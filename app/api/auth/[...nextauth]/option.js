@@ -45,7 +45,7 @@ export const authOptions = {
                     if (role === "manufacturer" && !user.isVerified) {
                         throw new Error("Please verify your account before login");
                     }
-            
+             
                     if (role === "lineManager" && !user.isSet) {
                         throw new Error("Your password has not been set yet");
                     }
