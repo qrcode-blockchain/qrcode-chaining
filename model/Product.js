@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { deflate } from "zlib";
 
 const ProductSchema = new mongoose.Schema({
     name: {
@@ -36,6 +37,10 @@ const ProductSchema = new mongoose.Schema({
         type: String,
         required: [true, "Location is Required"],
 
+    },
+    generatedHash:{
+       type:String,
+       default:false,
     },
     createdAt: {
         type: Date,
