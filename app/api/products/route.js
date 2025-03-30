@@ -34,10 +34,10 @@ export async function GET() {
 
                 const allUnits = await Promise.all(
                     products.map(async (product) => {
-                        const { _id, name, location, date, batchNo, serialNo, amount } = product;
+                        const { _id, name, location, date, batchNo, startSerialNo,endSerialNo, NoOfUnits } = product;
 
                         const unitIds = Array.from({ length: amount }, (_, i) =>
-                            `${_id.toString()}${generateHash(`${name}-${location}-${date}-${batchNo}-${Number(serialNo) + i}`)}`
+                            `${_id.toString()}${generateHash(`${name}-${location}-${date}-${batchNo}-${Number(startSerialNo) + i}`)}`
                         );
 
                         const filePath = path.join(process.cwd(), "data.txt");

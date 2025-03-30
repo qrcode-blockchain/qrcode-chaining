@@ -22,7 +22,7 @@ export async function middleware(request) {
 
   // Redirect authenticated users away from public routes
   if (
-    token.role==="manufacturer" &&
+    token?.role==="manufacturer" &&
     (url.pathname.startsWith('/SignUp') ||
       url.pathname.startsWith('/ManufacturerSignup') ||
       url.pathname.startsWith('/verify')||
@@ -32,7 +32,7 @@ export async function middleware(request) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
   if (
-    token.role==="lineManager" &&
+    token?.role==="lineManager" &&
     (url.pathname.startsWith('/SignUp') ||
       url.pathname==='/' ||
       url.pathname==='/lineManager/lineManagerLogin'
