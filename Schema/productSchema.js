@@ -3,7 +3,7 @@ import { z } from "zod";
 export const productSchema = z.object({
     name: z.string().min(2, { message: "Product name must be at least 2 characters." }),
 
-    batchNo: z.coerce.number().min(1, { message: "Batch No. is required." }),
+    batchNo: z.string().min(1,{message:"Minimun 1 character"}),
 
     startSerialNo: z.coerce
                 .number()
@@ -28,7 +28,7 @@ export const productSchema = z.object({
 export const MproductSchema = z.object({
         name: z.string().min(2, { message: "Product name must be at least 2 characters." }),
     
-        batchNo: z.coerce.number().min(1, { message: "Batch No. is required." }),
+        batchNo: z.string().min(1,{message:"Minimun 1 character"}),
     
         startSerialNo: z.coerce
                     .number()
