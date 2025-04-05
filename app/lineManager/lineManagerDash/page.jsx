@@ -64,7 +64,7 @@ const LineManagerDashboard = () => {
   const router=useRouter();
   //to handle complete task
   const handleCompleteTask = (taskId) => {
-    router.push(`/AssignProducts?taskId=${taskId}`);
+    router.push(`/AssignProductsFormLm?taskId=${taskId}`);
 };
   //to check if logged in otherwise load
 
