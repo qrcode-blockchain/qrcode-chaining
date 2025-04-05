@@ -2,7 +2,7 @@
 import React from "react";
 import { useSession } from "next-auth/react";
 import { MoonIcon } from "lucide-react";
-import ProductRegistration from "../../components/ProductRegistration";
+import MProductRegistration from '../../components/MProductRegistration'
 import SideBarComponent from "../../components/SideBarComponent";
 
 export default function QRCreator() {
@@ -22,7 +22,7 @@ export default function QRCreator() {
 							<MoonIcon className="text-white bg-none rounded-full" size={24}/>
 						</div>
 					</div>
-					<ProductRegistration taskId={role==="lineManager"?taskId:null} role={role} />
+					<MProductRegistration  />
 
 				</div>
 			</main>

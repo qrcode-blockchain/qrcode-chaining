@@ -6,7 +6,7 @@ import { LinkIcon, Factory, Shield, BarChart2, QrCode, Users, Settings, ScanLine
 
 const services = [
     { name: "Overview", icon: <BarChart2 className="w-5 h-5" />, link: '/dashboard'},
-    { name: "QR Management", icon: <QrCode className="w-5 h-5" />, link: '/Products_Form' },
+    { name: "QR Creation", icon: <QrCode className="w-5 h-5" />, link: '/Products_Form' },
     { name: "Security", icon: <Shield className="w-5 h-5" />, link: '/dashboard'},
     { name: "Blockchain", icon: <LinkIcon className="w-5 h-5" />, link: '/dashboard' },
     { name: "Manufacturing", icon: <Factory className="w-5 h-5" />, link: '/Inventory' },
