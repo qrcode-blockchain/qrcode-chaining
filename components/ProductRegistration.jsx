@@ -795,6 +795,7 @@ export default function ProductRegistration({taskId, role}) {
     const [lastUsedSerialNo, setLastUsedSerialNo] = useState(1);
     const [taskData, setTaskData] = useState(null);
     const [loading, setLoading] = useState(false); // Added missing state
+    const [manufacturerName,setManufacturerName]=useState("");
   const toast=useToast();
     
     useEffect(() => {
@@ -852,11 +853,21 @@ export default function ProductRegistration({taskId, role}) {
                         console.log("The task data is", task);
                         
                         if (task) {
+                           console.log("The task is",task);
                            
                             setTaskData(task);
-                            
+                            if (task.manufacturer) {
+                                try {
+                                    const manufacturerResponse = await axios.get(`/api/manufacturers/getById?id=${task.manufacturer}`);
+                                    if (manufacturerResponse.data.success) {
+                                        setManufacturerName(manufacturerResponse.data.manufacturer.name);
+                                    }
+                                } catch (manufacturerError) {
+                                    console.error("Error fetching manufacturer:", manufacturerError);
+                                    setManufacturerName("Error fetching name");
+                                }
                             // Pre-populate form with task data
-                           
+                            }  
                         } else {
                             toast({
                                 title: "Task not found",
@@ -1120,8 +1131,8 @@ export default function ProductRegistration({taskId, role}) {
                             <span className="font-medium">{taskData._id || "N/A"}</span>
                         </div>
                         <div className="flex flex-col">
-                            <span className="text-blue-200 text-sm">Manufacturer Name</span>
-                            <span className="font-medium">{"Carol Lobo" || "N/A"}</span>
+                            <span className="text-blue-200 text-sm">Manufacturerr</span>
+                            <span className="font-medium">{manufacturerName || "N/A"}</span>
                         </div>
                         <div className="flex flex-col">
                             <span className="text-blue-200 text-sm">Location</span>
