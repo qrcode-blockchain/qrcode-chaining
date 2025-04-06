@@ -284,6 +284,148 @@ import Batch from "../../../model/Batch";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/option";
 import Manufacturer from '../../../model/Manufacturer';
+import axios from 'axios';
+
+const generateHash = (input) =>
+    crypto.createHash("sha256").update(input).digest("hex");
+  
+export async function GET() {
+    await dbConnect();
+  
+    try {
+        const response = NextResponse.json(
+            { success: true, message: "Processing in background" },
+            { status: 202 }
+        );
+  
+        setTimeout(async () => {
+            try {
+                const today = new Date();
+                today.setUTCHours(0, 0, 0, 0);
+        
+                const productsWithBatches = await Product.aggregate([
+                    {
+                        $match: {
+                            createdAt: { $gte: today },
+                            generatedHash: { $ne: true }
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: "batches", // MongoDB collection name (usually lowercase plural of model)
+                            localField: "_id",
+                            foreignField: "productId",
+                            as: "batches"
+                        },
+                        $lookup: {
+                            from: "manufacturers",
+                            localField: 'manufacturerId',
+                            foreignField: '_id',
+                            as: 'manufacturer'
+                        }
+                    },
+                    {
+                        $project: {
+                            _id: 1,
+                            name: 1,
+                            location: 1,
+                            createdAt: 1,
+                            batches: {
+                                $map: {
+                                    input: "$batches",
+                                    as: "batch",
+                                    in: {
+                                        batchNo: "$$batch.batchNo",
+                                        startSerialNo: "$$batch.globalStartSerialNo",
+                                        endSerialNo: "$$batch.globalEndSerialNo"
+                                    }
+                                }
+                            },
+                            manufacturerDetails: {
+                                $map: {
+                                    input: '$manufacturer',
+                                    as: 'manufacturer',
+                                    in: {
+                                        manuName: "$manufacturer.name",
+                                        manuEmail: '$manufacturer.email',
+                                        manuWebpage: "$manufacturer.website"
+                                    }
+                                }
+                            }
+                        },
+                    }
+                ]);
+    
+            if (!productsWithBatches.length) {
+                console.log("No products found for today.");
+                return;
+            }
+    
+            const allUnits = [];
+            const errorQRs = [];
+    
+            for (const product of productsWithBatches) {
+                const { _id, name, location, createdAt, batches } = product;
+    
+                for (const batch of batches) {
+                    const { batchNo, startSerialNo, endSerialNo } = batch;
+                    const totalUnits = endSerialNo - startSerialNo + 1;
+        
+                    const unitIds = Array.from({ length: totalUnits }, async (_, i) => {
+                            const data = {
+                                product_name: `${name}`,
+                                batch_number: `${batchNo}`,
+                                location: `${location}`,
+                                date: `${createdAt.toISOString()}`,
+                                serial_number: String(startSerialNo + i),
+                                price: '2',
+                                weight: '12',
+                                man_name: 'qrcipher'
+                            }
+                            const productUrl = `https://qr-code-blockchain-1d-backend.onrender.com/products/${name}/${location}/${createdAt.toISOString()}/${batchNo}/${startSerialNo + i}`
+                            const productHash = generateHash( `${_id.toString()}${generateHash(`${name}${location}${createdAt.toISOString()}${batchNo}${startSerialNo + i}`)}`)
+
+                            const response = await fetch('https://qr-code-blockchain-1.vercel.app/api/contract_api', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                    ...data,
+                                    url:productUrl,
+                                    hashValue:productHash
+                                })
+                            })
+                            const result = response.json()
+
+                            if (!result.success) {
+                                errorQRs.push({ url: productUrl, hash: productHash });
+                            }
+
+                            return productUrl;
+                        }
+                    );
+
+                    allUnits.push(unitIds);
+                }
+    
+                await Product.updateOne({ _id }, { $set: { generatedHash: true } });
+            }
+    
+            console.log("Generated unit IDs successfully", allUnits);
+            await axios.post('https://qr-code-blockchain-1d-backend.onrender.com/generate-qr', {
+                "urls": allUnits
+            });
+            
+        } catch (error) {
+          console.error("Error generating unit IDs:", error);
+        }
+      }, 2000);
+  
+      return response;
+    } catch (error) {
+      console.error("Error initializing background process:", error);
+      return NextResponse.json({ error: "Internal Server Error" });
+    }
+}  
 
 export async function POST(request){
     try {

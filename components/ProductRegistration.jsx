@@ -353,6 +353,7 @@ import ProductForm from "./ProductForm.jsx";
 import { useState, useEffect } from "react";
 import { TableProperties } from "lucide-react";
 import { Button } from "./ui/button.jsx";
+import axios from "axios";
 
 export default function ProductRegistration({taskId, role}) {
     const [products, setProducts] = useState([]);
@@ -411,7 +412,6 @@ export default function ProductRegistration({taskId, role}) {
         loadInitialState();
     }, []);
 
-    // Save or update product in state and localStorage
     const handleSaveProduct = (product) => {
         // Add timestamp to the product if it doesn't exist
         if (!product.timestamp) {
@@ -500,7 +500,6 @@ export default function ProductRegistration({taskId, role}) {
         setSelectedProduct(null);
     };
 
-    // Cancel editing
     const handleCancel = () => setSelectedProduct(null);
 
     // Delete product from state and localStorage
@@ -556,34 +555,27 @@ export default function ProductRegistration({taskId, role}) {
 
     // Submit all products
     const submitAllProducts = async () => {
+        console.log(products);
         if (products.length === 0) {
             setError("No products to submit.");
             return;
         }
-
+    
         if (!confirm("Are you sure you want to submit all products?")) {
             return;
         }
-
+    
         setIsSubmitting(true);
         setError(null);
         setSuccess(false);
     
         try {
-            const response = await fetch("/api/products", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ products: products }),
-            });
+            const response = await axios.post("/api/products/submit", { products });
     
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || 'Failed to submit products');
+            if (response.status !== 200) {
+                throw new Error(response.data?.message || 'Failed to submit products');
             }
-            
+    
             localStorage.removeItem("products");
             localStorage.removeItem("remainingUnits");
             localStorage.removeItem("lastUsedSerialNo");
@@ -594,7 +586,7 @@ export default function ProductRegistration({taskId, role}) {
             setSuccess(true);
         } catch (error) {
             console.error("Error submitting products:", error);
-            setError(error.message || "Failed to submit products. Please try again.");
+            setError(error.response?.data?.message || "Failed to submit products. Please try again.");
         } finally {
             setIsSubmitting(false);
         }
