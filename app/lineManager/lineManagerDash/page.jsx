@@ -297,7 +297,9 @@ const LineManagerDashboard = () => {
                             <span>Units: {task.NoOfUnits?.toLocaleString() || 0}</span>
                           </div>
                           <div className='space-y-96'>
-                          <Button onClick={()=>{handleCompleteTask(task._id)}}>Comple Task</Button>
+                          {task.status.toLowerCase() === 'pending' && (
+    <Button onClick={()=>{handleCompleteTask(task._id)}}>Complete Task</Button>
+  )}
                         </div>
                         </div>
                       </CardContent>
@@ -345,6 +347,63 @@ const LineManagerDashboard = () => {
                         </div>
                       </CardHeader>
                       <CardContent>
+                      <div className="grid grid-cols-3 gap-8">
+                          <div className="flex items-center">
+                            <DollarSign className="mr-2 h-4 w-4 text-gray-500" />
+                            <span>Price: ₹{task.productPrice}</span>
+                          </div>
+                          <div className="flex items-center">
+                            <Truck className="mr-2 h-4 w-4 text-gray-500" />
+                            <span>Units: {task.NoOfUnits?.toLocaleString() || 0}</span>
+                          </div>
+                          <div className='space-y-96'>
+                          <Button onClick={()=>{handleCompleteTask(task._id)}}>Comple Task</Button>
+                        </div>
+                        </div>
+                        
+                      </CardContent>
+                      <CardFooter className="bg-gray-50 py-2 px-6 text-sm text-gray-600 flex items-center">
+                        <Clock className="mr-2 h-4 w-4" />
+                        <span>Assigned: {formatDate(task.assignedAt)}</span>
+                      </CardFooter>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </TabsContent>
+
+            <TabsContent value="in-progress">
+              {tasks.filter(task => task.status?.toLowerCase() === 'in-progress').length === 0 ? (
+                <Card>
+                  <CardContent className="pt-6 text-center text-gray-500">
+                    No  tasks in progress.
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="grid gap-4">
+                  {tasks.filter(task => task.status?.toLowerCase() === 'in-progress').map((task) => (
+                    <Card 
+                      key={task._id} 
+                      className="overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
+                      onClick={() => setSelectedTasks(task)}
+                    >
+                      <CardHeader className="pb-2">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <CardTitle className="flex items-center">
+                              <Package className="mr-2 h-5 w-5 text-blue-600" />
+                              {task.productName}
+                            </CardTitle>
+                            <CardDescription className="mt-1">
+                              Location: {task.location}
+                            </CardDescription>
+                          </div>
+                          <Badge className={getStatusColor(task.status)}>
+                            {task.status.charAt(0).toUpperCase() + task.status.slice(1)}
+                          </Badge>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
                         <div className="grid grid-cols-2 gap-4">
                           <div className="flex items-center">
                             <DollarSign className="mr-2 h-4 w-4 text-gray-500" />
@@ -365,9 +424,58 @@ const LineManagerDashboard = () => {
                 </div>
               )}
             </TabsContent>
-
-            
-             
+            <TabsContent value="completed">
+              {tasks.filter(task => task.status?.toLowerCase() === 'completed').length === 0 ? (
+                <Card>
+                  <CardContent className="pt-6 text-center text-gray-500">
+                    No  tasks in progress.
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="grid gap-4">
+                  {tasks.filter(task => task.status?.toLowerCase() === 'completed').map((task) => (
+                    <Card 
+                      key={task._id} 
+                      className="overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
+                      onClick={() => setSelectedTasks(task)}
+                    >
+                      <CardHeader className="pb-2">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <CardTitle className="flex items-center">
+                              <Package className="mr-2 h-5 w-5 text-blue-600" />
+                              {task.productName}
+                            </CardTitle>
+                            <CardDescription className="mt-1">
+                              Location: {task.location}
+                            </CardDescription>
+                          </div>
+                          <Badge className={getStatusColor(task.status)}>
+                            {task.status.charAt(0).toUpperCase() + task.status.slice(1)}
+                          </Badge>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="flex items-center">
+                            <DollarSign className="mr-2 h-4 w-4 text-gray-500" />
+                            <span>Price: ₹{task.productPrice}</span>
+                          </div>
+                          <div className="flex items-center">
+                            <Truck className="mr-2 h-4 w-4 text-gray-500" />
+                            <span>Units: {task.NoOfUnits?.toLocaleString() || 0}</span>
+                          </div>
+                        </div>
+                      </CardContent>
+                      <CardFooter className="bg-gray-50 py-2 px-6 text-sm text-gray-600 flex items-center">
+                        <Clock className="mr-2 h-4 w-4" />
+                        <span>Assigned: {formatDate(task.assignedAt)}</span>
+                      </CardFooter>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </TabsContent>
             </Tabs>
             </div>
          

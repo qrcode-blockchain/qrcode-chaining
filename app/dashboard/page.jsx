@@ -97,14 +97,7 @@ const Dashboard = () => {
       location:'',
     }
 });
-  // const addLineManager = () => {
-  //   if (managerName && managerEmail) {
-  //     setLineManagers([...lineManagers, { name: managerName, email: managerEmail }]);
-  //     setManagerName("");
-  //     setManagerEmail("");
-  //     setShowModal(false);
-  //   }
-  // };
+ 
 const {toast} = useToast();
 // Fetch line managers on component mount
 useEffect(() => {

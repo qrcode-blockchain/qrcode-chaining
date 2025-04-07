@@ -1064,12 +1064,16 @@ export default function ProductRegistration({taskId, role}) {
         setSuccess(false);
     
         try {
+            console.log("The atsk id is n rontend",taskId);
+            
             const response = await fetch("/api/products", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ products: products }),
+                body: JSON.stringify({ products: products,taskId:taskId }),
+                
+                
             });
     
             const data = await response.json();
