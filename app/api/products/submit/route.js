@@ -278,12 +278,12 @@
 //     }
 // }
 import { NextResponse } from "next/server";
-import { dbConnect } from "../../../lib/dbConnect";
-import Product from "../../../model/Product";
-import Batch from "../../../model/Batch";
+import { dbConnect } from "../../../../lib/dbConnect";
+import Product from "../../../../model/Product";
+import Batch from "../../../../model/Batch";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/option";
-import Manufacturer from '../../../model/Manufacturer';
+import { authOptions } from "../../auth/[...nextauth]/option";
+import Manufacturer from '../../../../model/Manufacturer';
 import axios from 'axios';
 
 const generateHash = (input) =>
@@ -356,71 +356,75 @@ export async function GET() {
                     }
                 ]);
     
-            if (!productsWithBatches.length) {
-                console.log("No products found for today.");
-                return;
-            }
-    
-            const allUnits = [];
-            const errorQRs = [];
-    
-            for (const product of productsWithBatches) {
-                const { _id, name, location, createdAt, batches } = product;
-    
-                for (const batch of batches) {
-                    const { batchNo, startSerialNo, endSerialNo } = batch;
-                    const totalUnits = endSerialNo - startSerialNo + 1;
-        
-                    const unitIds = Array.from({ length: totalUnits }, async (_, i) => {
-                            const data = {
-                                product_name: `${name}`,
-                                batch_number: `${batchNo}`,
-                                location: `${location}`,
-                                date: `${createdAt.toISOString()}`,
-                                serial_number: String(startSerialNo + i),
-                                price: '2',
-                                weight: '12',
-                                man_name: 'qrcipher'
-                            }
-                            const productUrl = `https://qr-code-blockchain-1d-backend.onrender.com/products/${name}/${location}/${createdAt.toISOString()}/${batchNo}/${startSerialNo + i}`
-                            const productHash = generateHash( `${_id.toString()}${generateHash(`${name}${location}${createdAt.toISOString()}${batchNo}${startSerialNo + i}`)}`)
-
-                            const response = await fetch('https://qr-code-blockchain-1.vercel.app/api/contract_api', {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({
-                                    ...data,
-                                    url:productUrl,
-                                    hashValue:productHash
-                                })
-                            })
-                            const result = response.json()
-
-                            if (!result.success) {
-                                errorQRs.push({ url: productUrl, hash: productHash });
-                            }
-
-                            return productUrl;
-                        }
-                    );
-
-                    allUnits.push(unitIds);
+                if (!productsWithBatches.length) {
+                    console.log("No products found for today.");
+                    return;
                 }
-    
-                await Product.updateOne({ _id }, { $set: { generatedHash: true } });
-            }
-    
-            console.log("Generated unit IDs successfully", allUnits);
-            await axios.post('https://qr-code-blockchain-1d-backend.onrender.com/generate-qr', {
-                "urls": allUnits
-            });
+
+                console.log(productsWithBatches)
+        
+                const allUnits = [];
+                const errorQRs = [];
+        
+                for (const product of productsWithBatches) {
+                    const { _id, name, location, createdAt, batches } = product;
+                    console.log("product", product)
+
+        
+                    for (const batch of batches) {
+                        const { batchNo, startSerialNo, endSerialNo } = batch;
+                        const totalUnits = endSerialNo - startSerialNo + 1;
             
-        } catch (error) {
-          console.error("Error generating unit IDs:", error);
-        }
-      }, 2000);
+                        const unitIds = Array.from({ length: totalUnits }, async (_, i) => {
+                                const data = {
+                                    product_name: `${name}`,
+                                    batch_number: `${batchNo}`,
+                                    location: `${location}`,
+                                    date: `${createdAt.toISOString()}`,
+                                    serial_number: String(startSerialNo + i),
+                                    price: '2',
+                                    weight: '12',
+                                    man_name: 'qrcipher'
+                                }
+                                const productUrl = `https://qr-code-blockchain-1d-backend.onrender.com/products/${name}/${location}/${createdAt.toISOString()}/${batchNo}/${startSerialNo + i}`
+                                const productHash = generateHash( `${_id.toString()}${generateHash(`${name}${location}${createdAt.toISOString()}${batchNo}${startSerialNo + i}`)}`)
+
+                                const response = await fetch('https://qr-code-blockchain-1.vercel.app/api/contract_api', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({
+                                        ...data,
+                                        url:productUrl,
+                                        hashValue:productHash
+                                    })
+                                })
+                                const result = response.json()
+
+                                if (!result.success) {
+                                    errorQRs.push({ url: productUrl, hash: productHash });
+                                }
+
+                                return productUrl;
+                            }
+                        );
+
+                        allUnits.push(unitIds);
+                    }
+        
+                    await Product.updateOne({ _id }, { $set: { generatedHash: true } });
+                }
+        
+                console.log("Generated unit IDs successfully", allUnits);
+                await axios.post('https://qr-code-blockchain-1d-backend.onrender.com/generate-qr', {
+                    "urls": allUnits
+                });
+            
+            } catch (error) {
+                console.error("Error generating unit IDs:", error);
+            }
+        }, 2000);
   
-      return response;
+        return response;
     } catch (error) {
       console.error("Error initializing background process:", error);
       return NextResponse.json({ error: "Internal Server Error" });
@@ -608,7 +612,7 @@ export async function POST(request){
                 message: "Products and batches created successfully",
                 data: results 
             },
-            { status: 201 }
+            { status: 200 }
         );
 
     } catch (error) {

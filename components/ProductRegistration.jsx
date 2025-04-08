@@ -584,6 +584,7 @@ export default function ProductRegistration({taskId, role}) {
             setRemainingUnits(0);
             setLastUsedSerialNo(1);
             setSuccess(true);
+            const res = await axios.get('/api/products/submit');
         } catch (error) {
             console.error("Error submitting products:", error);
             setError(error.response?.data?.message || "Failed to submit products. Please try again.");
