@@ -367,7 +367,7 @@ export async function GET() {
                 const errorQRs = [];
         
                 for (const product of productsWithBatches) {
-                    const { _id, name, location, createdAt, batches } = product;
+                    const { _id, name, location, createdAt, batches, price } = product;
                     console.log("product", product)
 
         
@@ -382,7 +382,7 @@ export async function GET() {
                                     location: `${location}`,
                                     date: `${createdAt.toISOString()}`,
                                     serial_number: String(startSerialNo + i),
-                                    price: '2',
+                                    price: `${price}`,
                                     weight: '12',
                                     man_name: 'qrcipher'
                                 }
