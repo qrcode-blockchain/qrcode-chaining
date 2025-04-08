@@ -1066,7 +1066,7 @@ export default function ProductRegistration({taskId, role}) {
         try {
             console.log("The atsk id is n rontend",taskId);
             
-            const response = await fetch("/api/products", {
+            const response = await fetch("/api/products/submit", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

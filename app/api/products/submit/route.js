@@ -6,6 +6,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/option";
 import Manufacturer from '../../../../model/Manufacturer';
 import axios from 'axios';
+import Task from '../../../../model/TaskLM'
+import crypto from 'crypto';
 
 const generateHash = (input) =>
     crypto.createHash("sha256").update(input).digest("hex");
@@ -37,7 +39,9 @@ export async function GET() {
                             localField: "_id",
                             foreignField: "productId",
                             as: "batches"
-                        },
+                        }
+                    },
+                    {
                         $lookup: {
                             from: "manufacturers",
                             localField: 'manufacturerId',
@@ -88,7 +92,7 @@ export async function GET() {
                 const errorQRs = [];
         
                 for (const product of productsWithBatches) {
-                    const { _id, name, location, createdAt, batches, price, manufacturerDetails } = product;
+                    const { _id, name, location, createdAt, batches, manufacturerDetails } = product;
                     console.log("product", product)
 
         
@@ -97,18 +101,23 @@ export async function GET() {
                         const totalUnits = endSerialNo - startSerialNo + 1;
             
                         const unitIds = Array.from({ length: totalUnits }, async (_, i) => {
+                                const createdAtDate = new Date(createdAt);
+                                const formattedDate = createdAtDate.getFullYear().toString() +
+                                                    String(createdAtDate.getMonth() + 1).padStart(2, '0') +
+                                                    String(createdAtDate.getDate()).padStart(2, '0');
+
                                 const data = {
                                     product_name: `${name}`,
                                     batch_number: `${batchNo}`,
                                     location: `${location}`,
-                                    date: `${createdAt.toISOString()}`,
+                                    date: `${formattedDate}`,
                                     serial_number: String(startSerialNo + i),
-                                    price: `${price}`,
+                                    price: `20`,
                                     weight: '12',
-                                    man_name: `${manufacturerDetails.manuName}`
+                                    man_name: `${manufacturerDetails[0].manuName}`
                                 }
-                                const productUrl = `https://qr-code-blockchain-1d-backend.onrender.com/products/${name}/${location}/${createdAt.toISOString()}/${batchNo}/${startSerialNo + i}`
-                                const productHash = generateHash( `${_id.toString()}${generateHash(`${name}${location}${createdAt.toISOString()}${batchNo}${startSerialNo + i}`)}`)
+                                const productUrl = `https://qr-code-blockchain-1d.vercel.app/products/${name}/${location}/${formattedDate}/${batchNo}/${startSerialNo + i}`
+                                const productHash = generateHash( `${_id.toString()}${generateHash(`${name}${location}${formattedDate}${batchNo}${startSerialNo + i}`)}`)
 
                                 const response = await fetch('https://qr-code-blockchain-1.vercel.app/api/contract_api', {
                                         method: 'POST',
@@ -244,7 +253,8 @@ export async function POST(request){
                     location: location,
                     manufacturerId: manufacturerId,
                     batchIds: [],
-                    generatedHash: false
+                    generatedHash: false,
+                    price: products[0].price
                 });
             }
             
