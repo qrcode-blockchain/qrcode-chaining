@@ -31,7 +31,7 @@ const batchSchema = new mongoose.Schema({
     required: true
   },
   batchNo: {
-    type: Number,
+    type: String,
     required: true
   },
   utcTimestamp: {

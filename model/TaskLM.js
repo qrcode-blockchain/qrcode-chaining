@@ -8,7 +8,7 @@ const TaskSchema = new mongoose.Schema({
     },
     lineManagerId: {
         type: mongoose.Schema.Types.ObjectId,
-        required: true,
+        required: false,
     },
     location: {
         type: String,
@@ -34,7 +34,7 @@ const TaskSchema = new mongoose.Schema({
     },
     status:{
         type:String,
-        enum:["pending","in-progess","completed"],
+        enum:["pending","in-progress","completed"],
         default:"pending",
     }
 });
