@@ -346,9 +346,9 @@ export async function GET() {
                                     input: '$manufacturer',
                                     as: 'manufacturer',
                                     in: {
-                                        manuName: "$manufacturer.name",
-                                        manuEmail: '$manufacturer.email',
-                                        manuWebpage: "$manufacturer.website"
+                                        manuName: "$$manufacturer.name",
+                                        manuEmail: '$$manufacturer.email',
+                                        manuWebpage: "$$manufacturer.website"
                                     }
                                 }
                             }
@@ -367,7 +367,7 @@ export async function GET() {
                 const errorQRs = [];
         
                 for (const product of productsWithBatches) {
-                    const { _id, name, location, createdAt, batches, price } = product;
+                    const { _id, name, location, createdAt, batches, price, manufacturerDetails } = product;
                     console.log("product", product)
 
         
@@ -384,7 +384,7 @@ export async function GET() {
                                     serial_number: String(startSerialNo + i),
                                     price: `${price}`,
                                     weight: '12',
-                                    man_name: 'qrcipher'
+                                    man_name: `${manufacturerDetails.manuName}`
                                 }
                                 const productUrl = `https://qr-code-blockchain-1d-backend.onrender.com/products/${name}/${location}/${createdAt.toISOString()}/${batchNo}/${startSerialNo + i}`
                                 const productHash = generateHash( `${_id.toString()}${generateHash(`${name}${location}${createdAt.toISOString()}${batchNo}${startSerialNo + i}`)}`)
@@ -401,7 +401,7 @@ export async function GET() {
                                 const result = response.json()
 
                                 if (!result.success) {
-                                    errorQRs.push({ url: productUrl, hash: productHash });
+                                    errorQRs.push({ url: productUrl, hash: productHash, error: result.error });
                                 }
 
                                 return productUrl;
