@@ -8,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useToast } from '../../hooks/useToast';
 import * as z from 'zod';
 import AssignTaskModal from '../../components/AssignTask'
-//import {ManufacturerClientSchema} from '../../Schema/manufacturerClientShema'
+
 import {
   Form,
   FormControl,
@@ -97,14 +97,7 @@ const Dashboard = () => {
       location:'',
     }
 });
-  // const addLineManager = () => {
-  //   if (managerName && managerEmail) {
-  //     setLineManagers([...lineManagers, { name: managerName, email: managerEmail }]);
-  //     setManagerName("");
-  //     setManagerEmail("");
-  //     setShowModal(false);
-  //   }
-  // };
+ 
 const {toast} = useToast();
 // Fetch line managers on component mount
 useEffect(() => {

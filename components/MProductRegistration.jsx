@@ -226,7 +226,7 @@ const handleSaveProduct = (product) => {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    storedTotalUnits
+                    
                 },
                 body: JSON.stringify({ products: products }),
             });
