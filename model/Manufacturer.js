@@ -112,6 +112,11 @@ const ManufacturerSchema = new mongoose.Schema({
         required: false,
         match: [/^(https?:\/\/)?([\w\d.-]+)\.([a-z]{2,6})([\/\w .-]*)*\/?$/, "Please enter a valid URL"]
     },
+    useBlockchain: {
+        type: Boolean,
+        default: false,
+        
+    },
     verifyCode:{
         type:String,
         required:[true,"Verify code is required"],
@@ -131,7 +136,8 @@ const ManufacturerSchema = new mongoose.Schema({
         default:[] //Initialize an empty array if no line managers
        }
 }, {
-    timestamps: true
+    timestamps: true,
+    minimize: false
 });
 
 const Manufacturer = mongoose.models.Manufacturer || mongoose.model('Manufacturer', ManufacturerSchema);
