@@ -433,7 +433,7 @@ export async function POST(request) {
       cinNumber,
       productsManufactured,
       website: website || '',
-    
+      
       // GridFS file ObjectIds (uploaded to MongoDB)
       gstCertificate: gstCertificateId.toString(),
       manufacturingLicenseCertificate: manufacturingLicenseCertificateId.toString(),
@@ -516,14 +516,20 @@ export async function POST(request) {
         cinCertificate: cinCertificateId,
         productsManufactured,
         website: website || '',
+        
         companyLogo: companyLogoId,
         businessCertificate: businessCertificateId,
         verifyCode,
         verifyCodeExpiry,
-        isVerified: false
+        isVerified: false,
+        
+        
+        useBlockchain:false,
       });
-
+      console.log("About to save manufacturer with useBlockchain:", newManufacturer.useBlockchain);
       await newManufacturer.save();
+      console.log("Saved manufacturer with useBlockchain:", newManufacturer.useBlockchain);
+      
     }
 
     // Send verification email
