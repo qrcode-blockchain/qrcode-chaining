@@ -23,13 +23,10 @@ export async function GET() {
   
         setTimeout(async () => {
             try {
-                const today = new Date();
-                today.setUTCHours(0, 0, 0, 0);
         
                 const productsWithBatches = await Product.aggregate([
                     {
                         $match: {
-                            createdAt: { $gte: today },
                             generatedHash: { $ne: true }
                         }
                     },
@@ -73,7 +70,8 @@ export async function GET() {
                                     in: {
                                         manuName: "$$manufacturer.name",
                                         manuEmail: '$$manufacturer.email',
-                                        manuWebpage: "$$manufacturer.website"
+                                        manuWebpage: "$$manufacturer.website",
+                                        useBlockchainFlag: "$$manufacturer.useBlockchain"
                                     }
                                 }
                             }
@@ -95,12 +93,11 @@ export async function GET() {
                     const { _id, name, location, createdAt, batches, manufacturerDetails } = product;
                     console.log("product", product)
 
-        
                     for (const batch of batches) {
                         const { batchNo, startSerialNo, endSerialNo } = batch;
                         const totalUnits = endSerialNo - startSerialNo + 1;
             
-                        const unitIds = Array.from({ length: totalUnits }, async (_, i) => {
+                        const unitIds = await Promise.all(Array.from({ length: totalUnits }, async (_, i) => {
                                 const createdAtDate = new Date(createdAt);
                                 const formattedDate = createdAtDate.getFullYear().toString() +
                                                     String(createdAtDate.getMonth() + 1).padStart(2, '0') +
@@ -116,27 +113,29 @@ export async function GET() {
                                     weight: '12',
                                     man_name: `${manufacturerDetails[0].manuName}`
                                 }
-                                const productUrl = `https://qr-code-blockchain-1d.vercel.app/products/${name}/${location}/${formattedDate}/${batchNo}/${startSerialNo + i}`
+                                const productUrl = `http://localhost:3002/products/${name}/${location}/${formattedDate}/${batchNo}/${startSerialNo + i}`
                                 const productHash = generateHash( `${_id.toString()}${generateHash(`${name}${location}${formattedDate}${batchNo}${startSerialNo + i}`)}`)
 
-                                const response = await fetch('https://qr-code-blockchain-1.vercel.app/api/contract_api', {
-                                        method: 'POST',
-                                        headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify({
-                                        ...data,
-                                        url:productUrl,
-                                        hashValue:productHash
+                                if (manufacturerDetails[0].useBlockchainFlag) {
+                                    const response = await fetch('http://localhost:3002/api/contract_api', {
+                                            method: 'POST',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({
+                                            ...data,
+                                            url:productUrl,
+                                            hashValue:productHash
+                                        })
                                     })
-                                })
-                                const result = response.json()
+                                    const result = await response.json()
+                                    console.log(result?.txHash)
 
-                                if (!result.success) {
-                                    errorQRs.push({ url: productUrl, hash: productHash, error: result.error });
+                                    if (!result.success) {
+                                        errorQRs.push({ url: productUrl, hash: productHash, error: result.error });
+                                    }
                                 }
-
                                 return productUrl;
                             }
-                        );
+                        ));
 
                         allUnits.push(unitIds);
                     }
@@ -145,9 +144,14 @@ export async function GET() {
                 }
         
                 console.log("Generated unit IDs successfully", allUnits);
-                await axios.post('https://qr-code-blockchain-1d-backend.onrender.com/generate-qr', {
-                    "urls": allUnits
+
+                const flatUrls = allUnits.flat()
+
+                const respo = await axios.post('http://localhost:5000/generate-qr', {
+                    "urls": flatUrls
                 });
+
+                console.log(errorQRs)
             
             } catch (error) {
                 console.error("Error generating unit IDs:", error);
