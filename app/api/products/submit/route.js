@@ -113,11 +113,11 @@ export async function GET() {
                                     weight: '12',
                                     man_name: `${manufacturerDetails[0].manuName}`
                                 }
-                                const productUrl = `http://localhost:3002/products/${name}/${location}/${formattedDate}/${batchNo}/${startSerialNo + i}`
+                                const productUrl = `https://qr-code-blockchain-1.vercel.app/products/${name}/${location}/${formattedDate}/${batchNo}/${startSerialNo + i}`
                                 const productHash = generateHash( `${_id.toString()}${generateHash(`${name}${location}${formattedDate}${batchNo}${startSerialNo + i}`)}`)
 
                                 if (manufacturerDetails[0].useBlockchainFlag) {
-                                    const response = await fetch('http://localhost:3002/api/contract_api', {
+                                    const response = await fetch('https://www.qrcipher.in/api/contract_api', {
                                             method: 'POST',
                                             headers: { 'Content-Type': 'application/json' },
                                             body: JSON.stringify({
@@ -142,17 +142,39 @@ export async function GET() {
         
                     await Product.updateOne({ _id }, { $set: { generatedHash: true } });
                 }
-        
+                console.log(errorQRs)
+                if (errorQRs) {
+                    for (let qr of errorQRs) {
+                        let productUrl = qr.url;
+                        let productHash = qr.hash;
+
+                        if (manufacturerDetails[0].useBlockchainFlag) {
+                            const response = await fetch('https://www.qrcipher.in/api/contract_api', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                    ...data,
+                                    url:productUrl,
+                                    hashValue:productHash
+                                })
+                            })
+                            const result = await response.json()
+                            console.log(result?.txHash)
+                        }
+                    }
+                }
                 console.log("Generated unit IDs successfully", allUnits);
 
                 const flatUrls = allUnits.flat()
-
-                const respo = await axios.post('http://localhost:5000/generate-qr', {
-                    "urls": flatUrls
-                });
-
-                console.log(errorQRs)
-            
+                console.log(flatUrls);
+                const respo = await fetch('https://www.qrcipher.in/api/generate-qr', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        urls: flatUrls,
+                        email: productsWithBatches[0].manufacturerDetails[0].manuName
+                    })
+                })
             } catch (error) {
                 console.error("Error generating unit IDs:", error);
             }
