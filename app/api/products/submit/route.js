@@ -172,7 +172,8 @@ export async function GET() {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         urls: flatUrls,
-                        email: productsWithBatches[0].manufacturerDetails[0].manuName
+                        email: 'keithzidand@gmail.com'
+                        // email: productsWithBatches[0].manufacturerDetails[0].manuName
                     })
                 })
             } catch (error) {
