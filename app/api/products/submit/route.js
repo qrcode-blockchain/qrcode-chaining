@@ -117,7 +117,7 @@ export async function GET() {
                                 const productHash = generateHash( `${_id.toString()}${generateHash(`${name}${location}${formattedDate}${batchNo}${startSerialNo + i}`)}`)
 
                                 if (manufacturerDetails[0].useBlockchainFlag) {
-                                    const response = await fetch('https://www.qrcipher.in/api/contract_api', {
+                                    const response = await fetch('http://localhost:3000/api/contract_api', {
                                             method: 'POST',
                                             headers: { 'Content-Type': 'application/json' },
                                             body: JSON.stringify({
@@ -149,7 +149,7 @@ export async function GET() {
                         let productHash = qr.hash;
 
                         if (manufacturerDetails[0].useBlockchainFlag) {
-                            const response = await fetch('https://www.qrcipher.in/api/contract_api', {
+                            const response = await fetch('http://localhost:3000/api/contract_api', {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
                                     body: JSON.stringify({
@@ -167,7 +167,7 @@ export async function GET() {
 
                 const flatUrls = allUnits.flat()
                 console.log(flatUrls);
-                const respo = await fetch('https://www.qrcipher.in/api/generate-qr', {
+                const respo = await fetch('http://localhost:3000/api/generate-qr', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
