@@ -83,8 +83,7 @@ export async function GET() {
                     console.log("No products found for today.");
                     return;
                 }
-
-                console.log(productsWithBatches)
+                console.log(productsWithBatches);
         
                 const allUnits = [];
                 const errorQRs = [];
@@ -102,7 +101,6 @@ export async function GET() {
                                 const formattedDate = createdAtDate.getFullYear().toString() +
                                                     String(createdAtDate.getMonth() + 1).padStart(2, '0') +
                                                     String(createdAtDate.getDate()).padStart(2, '0');
-
                                 const data = {
                                     product_name: `${name}`,
                                     batch_number: `${batchNo}`,
@@ -112,12 +110,12 @@ export async function GET() {
                                     price: `20`,
                                     weight: '12',
                                     man_name: `${manufacturerDetails[0].manuName}`
-                                }
-                                const productUrl = `https://qr-code-blockchain-1.vercel.app/products/${name}/${location}/${formattedDate}/${batchNo}/${startSerialNo + i}`
-                                const productHash = generateHash( `${_id.toString()}${generateHash(`${name}${location}${formattedDate}${batchNo}${startSerialNo + i}`)}`)
+                                };
+                                const productUrl = `https://qr-code-blockchain-1.vercel.app/products/${name}/${location}/${formattedDate}/${batchNo}/${startSerialNo + i}`;
+                                const productHash = generateHash( `${_id.toString()}${generateHash(`${name}${location}${formattedDate}${batchNo}${startSerialNo + i}`)}`);
 
                                 if (manufacturerDetails[0].useBlockchainFlag) {
-                                    const response = await fetch('http://localhost:3000/api/contract_api', {
+                                    const response = await fetch('https://www.qrcipher.in/api/contract_api', {
                                             method: 'POST',
                                             headers: { 'Content-Type': 'application/json' },
                                             body: JSON.stringify({
@@ -125,9 +123,9 @@ export async function GET() {
                                             url:productUrl,
                                             hashValue:productHash
                                         })
-                                    })
-                                    const result = await response.json()
-                                    console.log(result?.txHash)
+                                    });
+                                    const result = await response.json();
+                                    console.log(result?.txHash);
 
                                     if (!result.success) {
                                         errorQRs.push({ url: productUrl, hash: productHash, error: result.error });
@@ -142,14 +140,15 @@ export async function GET() {
         
                     await Product.updateOne({ _id }, { $set: { generatedHash: true } });
                 }
-                console.log(errorQRs)
+                console.log("QR codes with errors: ",errorQRs);
+
                 if (errorQRs) {
                     for (let qr of errorQRs) {
                         let productUrl = qr.url;
                         let productHash = qr.hash;
 
                         if (manufacturerDetails[0].useBlockchainFlag) {
-                            const response = await fetch('http://localhost:3000/api/contract_api', {
+                            const response = await fetch('https://www.qrcipher.in/api/contract_api', {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
                                     body: JSON.stringify({
@@ -157,17 +156,16 @@ export async function GET() {
                                     url:productUrl,
                                     hashValue:productHash
                                 })
-                            })
-                            const result = await response.json()
-                            console.log(result?.txHash)
+                            });
+                            const result = await response.json();
+                            console.log(result?.txHash);
                         }
                     }
                 }
-                console.log("Generated unit IDs successfully", allUnits);
+                console.log("Generated unit IDs successfully");
 
-                const flatUrls = allUnits.flat()
-                console.log(flatUrls);
-                const respo = await fetch('http://localhost:3000/api/generate-qr', {
+                const flatUrls = allUnits.flat();   
+                const pdfReponse = await fetch('https://www.qrcipher.in/api/generate-qr', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -175,7 +173,17 @@ export async function GET() {
                         email: 'keithzidand@gmail.com'
                         // email: productsWithBatches[0].manufacturerDetails[0].manuName
                     })
-                })
+                });
+                // const pdfResult = await pdfReponse.json();
+                // if (!pdfResult.success) {
+                //     console.error('An error occured');
+                // }
+
+                // const productTask = Task.findOne({ id: taskId })
+                // if (productTask) {
+                //     productTask.status = 'completed';
+                //     await productTask.save();
+                // }
             } catch (error) {
                 console.error("Error generating unit IDs:", error);
             }
@@ -381,7 +389,8 @@ export async function POST(request){
                     results.push({
                         productId: product._id,
                         batchId: batch._id,
-                        units: unitsCreated
+                        units: unitsCreated,
+                        // taskID: taskId
                     });
                       const task=await Task.findOne({_id:taskId});
                       if(!task){
@@ -400,7 +409,7 @@ export async function POST(request){
             { 
                 success: true, 
                 message: "Products and batches created successfully",
-                data: results 
+                data: results
             },
             { status: 200 }
         );
