@@ -994,7 +994,6 @@ export default function ProductRegistration({taskId, role}) {
         setSelectedProduct(null);
     };
 
-    // Cancel editing
     const handleCancel = () => setSelectedProduct(null);
 
     // Delete product from state and localStorage
@@ -1050,15 +1049,16 @@ export default function ProductRegistration({taskId, role}) {
 
     // Submit all products
     const submitAllProducts = async () => {
+        console.log(products);
         if (products.length === 0) {
             setError("No products to submit.");
             return;
         }
-
+    
         if (!confirm("Are you sure you want to submit all products?")) {
             return;
         }
-
+    
         setIsSubmitting(true);
         setError(null);
         setSuccess(false);
@@ -1066,7 +1066,7 @@ export default function ProductRegistration({taskId, role}) {
         try {
             console.log("The atsk id is n rontend",taskId);
             
-            const response = await fetch("/api/products", {
+            const response = await fetch("/api/products/submit", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -1076,12 +1076,10 @@ export default function ProductRegistration({taskId, role}) {
                 
             });
     
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || 'Failed to submit products');
+            if (response.status !== 200) {
+                throw new Error(response.data?.message || 'Failed to submit products');
             }
-            
+    
             localStorage.removeItem("products");
             localStorage.removeItem("remainingUnits");
             localStorage.removeItem("lastUsedSerialNo");
@@ -1090,9 +1088,10 @@ export default function ProductRegistration({taskId, role}) {
             setRemainingUnits(0);
             setLastUsedSerialNo(1);
             setSuccess(true);
+            const res = await axios.get('/api/products/submit');
         } catch (error) {
             console.error("Error submitting products:", error);
-            setError(error.message || "Failed to submit products. Please try again.");
+            setError(error.response?.data?.message || "Failed to submit products. Please try again.");
         } finally {
             setIsSubmitting(false);
         }

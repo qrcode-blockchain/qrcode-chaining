@@ -34,7 +34,7 @@ export default function Inventory() {
 
                 let shippedData = {};
                 data.forEach((p) => {
-                    shippedData[p._id] = Math.round(Math.random() * 20);
+                    shippedData[p._id] = Math.round(Math.random() * p.totalAmount);
                 });
                 setShippedUnits(shippedData);
             })
