@@ -5,8 +5,7 @@ import Batch from "../../../../model/Batch";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/option";
 import Manufacturer from '../../../../model/Manufacturer';
-import axios from 'axios';
-import Task from '../../../../model/TaskLM'
+import Task from '../../../../model/TaskLM';
 import crypto from 'crypto';
 
 const generateHash = (input) =>
@@ -111,7 +110,7 @@ export async function GET() {
                                     weight: '12',
                                     man_name: `${manufacturerDetails[0].manuName}`
                                 };
-                                const productUrl = `https://qr-code-blockchain-1.vercel.app/products/${name}/${location}/${formattedDate}/${batchNo}/${startSerialNo + i}`;
+                                const productUrl = `https://www.qrcipher.in/products/${name}/${location}/${formattedDate}/${batchNo}/${startSerialNo + i}/${_id.toString()}`;
                                 const productHash = generateHash( `${_id.toString()}${generateHash(`${name}${location}${formattedDate}${batchNo}${startSerialNo + i}`)}`);
 
                                 if (manufacturerDetails[0].useBlockchainFlag) {
