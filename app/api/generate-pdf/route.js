@@ -33,15 +33,18 @@ export async function POST(req) {
             const productName = match[1];
             const location = match[2];
             const batch = match[4];
+            const serial_number = match[5];
             const rawDate = match[3];
             const formattedDate = `${rawDate.slice(6, 8)}/${rawDate.slice(4, 6)}/${rawDate.slice(0, 4)}`;
+
+            const batchSerialData = `${batch}/${serial_number}`
 
             page.drawImage(qrImage, {
                 x, y,
                 width: 40, height: 40
             });
 
-            page.drawText(batch, {
+            page.drawText(batchSerialData, {
                 x: x + 5,
                 y: y + 41,
                 size: 5,
