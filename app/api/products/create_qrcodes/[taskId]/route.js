@@ -116,7 +116,7 @@ export async function GET(request, { params }) {
                                 
                                 const productUrl = `https://www.qrcipher.in/products/${name}/${location}/${formattedDate}/${batchNo}/${startSerialNo + i}/${_id.toString()}`;
                                 
-                                if (useBlockchainFlag || true) {
+                                if (useBlockchainFlag) {
                                     const productHash = generateHash( `${_id.toString()}${generateHash(`${name}${location}${formattedDate}${batchNo}${startSerialNo + i}`)}`);
                                     const data = {
                                         product_name: `${name}`,
@@ -174,7 +174,7 @@ export async function GET(request, { params }) {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         urls: flatUrlsArray,
-                        email: "keithzidand@gmail.com" //'mayaggarwal@gmail.com' 
+                        email:  'mayaggarwal@gmail.com' //"keithzidand@gmail.com"
                         // email: manufacturerEmail
                     })
                 });
