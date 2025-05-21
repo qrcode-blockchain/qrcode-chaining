@@ -17,7 +17,7 @@ export async function POST(req) {
         let x = 20, y = 700;
         console.log('PDF Generation Started.....')
 
-        const regexPattern = /https:\/\/[^/]+\/products\/([^/]+)\/([^/]+)\/([^/]+)\/([^/]+)\/([^/]+)/
+        const regexPattern = /http:\/\/[^/]+\/products\/([^/]+)\/([^/]+)\/([^/]+)\/([^/]+)\/([^/]+)/
 
         for (let url of urls) {
             const qrDataURL = await QRCode.toDataURL(url, { errorCorrectionLevel: 'H', scale: 2 });
@@ -87,7 +87,7 @@ export async function POST(req) {
         const pdfBytes = await pdfDoc.save();
         console.log("PDF Generation done.... Sending PDF......")
         const msg = {
-            from: 'onboarding@resend.dev',
+            from: 'info@qrcipher.in',
             to: email,
             subject: 'QR Codes PDF',
             text: 'Please find attached the QR codes PDF.',
