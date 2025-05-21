@@ -17,7 +17,7 @@ export async function POST(req) {
         let x = 20, y = 700;
         console.log('PDF Generation Started.....')
 
-        const regexPattern = /http:\/\/[^/]+\/products\/([^/]+)\/([^/]+)\/([^/]+)\/([^/]+)\/([^/]+)/
+        const regexPattern = /https:\/\/[^/]+\/products\/([^/]+)\/([^/]+)\/([^/]+)\/([^/]+)\/([^/]+)/
 
         for (let url of urls) {
             const qrDataURL = await QRCode.toDataURL(url, { errorCorrectionLevel: 'H', scale: 2 });
