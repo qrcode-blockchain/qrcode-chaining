@@ -28,6 +28,11 @@ const TaskSchema = new mongoose.Schema({
         required: true,
         min: 1,
     },
+    useBlockchain: {
+        type: Boolean,
+        default: false,
+        
+    },
     assignedAt: {
         type: Date,
         default: Date.now,

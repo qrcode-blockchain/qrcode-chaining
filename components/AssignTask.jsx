@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from "zod";
 import { Button } from './ui/button';
 import { Input } from './ui/input';
+import { Check } from 'lucide-react';
 import {
   Form,
   FormControl,
@@ -40,13 +41,42 @@ const AssignTaskSchema = z.object({
   NoOfUnits: z.coerce.number().int().positive({ message: "Number of units must be a positive integer" })
 });
 
+
 const AssignTaskModal = ({ isOpen, onClose }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [lineManagers, setLineManagers] = useState([]);
+  const [useBlockchain,setUseBlockchain]=useState(false);
+   const [isLoading, setIsLoading] = useState(false);
   const [location, setLocation] = useState("");
   const { toast } = useToast();
   const { data: session } = useSession();
-  
+  const handleBlockchainToggle = async () => {
+    setIsLoading(true);
+    try {
+      const newValue = !useBlockchain;
+      console.log("The new value is", newValue);
+      
+      // // Update preference in the database
+      // const response = await fetch('/api/manufacturers/preferences', {
+      //   method: 'PUT',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify({ useBlockchain: newValue }),
+      // });
+      
+      // const data = await response.json();
+      // console.log("The data in toggle is", data);
+      
+      
+        setUseBlockchain(newValue);
+     
+    } catch (error) {
+      console.error("Error updating blockchain preference:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   const form = useForm({
     resolver: zodResolver(AssignTaskSchema),
     defaultValues: {
@@ -88,7 +118,7 @@ const AssignTaskModal = ({ isOpen, onClose }) => {
   const onSubmit = async (data) => {
     setIsSubmitting(true);
     try {
-      const response = await axios.post('/api/lineManagers/assign-task',{...data,manufacturerId} , {
+      const response = await axios.post('/api/lineManagers/assign-task',{...data,manufacturerId,useBlockchain} , {
         headers: { 'Content-Type': 'application/json' }
       });
       
@@ -139,7 +169,51 @@ const AssignTaskModal = ({ isOpen, onClose }) => {
             <X size={20} />
           </button>
         </div>
-        
+        <div className="mt-8 p-4 bg-gray-50 rounded-lg border border-gray-200">
+          <div className="flex flex-col space-y-3">
+            <div>
+              <h3 className="text-gray-700 flex items-center font-medium text-sm">
+                {/* <Shield className="mr-1 text-blue-600" size={16} /> */}
+                Blockchain Integration
+              </h3>
+              <p className="text-xs text-gray-500 mt-1">
+                Enable to use blockchain for secure QR codes
+              </p>
+            </div>
+            
+            <div className="flex items-center justify-between mt-2">
+              <span className="text-xs font-medium text-gray-700">
+                {useBlockchain ? "Enabled" : "Disabled"}
+              </span>
+              
+              <button 
+                onClick={handleBlockchainToggle}
+                disabled={isLoading}
+                className={`relative inline-flex h-6 w-12 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 ${
+                  useBlockchain ? 'bg-blue-600' : 'bg-gray-300'
+                } ${isLoading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                aria-pressed={useBlockchain}
+                aria-label="Toggle Blockchain"
+              >
+                <span className="sr-only">Toggle Blockchain</span>
+                <span 
+                  className={`${
+                    useBlockchain ? 'translate-x-6' : 'translate-x-1'
+                  } inline-block h-4 w-4 transform rounded-full bg-white shadow-lg ring-0 transition-transform duration-200 ease-in-out`} 
+                />
+                {isLoading ? (
+                  <span className="absolute inset-0 flex items-center justify-center">
+                    <span className="h-4 w-4 rounded-full border-2 border-gray-200 border-t-transparent animate-spin"></span>
+                  </span>
+                ) : useBlockchain ? (
+                  <Check className="absolute left-1 h-3 w-3 text-white" />
+                ) : (
+                  <X className="absolute right-1 h-3 w-3 text-gray-500" />
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className="grid grid-cols-2 gap-4">
