@@ -1064,7 +1064,7 @@ export default function ProductRegistration({taskId, role}) {
         setSuccess(false);
     
         try {
-            console.log("The atsk id is n rontend",taskId);
+            console.log("The task id is in frontend",taskId);
             
             const response = await fetch("/api/products/submit", {
                 method: "POST",
@@ -1176,7 +1176,7 @@ export default function ProductRegistration({taskId, role}) {
                 {/* Table */}
                 <div className="col-span-1 md:col-span-2 bg-blue-900/30 p-4 rounded-lg shadow-lg border border-blue-400/20 hover:shadow-xl transition-all text-white">
                     <div className="flex justify-between items-center mb-3">
-                        <h2 className="text-xl font-semibold">Product List</h2>
+                        <h2 className="text-xl font-semibold">Task List</h2>
                         <div className="text-sm bg-blue-800/50 px-3 py-1 rounded-full">
                             Remaining Units: <span className="font-bold">{remainingUnits}</span>
                         </div>
