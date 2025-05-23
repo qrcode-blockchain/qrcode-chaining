@@ -1072,8 +1072,6 @@ export default function ProductRegistration({taskId, role}) {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({ products: products,taskId:taskId }),
-                
-                
             });
     
             if (response.status !== 200) {
@@ -1088,7 +1086,7 @@ export default function ProductRegistration({taskId, role}) {
             setRemainingUnits(0);
             setLastUsedSerialNo(1);
             setSuccess(true);
-            const res = await axios.get('/api/products/submit');
+            const res = await axios.get(`/api/products/create_qrcodes/${taskId}`);
         } catch (error) {
             console.error("Error submitting products:", error);
             setError(error.response?.data?.message || "Failed to submit products. Please try again.");
