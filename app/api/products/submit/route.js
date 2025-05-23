@@ -1,11 +1,200 @@
 import { NextResponse } from "next/server";
-import { dbConnect } from "../../../lib/dbConnect";
-import Product from "../../../model/Product";
-import Batch from "../../../model/Batch";
+import { dbConnect } from "../../../../lib/dbConnect";
+import Product from "../../../../model/Product";
+import Batch from "../../../../model/Batch";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/option";
-import Manufacturer from '../../../model/Manufacturer';
-import Task from "../../../model/TaskLM";
+import { authOptions } from "../../auth/[...nextauth]/option";
+import Manufacturer from '../../../../model/Manufacturer';
+import Task from '../../../../model/TaskLM';
+import crypto from 'crypto';
+
+const generateHash = (input) =>
+    crypto.createHash("sha256").update(input).digest("hex");
+  
+export async function GET() {
+    await dbConnect();
+  
+    try {
+        const response = NextResponse.json(
+            { success: true, message: "Processing in background" },
+            { status: 202 }
+        );
+  
+        setTimeout(async () => {
+            try {
+        
+                const productsWithBatches = await Product.aggregate([
+                    {
+                        $match: {
+                            generatedHash: { $ne: true }
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: "batches", // MongoDB collection name (usually lowercase plural of model)
+                            localField: "_id",
+                            foreignField: "productId",
+                            as: "batches"
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: "manufacturers",
+                            localField: 'manufacturerId',
+                            foreignField: '_id',
+                            as: 'manufacturer'
+                        }
+                    },
+                    {
+                        $project: {
+                            _id: 1,
+                            name: 1,
+                            location: 1,
+                            createdAt: 1,
+                            batches: {
+                                $map: {
+                                    input: "$batches",
+                                    as: "batch",
+                                    in: {
+                                        batchNo: "$$batch.batchNo",
+                                        startSerialNo: "$$batch.globalStartSerialNo",
+                                        endSerialNo: "$$batch.globalEndSerialNo"
+                                    }
+                                }
+                            },
+                            manufacturerDetails: {
+                                $map: {
+                                    input: '$manufacturer',
+                                    as: 'manufacturer',
+                                    in: {
+                                        manuName: "$$manufacturer.name",
+                                        manuEmail: '$$manufacturer.email',
+                                        manuWebpage: "$$manufacturer.website",
+                                        useBlockchainFlag: "$$manufacturer.useBlockchain"
+                                    }
+                                }
+                            }
+                        },
+                    }
+                ]);
+    
+                if (!productsWithBatches.length) {
+                    console.log("No products found for today.");
+                    return;
+                }
+                console.log(productsWithBatches);
+        
+                const allUnits = [];
+                const errorQRs = [];
+        
+                for (const product of productsWithBatches) {
+                    const { _id, name, location, createdAt, batches, manufacturerDetails } = product;
+                    console.log("product", product)
+
+                    for (const batch of batches) {
+                        const { batchNo, startSerialNo, endSerialNo } = batch;
+                        const totalUnits = endSerialNo - startSerialNo + 1;
+            
+                        const unitIds = await Promise.all(Array.from({ length: totalUnits }, async (_, i) => {
+                                const createdAtDate = new Date(createdAt);
+                                const formattedDate = createdAtDate.getFullYear().toString() +
+                                                    String(createdAtDate.getMonth() + 1).padStart(2, '0') +
+                                                    String(createdAtDate.getDate()).padStart(2, '0');
+                                const data = {
+                                    product_name: `${name}`,
+                                    batch_number: `${batchNo}`,
+                                    location: `${location}`,
+                                    date: `${formattedDate}`,
+                                    serial_number: String(startSerialNo + i),
+                                    price: `20`,
+                                    weight: '12',
+                                    man_name: `${manufacturerDetails[0].manuName}`
+                                };
+                                const productUrl = `https://www.qrcipher.in/products/${name}/${location}/${formattedDate}/${batchNo}/${startSerialNo + i}/${_id.toString()}`;
+                                const productHash = generateHash( `${_id.toString()}${generateHash(`${name}${location}${formattedDate}${batchNo}${startSerialNo + i}`)}`);
+
+                                if (manufacturerDetails[0].useBlockchainFlag) {
+                                    const response = await fetch('https://www.qrcipher.in/api/contract_api', {
+                                            method: 'POST',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({
+                                            ...data,
+                                            url:productUrl,
+                                            hashValue:productHash
+                                        })
+                                    });
+                                    const result = await response.json();
+                                    console.log(result?.txHash);
+
+                                    if (!result.success) {
+                                        errorQRs.push({ url: productUrl, hash: productHash, error: result.error });
+                                    }
+                                }
+                                return productUrl;
+                            }
+                        ));
+
+                        allUnits.push(unitIds);
+                    }
+        
+                    await Product.updateOne({ _id }, { $set: { generatedHash: true } });
+                }
+                console.log("QR codes with errors: ",errorQRs);
+
+                if (errorQRs) {
+                    for (let qr of errorQRs) {
+                        let productUrl = qr.url;
+                        let productHash = qr.hash;
+
+                        if (manufacturerDetails[0].useBlockchainFlag) {
+                            const response = await fetch('https://www.qrcipher.in/api/contract_api', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                    ...data,
+                                    url:productUrl,
+                                    hashValue:productHash
+                                })
+                            });
+                            const result = await response.json();
+                            console.log(result?.txHash);
+                        }
+                    }
+                }
+                console.log("Generated unit IDs successfully");
+
+                const flatUrls = allUnits.flat();   
+                const pdfReponse = await fetch('https://www.qrcipher.in/api/generate-qr', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        urls: flatUrls,
+                        email: 'keithzidand@gmail.com'
+                        // email: productsWithBatches[0].manufacturerDetails[0].manuName
+                    })
+                });
+                // const pdfResult = await pdfReponse.json();
+                // if (!pdfResult.success) {
+                //     console.error('An error occured');
+                // }
+
+                // const productTask = Task.findOne({ id: taskId })
+                // if (productTask) {
+                //     productTask.status = 'completed';
+                //     await productTask.save();
+                // }
+            } catch (error) {
+                console.error("Error generating unit IDs:", error);
+            }
+        }, 2000);
+  
+        return response;
+    } catch (error) {
+      console.error("Error initializing background process:", error);
+      return NextResponse.json({ error: "Internal Server Error" });
+    }
+}  
+
 export async function POST(request){
     try {
         await dbConnect();
@@ -98,7 +287,8 @@ export async function POST(request){
                     location: location,
                     manufacturerId: manufacturerId,
                     batchIds: [],
-                    generatedHash: false
+                    generatedHash: false,
+                    price: products[0].price
                 });
             }
             
@@ -198,7 +388,8 @@ export async function POST(request){
                     results.push({
                         productId: product._id,
                         batchId: batch._id,
-                        units: unitsCreated
+                        units: unitsCreated,
+                        // taskID: taskId
                     });
                       const task=await Task.findOne({_id:taskId});
                       if(!task){
@@ -217,9 +408,9 @@ export async function POST(request){
             { 
                 success: true, 
                 message: "Products and batches created successfully",
-                data: results 
+                data: results
             },
-            { status: 201 }
+            { status: 200 }
         );
 
     } catch (error) {

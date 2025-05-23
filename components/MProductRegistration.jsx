@@ -222,7 +222,7 @@ const handleSaveProduct = (product) => {
     
         try {
               const storedTotalUnits = localStorage.getItem("totalUnits");
-            const response = await fetch("/api/products", {
+            const response = await fetch("/api/products/submit", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -246,6 +246,8 @@ const handleSaveProduct = (product) => {
             setTotalUnits(0);
             setLastUsedSerialNo(1);
             setSuccess(true);
+            
+            const res = await axios.get('/api/products/submit');
         } catch (error) {
             console.error("Error submitting products:", error);
             setError(error.message || "Failed to submit products. Please try again.");
