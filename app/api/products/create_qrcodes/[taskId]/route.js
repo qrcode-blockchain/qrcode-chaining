@@ -2,23 +2,20 @@ import Task from '../../../../../model/TaskLM';
 import Product from "../../../../../model/Product";
 import { NextResponse } from "next/server";
 import { dbConnect } from "../../../../../lib/dbConnect";
-import crypto from 'crypto';
+import pLimit from 'p-limit';
 
-const generateHash = (input) =>
-    crypto.createHash("sha256").update(input).digest("hex");
+const limit = pLimit(10);
+let errorQRs = [];
 
-async function createContractTransaction(productUrl, productHash) {
-    const response = await fetch('https://www.qrcipher.in/api/contract_api', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            ...data,
-            url: productUrl,
-            hashValue: productHash
-        })
-    });
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
-    const result = await response.json();
+function chunkArray(array, size) {
+    const result = [];
+    for (let i = 0; i < array.length; i += size) {
+        result.push(array.slice(i, i + size));
+    }
     return result;
 }
 
@@ -75,6 +72,107 @@ async function getProductAndManufacturerDetails() {
 
     return productsDetails;
 }
+
+async function storeHashOnBlockchain(ipfsHash) {
+    try {
+        const chainResponse = await fetch('https://qrcode-ipfs-blockchain.vercel.app/api/blockchain_store', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ ipfsHash: ipfsHash }),
+        });
+        
+        if (!chainResponse.ok) {
+            return { success: false, errorMsg: "Failed to Store data on blockchain"}
+        } 
+        const chainData = await chainResponse.json();
+        console.log('chain Tx:', chainData.txHash);
+
+        return {success: true, chainData: chainData};
+    } catch (error) {
+        console.log(error);
+        return { success: false, errorMsg: error.message };
+    }
+}
+
+async function storeDataInIpfs(data) {
+    try {
+        const ipfsResponse = await fetch('https://qrcode-ipfs-blockchain.vercel.app/api/ipfs_store', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+        const result = await ipfsResponse.json();
+
+        if (!result.success) {
+            return {success: false, errorMsg: "Failed to store data in Ipfs"}
+        }
+        return { success: true, ipfsHash: result.ipfsHash };    
+    } catch (error) {
+        console.log(error)
+        return { success: false, errorMsg: error.message };
+    }
+}
+
+async function processBatches(productData, useBlockchainFlag, manufacturerName) {
+    const { _id, name, location, createdAt, price, batchNo, totalUnits, startSerialNo } = productData;
+
+    const tasks = Array.from({ length: totalUnits }, (_, i) => {
+        const serialNumber = String(startSerialNo + i);
+        const createdAtDate = new Date(createdAt);
+        const formattedDate = createdAtDate.getFullYear().toString() +
+            String(createdAtDate.getMonth() + 1).padStart(2, '0') +
+            String(createdAtDate.getDate()).padStart(2, '0');
+
+        const data = {
+            _id: _id,
+            product_name: name,
+            batch_number: batchNo,
+            location,
+            date: formattedDate,
+            price,
+            serial_number: serialNumber,
+            weight: '12',
+            man_name: manufacturerName,
+        };
+
+        return async () => {
+            const ipfsResponse = await storeDataInIpfs(data);
+
+            if (!ipfsResponse.success) {
+                errorQRs.push({ productData: data, error: ipfsResponse.errorMsg });
+                return '';
+            }
+            const ipfsHash = ipfsResponse.ipfsHash;
+            const productUrl = `https://qrcode-ipfs-blockchain.vercel.app/products/${ipfsHash}`;
+            console.log(`IPFS CID for ${data.serial_number}`,ipfsHash);
+
+            if (useBlockchainFlag) {
+                const result = await storeHashOnBlockchain(ipfsHash);
+                if (!result.success) {
+                    errorQRs.push({ url: productUrl, hash: ipfsHash, error: result.errorMsg });
+                    return '';
+                }
+            }
+
+            return { data, url: productUrl };
+        };
+    });
+    const batchedTasks = chunkArray(tasks, 5);
+    let results = [];
+
+    for (const batch of batchedTasks) {
+        const batchResults = await Promise.all(batch.map(task => limit(task)));
+        results.push(...batchResults);
+
+        await sleep(300);
+    }
+    return results;
+}
+
   
 export async function GET(request, { params }) {
     const {taskId} = await params;
@@ -96,8 +194,8 @@ export async function GET(request, { params }) {
                 }
                 console.log(productsWithBatches);
         
-                const completedUnits = [];
-                const errorQRs = [];
+                let completedUnits = [];
+                
                 const { useBlockchainFlag, manufacturerName, manufacturerEmail } = productsWithBatches[0].manufacturerDetails
         
                 for (const product of productsWithBatches) {
@@ -107,82 +205,33 @@ export async function GET(request, { params }) {
                     for (const batch of batches) {
                         const { batchNo, startSerialNo, endSerialNo } = batch;
                         const totalUnits = endSerialNo - startSerialNo + 1;
-            
-                        const unitIds = await Promise.all(Array.from({ length: totalUnits }, async (_, i) => {
-                                const createdAtDate = new Date(createdAt);
-                                const formattedDate = createdAtDate.getFullYear().toString() +
-                                                    String(createdAtDate.getMonth() + 1).padStart(2, '0') +
-                                                    String(createdAtDate.getDate()).padStart(2, '0');
-                                
-                                const productUrl = `https://www.qrcipher.in/products/${name}/${location}/${formattedDate}/${batchNo}/${startSerialNo + i}/${_id.toString()}`;
-                                
-                                if (useBlockchainFlag || true) {
-                                    const productHash = generateHash( `${_id.toString()}${generateHash(`${name}${location}${formattedDate}${batchNo}${startSerialNo + i}`)}`);
-                                    const data = {
-                                        product_name: `${name}`,
-                                        batch_number: `${batchNo}`,
-                                        location: `${location}`,
-                                        date: `${formattedDate}`,
-                                        serial_number: String(startSerialNo + i),
-                                        price: `${price}`,
-                                        weight: '12',
-                                        man_name: `${manufacturerName}`
-                                    };
-                                    const result = await createContractTransaction(data, productUrl, productHash);
-                                    console.log(result?.txHash);
 
-                                    if (!result.success) {
-                                        errorQRs.push({ url: productUrl, hash: productHash, error: result.error });
-                                    }
-                                }
-                                return productUrl;
-                            }
-                        ));
-
+                        const unitIds = await processBatches({ _id, name, location, createdAt, price, batchNo, totalUnits, startSerialNo }, 
+                            useBlockchainFlag, manufacturerName
+                        );
                         completedUnits.push(unitIds);
                     }
         
                     await Product.updateOne({ _id }, { $set: { generatedHash: true } });
                 }
-                console.log("QR codes with errors: ",errorQRs);
+                console.log("Number of Failed QR codes: ", errorQRs.length);
 
-                // if (errorQRs) {
-                //     for (let qr of errorQRs) {
-                //         let productUrl = qr.url;
-                //         let productHash = qr.hash;
+                const flatUrlsArray = completedUnits.flat();
+                console.log("Generated QR urls successfully: ", (flatUrlsArray.length - errorQRs.length));
 
-                //         if (useBlockchainFlag) {
-                //             const response = await fetch('https://www.qrcipher.in/api/contract_api', {
-                //                     method: 'POST',
-                //                     headers: { 'Content-Type': 'application/json' },
-                //                     body: JSON.stringify({
-                //                     ...data,
-                //                     url:productUrl,
-                //                     hashValue:productHash
-                //                 })
-                //             });
-                //             const result = await response.json();
-                //             console.log(result?.txHash);
-                //         }
-                //     }
-                // }
-                console.log("Generated unit IDs successfully");
-
-                const flatUrlsArray = completedUnits.flat();   
                 const pdfReponse = await fetch('https://www.qrcipher.in/api/generate-pdf', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        urls: flatUrlsArray,
-                        email: "keithzidand@gmail.com" //'mayaggarwal@gmail.com' 
-                        // email: manufacturerEmail
+                        dataArray: flatUrlsArray,
+                        email: "keithzidand@gmail.com"
                     })
                 });
                 const pdfResult = await pdfReponse.json();
+
                 if (!pdfResult.success) {
                     console.error('An error occured');
                 }
-
                 await Task.findByIdAndUpdate(taskId, { status: 'completed' });
             } catch (error) {
                 console.error("Error generating unit IDs:", error);
