@@ -144,7 +144,7 @@ async function processBatches(productData, useBlockchainFlag, manufacturerName) 
 
             if (!ipfsResponse.success) {
                 errorQRs.push({ productData: data, error: ipfsResponse.errorMsg });
-                return '';
+                return {data, url: ''};
             }
             const ipfsHash = ipfsResponse.ipfsHash;
             const productUrl = `https://qrcode-ipfs-blockchain.vercel.app/products/${ipfsHash}`;
@@ -154,7 +154,7 @@ async function processBatches(productData, useBlockchainFlag, manufacturerName) 
                 const result = await storeHashOnBlockchain(ipfsHash);
                 if (!result.success) {
                     errorQRs.push({ url: productUrl, hash: ipfsHash, error: result.errorMsg });
-                    return '';
+                    return {data, url: ''};
                 }
             }
 
