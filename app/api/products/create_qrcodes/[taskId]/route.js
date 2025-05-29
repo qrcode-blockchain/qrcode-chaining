@@ -75,7 +75,7 @@ async function getProductAndManufacturerDetails() {
 
 async function storeHashOnBlockchain(ipfsHash) {
     try {
-        const chainResponse = await fetch('https://qrcode-ipfs-blockchain.vercel.app/api/blockchain_store', {
+        const chainResponse = await fetch('https://www.qrcipher.in/api/blockchain_store', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -98,7 +98,7 @@ async function storeHashOnBlockchain(ipfsHash) {
 
 async function storeDataInIpfs(data) {
     try {
-        const ipfsResponse = await fetch('https://qrcode-ipfs-blockchain.vercel.app/api/ipfs_store', {
+        const ipfsResponse = await fetch('https://www.qrcipher.in/api/ipfs_store', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -147,10 +147,11 @@ async function processBatches(productData, useBlockchainFlag, manufacturerName) 
                 return {data, url: ''};
             }
             const ipfsHash = ipfsResponse.ipfsHash;
-            const productUrl = `https://qrcode-ipfs-blockchain.vercel.app/products/${ipfsHash}`;
+            var productUrl = `https://www.qrcipher.in/products/${ipfsHash}`;
             console.log(`IPFS CID for ${data.serial_number}`,ipfsHash);
 
             if (useBlockchainFlag) {
+                productUrl = `https://www.qrcipher.in/products/${ipfsHash + 'bcf'}`;
                 const result = await storeHashOnBlockchain(ipfsHash);
                 if (!result.success) {
                     errorQRs.push({ url: productUrl, hash: ipfsHash, error: result.errorMsg });
@@ -224,7 +225,7 @@ export async function GET(request, { params }) {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         dataArray: flatUrlsArray,
-                        email: "mayaggarwal@gmail.com"
+                        email: "keithzidand@gmail.com"//"mayaggarwal@gmail.com"
                     })
                 });
                 const pdfResult = await pdfReponse.json();
