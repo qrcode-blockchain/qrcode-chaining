@@ -224,7 +224,7 @@ export async function GET(request, { params }) {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         dataArray: flatUrlsArray,
-                        email: "keithzidand@gmail.com"
+                        email: "mayaggarwal@gmail.com"
                     })
                 });
                 const pdfResult = await pdfReponse.json();
