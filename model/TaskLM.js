@@ -10,6 +10,11 @@ const TaskSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         required: false,
     },
+    productId:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Product",
+        required:true,
+    },
     location: {
         type: String,
         required: true,
@@ -23,24 +28,39 @@ const TaskSchema = new mongoose.Schema({
         required: true,
         min: 0,
     },
-    NoOfUnits: {
+    TotalNoOfUnits: {
         type: Number,
         required: true,
         min: 1,
     },
+    completedUnits:{
+        type:Number,
+       default:0,
+        min:0
+    },
+    startSerialNo: {
+        type: Number,
+        default:1,
+        required: true,
+      },
+      endSerialNo: {
+        type: Number,
+        default: null, // Will be calculated and updated as batches are completed
+      },
     useBlockchain: {
         type: Boolean,
         default: false,
         
     },
+ 
     assignedAt: {
         type: Date,
         default: Date.now,
     },
     status:{
         type:String,
-        enum:["pending","in-progress","completed"],
-        default:"pending",
+        enum:["Not Started","pending","in-progress","completed"],
+        default:"Not Started",
     }
 });
 

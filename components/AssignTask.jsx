@@ -38,7 +38,7 @@ const AssignTaskSchema = z.object({
   location: z.string().min(1, { message: "Location is required" }),
   productName: z.string().min(1, { message: "Product name is required" }),
   productPrice: z.coerce.number().positive({ message: "Product price must be a positive number" }),
-  NoOfUnits: z.coerce.number().int().positive({ message: "Number of units must be a positive integer" })
+  TotalNoOfUnits: z.coerce.number().int().positive({ message: "Number of units must be a positive integer" })
 });
 
 
@@ -84,7 +84,7 @@ const AssignTaskModal = ({ isOpen, onClose }) => {
       location: '',
       productName: '',
       productPrice: '',
-      NoOfUnits: '',
+      TotalNoOfUnits: '',
     }
   });
  const manufacturerId=session?.user._id;
@@ -321,7 +321,7 @@ const AssignTaskModal = ({ isOpen, onClose }) => {
                 
                 <FormField
                   control={form.control}
-                  name="NoOfUnits"
+                  name="TotalNoOfUnits"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-gray-700 flex items-center font-medium text-sm">

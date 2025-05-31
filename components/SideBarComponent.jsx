@@ -87,7 +87,8 @@ export default function SideBarComponent() {
     { name: "Manufacturing", icon: <Factory className="w-5 h-5" />, link: '/Inventory' },
     { name: "Scans", icon: <ScanLine className="w-5 h-5" />, link: '/Scan_Overview'},
     { name: "Users", icon: <Users className="w-5 h-5" />, link: '/users' },
-    { name: "Settings", icon: <Settings className="w-5 h-5" />, link: '/settings' }
+    { name: "Settings", icon: <Settings className="w-5 h-5" />, link: '/settings' },
+    {name:"Assigned tasks", icon:<Settings className="w-5 h-5" /> , link:'/taskStatusMan'}
   ];
 
   return (
