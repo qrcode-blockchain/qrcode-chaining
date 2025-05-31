@@ -25,7 +25,7 @@ const emptyValues = {
     startSerialNo: 1,
     endSerialNo: '',
     price: '',
-    date: "",
+    date:new Date().toISOString(),
     TotalNoOfUnits: '',
     location: "",
     remainingUnits:"",
@@ -141,8 +141,8 @@ export default function BatchDialog({ isOpen, onClose, taskId, role }) {
                 }
             });
             
-           // console.log("Response", response);
-            console.log("Response is",response.data.batch);
+            console.log("Response", response);
+            //console.log("Response is",response.data.batch);
             const newEndSerialNo=response.data.batch.endSerialNo;
             const createdUnits=response.data.batch.createdUnits;
             setCompletedUnits(completedUnits);
@@ -199,7 +199,9 @@ export default function BatchDialog({ isOpen, onClose, taskId, role }) {
             let errorMessage = "Failed to create QR codes";
             let errorTitle = "Error";
             
-           
+            if (error.response && error.response.data && error.response.data.message) {
+                errorMessage = error.response.data.message;
+            }
             
             toast({
                 title: errorTitle,

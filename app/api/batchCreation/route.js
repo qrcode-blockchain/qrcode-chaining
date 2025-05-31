@@ -24,20 +24,22 @@ export async function POST(request) {
 
   try {
     mongoSession.startTransaction();
-
+     console.log("The post batch creation is hit");
+     
     const { data, taskId } = await request.json();
     const {
       batchNo,
-      totalUnits,
+      TotalNoOfUnits,
       startSerialNo,
       endSerialNo,
       lineManagerId,
-      assignedAt,
+      date,
     } = data;
-
+     
     console.log("Task ID:", taskId);
     console.log("Request data:", data);
-
+    console.log("The date is",date);
+    
     const task = await Task.findById(taskId);
     if (!task) {
       return NextResponse.json(
@@ -56,13 +58,18 @@ export async function POST(request) {
 
     const unitsCreated = endSerialNo - startSerialNo + 1;
     let batch = await Batch.findOne({ productId: product._id, batchNo });
-
+     console.log("The batch found is",batch);
+     
     if (batch) {
       const alreadyAssigned = batch.lineManagers.some((lm) => {
         const isSameManager = lm.lineManagerId.toString() === session.user._id;
         const isSameDate =
           new Date(lm.utcTimestamp).toDateString() ===
-          new Date(assignedAt).toDateString();
+          new Date(date).toDateString();
+          console.log("The utc timestamp of lm is",new Date(lm.utcTimestamp).toDateString());
+          console.log("Th eassigned At is",new Date(date).toDateString());
+          
+          
         return isSameManager && isSameDate;
       });
 
@@ -72,7 +79,7 @@ export async function POST(request) {
             success: false,
             message: `You have already submitted batch ${batch.batchNo}.`,
           },
-          { status: 409 }
+          { status: 400 }
         );
       }
 
