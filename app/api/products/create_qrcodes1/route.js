@@ -7,6 +7,7 @@ import { dbConnect } from "../../../../lib/dbConnect";
 import pLimit from 'p-limit';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../auth/[...nextauth]/option';
+import axios from 'axios';  // ADD THIS
 
 const limit = pLimit(10);
 let errorQRs = [];
@@ -46,95 +47,130 @@ async function storeDataInIpfs(data) {
   }
 }
 
-async function storeHashOnBlockchain(ipfsHash) {
+async function storeHashOnBlockchain(ipfsHashArray) {
   try {
-    const chainResponse = await fetch('https://www.qrcipher.in/api/blockchain_store', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ipfsHash }),
-    });
+      const chainResponse = await axios.post('http://localhost:3000/api/blockchain_store', {
+          ipfsHashes: ipfsHashArray
+          }, {
+          timeout: 18000000
+      });
 
-    if (!chainResponse.ok) {
-      return { success: false, errorMsg: "Failed to store data on blockchain" };
-    }
+      if (chainResponse.status != 200) {
+          return { success: false, errorMsg: "Failed to Store data on blockchain"}
+      } 
+      console.log("Response From Blockchain")
+      const chainData = await chainResponse.data;
+      const hashArray = chainData.results.filter(r => r.status === 'success')
+      console.log(hashArray)
 
-    const chainData = await chainResponse.json();
-    console.log('Chain Tx:', chainData.txHash);
+      let hashes = []
+      for (const transaction of hashArray) {
+          hashes.push(transaction.hash)
+      }
 
-    return { success: true, chainData };
+      return {success: true, ipfsHashes: hashes};
   } catch (error) {
-    console.error(error);
-    return { success: false, errorMsg: error.message };
+      console.log(error);
+      return { success: false, errorMsg: error.message };
   }
 }
 
 async function processBatches(productData, useBlockchainFlag, manufacturerName) {
-    console.log("The process abtches fucntion is hit");
-    
+  console.log("The processBatches function is hit");
+
   const {
-    productId,
-    productName,
-    location,
-    createdAt,
-    productPrice,
-    batchNo,
-    unitsCreated,
-    startSerial,
+      productId,
+      productName,
+      location,
+      createdAt,
+      productPrice,
+      batchNo,
+      unitsCreated,
+      startSerial,
   } = productData;
 
   const tasks = Array.from({ length: unitsCreated }, (_, i) => {
-    const serialNumber = String(startSerial + i);
-    const formattedDate = new Date(createdAt).toISOString().slice(0, 10).replace(/-/g, '');
+      const serialNumber = String(startSerial + i);
+      const formattedDate = new Date(createdAt).toISOString().slice(0, 10).replace(/-/g, '');
 
-    const data = {
-      _id: productId,
-      product_name: productName,
-      batch_number: batchNo,
-      location,
-      date: formattedDate,
-      productPrice,
-      serial_number: serialNumber,
-      weight: '12',
-      man_name: manufacturerName,
-    };
+      const data = {
+          _id: productId,
+          product_name: productName,
+          batch_number: batchNo,
+          location,
+          date: formattedDate,
+          productPrice,
+          serial_number: serialNumber,
+          weight: '12',
+          man_name: manufacturerName,
+      };
 
-    return async () => {
-      const ipfsResponse = await storeDataInIpfs(data);
-     // console.log("The ipfs response after function is",ipfsResponse);
-      
-      if (!ipfsResponse.success) {
-        errorQRs.push({ productData: data, error: ipfsResponse.errorMsg });
-        return { data, url: '' };
-      }
+      return async () => {
+          const ipfsResponse = await storeDataInIpfs(data);
 
-      const ipfsHash = ipfsResponse.ipfsHash;
-      //console.log("The ipfs hash is",ipfsHash);
-      
-      let productUrl = `https://www.qrcipher.in/products/${ipfsHash}`;
+          if (!ipfsResponse.success) {
+              errorQRs.push({ productData: data, error: ipfsResponse.errorMsg });
+              return { data, url: '' };
+          }
 
-      // Optional blockchain integration (currently disabled)
-      // if (useBlockchainFlag) {
-      //   productUrl = `https://www.qrcipher.in/products/${ipfsHash}bcf`;
-      //   const result = await storeHashOnBlockchain(ipfsHash);
-      //   if (!result.success) {
-      //     errorQRs.push({ url: productUrl, hash: ipfsHash, error: result.errorMsg });
-      //     return { data, url: '' };
-      //   }
-      // }
-      console.log("The data and product url is",productUrl);
-      return { data, url: productUrl };
-     
-      
-    };
+          const ipfsHash = ipfsResponse.ipfsHash;
+
+          let productUrl;
+          if (useBlockchainFlag) {
+              productUrl = productUrl = `https://www.qrcipher.in/products/${ipfsHash + "bcf"}`;
+              ;
+          } else {
+              productUrl = `https://www.qrcipher.in/products/${ipfsHash}`;
+          }
+
+          console.log(`IPFS CID for ${data.serial_number}: ${ipfsHash}`);
+
+          return { data, url: productUrl };
+      };
   });
 
   const batchedTasks = chunkArray(tasks, 5);
   let results = [];
 
   for (const batch of batchedTasks) {
-    const batchResults = await Promise.all(batch.map(task => limit(task)));
-    results.push(...batchResults);
-    await sleep(300);
+      const batchResults = await Promise.all(batch.map(task => limit(task)));
+      results.push(...batchResults);
+      await sleep(300);
+  }
+
+  if (useBlockchainFlag) {
+      let cidArray = [];
+      let temp = [];
+
+      for (const result of results) {
+          const regexPattern = /https:\/\/[^/]+\/products\/([^/]+)/;
+          const match = result?.url.match(regexPattern);
+          if (match) {
+              cidArray.push(match[1].slice(0, -3)); // Remove "bcf" from end
+          }
+
+          temp.push({ data: result.data, url: result.url });
+      }
+
+      const response = await storeHashOnBlockchain(cidArray);
+      results = [];
+
+      if (!response.success) {
+          console.error('Error occurred while storing hash on blockchain');
+          return temp; // return what you have
+      }
+
+      const hashArray = response.ipfsHashes;
+      console.log("Received hashes from blockchain");
+
+      for (const product of temp) {
+          const regexPattern = /https:\/\/[^/]+\/products\/([^/]+)/;
+          const match = product?.url.match(regexPattern);
+
+          if (match && hashArray.includes(match[1].slice(0, -3))) {
+              results.push(product);
+          }
+      }
   }
 
   return results;
