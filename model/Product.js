@@ -29,5 +29,5 @@ const productSchema = new mongoose.Schema({
     }, {
     timestamps: true // includes createdAt and updatedAt
 });
-
+productSchema.index({name:1,manufacturer:1},{unique:true});
 export default mongoose.models.Product || mongoose.model("Product", productSchema);

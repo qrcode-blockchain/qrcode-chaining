@@ -133,7 +133,7 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { data: session } = useSession();
   const manufacturer = session?.user;
-  console.log("The manufacturer is",manufacturer);
+  //console.log("The manufacturer is",manufacturer);
   const pathname=usePathname();
 
   const hiddenPaths=['/lineManager/lineManagerLogin','/SignIn'];

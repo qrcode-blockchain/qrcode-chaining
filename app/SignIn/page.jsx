@@ -46,7 +46,7 @@ export default function SignInForm() {
     console.log("Form Data",data);
     setIsSubmitting(true);
     try {
-      console.log("The data in signin is",data.identifier);
+     // console.log("The data in signin is",data.identifier);
       
       const result = await signIn('credentials', {
         redirect: false,
@@ -54,7 +54,7 @@ export default function SignInForm() {
         password: data.password,
        // callbackUrl: '/dashboard' 
       });
-        console.log("The result is",result);
+       // console.log("The result is",result);
         // Then check if authentication was successful before redirecting
 // if (!result?.error) {
 //   // Use the URL from the result if available, otherwise fallback to dashboard

@@ -3,12 +3,16 @@ import QRCode from 'qrcode';
 import { PDFDocument, rgb, StandardFonts, degrees } from 'pdf-lib';
 import { resend } from '../../../lib/resend';
 
+// function updateCoOrdinates() {
+
+// }
+
 export async function POST(req) {
     try {
-        const { urls, email } = await req.json();
+        const { dataArray, email } = await req.json();
 
-        if (!urls || !email) {
-            console.log("Missing Data: ", { urls, email })
+        if (!dataArray || !email) {
+            console.log("Missing Data: ", { dataArray, email })
             return NextResponse.json({ error: 'Missing URLs or email' }, { status: 400 });
         }
         const pdfDoc = await PDFDocument.create();
@@ -16,28 +20,27 @@ export async function POST(req) {
         const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
         let x = 20, y = 700;
         console.log('PDF Generation Started.....')
+        console.log("Number of Qrcodes: ", dataArray.length)
 
-        const regexPattern = /https:\/\/[^/]+\/products\/([^/]+)\/([^/]+)\/([^/]+)\/([^/]+)\/([^/]+)/
+        const regexPattern = /https:\/\/[^/]+\/products\/([^/]+)/
 
-        for (let url of urls) {
-            const qrDataURL = await QRCode.toDataURL(url, { errorCorrectionLevel: 'H', scale: 2 });
-            const qrImageBytes = Buffer.from(qrDataURL.split(',')[1], 'base64');
-            const qrImage = await pdfDoc.embedPng(qrImageBytes);
+        for (let { data, url } of dataArray) {
+            if (url == '') {
+                continue;
+            }
             const match = url.match(regexPattern);
 
             if (!match) {
                 console.warn(`Invalid URL: ${url}`);
                 continue;
             }
+            const qrDataURL = await QRCode.toDataURL(url, { errorCorrectionLevel: 'H', scale: 2 });
+            const qrImageBytes = Buffer.from(qrDataURL.split(',')[1], 'base64');
+            const qrImage = await pdfDoc.embedPng(qrImageBytes);
 
-            const productName = match[1];
-            const location = match[2];
-            const batch = match[4];
-            const serial_number = match[5];
-            const rawDate = match[3];
+            const rawDate = data.date;
             const formattedDate = `${rawDate.slice(6, 8)}/${rawDate.slice(4, 6)}/${rawDate.slice(0, 4)}`;
-
-            const batchSerialData = `${batch}/${serial_number}`
+            const batchSerialData = `${data.batch_number}/${data.serial_number}`
 
             page.drawImage(qrImage, {
                 x, y,
@@ -51,7 +54,7 @@ export async function POST(req) {
                 font,
                 color: rgb(0, 0, 0),
             });
-            page.drawText(productName, {
+            page.drawText(data.product_name, {
                 x: x + 7,
                 y: y - 5,
                 size: 5,
@@ -66,7 +69,7 @@ export async function POST(req) {
                 font,
                 color: rgb(0, 0, 0),
             });
-            page.drawText(location, {
+            page.drawText(data.location, {
                 x: x + 45,
                 y: y + 9,
                 rotate: degrees(90),
