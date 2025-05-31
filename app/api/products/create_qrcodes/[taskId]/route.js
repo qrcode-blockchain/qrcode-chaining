@@ -3,12 +3,13 @@ import Product from "../../../../../model/Product";
 import { NextResponse } from "next/server";
 import { dbConnect } from "../../../../../lib/dbConnect";
 import pLimit from 'p-limit';
+import axios from 'axios';
 
 const limit = pLimit(10);
 let errorQRs = [];
 
-const controller = new AbortController();
-const timeout = setTimeout(() => controller.abort(), 18000000);
+// const controller = new AbortController();
+// const timeout = setTimeout(() => controller.abort(), 18000000);
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -78,20 +79,17 @@ async function getProductAndManufacturerDetails() {
 
 async function storeHashOnBlockchain(ipfsHashArray) {
     try {
-        const chainResponse = await fetch('http://localhost:3000/api/blockchain_store', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ ipfsHashes: ipfsHashArray }),
-            signal: controller.signal
+        const chainResponse = await axios.post('http://localhost:3000/api/blockchain_store', {
+            ipfsHashes: ipfsHashArray
+            }, {
+            timeout: 18000000
         });
-        clearTimeout(timeout);
-        if (!chainResponse.ok) {
+
+        if (chainResponse.status != 200) {
             return { success: false, errorMsg: "Failed to Store data on blockchain"}
         } 
         console.log("Response From Blockchain")
-        const chainData = await chainResponse.json();
+        const chainData = await chainResponse.data;
         const hashArray = chainData.results.filter(r => r.status === 'success')
         console.log(hashArray)
 
