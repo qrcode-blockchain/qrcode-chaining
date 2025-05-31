@@ -184,12 +184,9 @@ export async function POST(request) {
   const { taskId, batchNo, endSerial, startSerial, unitsCreated, createdAt } = body;
   const session=await getServerSession(authOptions);
   try {
-    const response = NextResponse.json(
-      { success: true, message: "Processing in background" },
-      { status: 202 }
-    );
+   
 
-    setTimeout(async () => {
+   
       try {
         const task = await Task.findById({ _id: taskId });
         if (!task) {
@@ -293,13 +290,16 @@ if (!pdfResult.success) {
 } else {
   console.log('PDF generated successfully');
 }
-        await Task.findByIdAndUpdate(taskId, { status: 'completed' });
+        //await Task.findByIdAndUpdate(taskId, { status: 'completed' });
       } catch (error) {
         console.error("Error generating unit IDs:", error);
       }
-    }, 2000);
+    
 
-    return response;
+    return NextResponse.json(
+      { success: true, message: "Successful" },
+      { status: 202 }
+    );
   } catch (error) {
     console.error("Error initializing background process:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

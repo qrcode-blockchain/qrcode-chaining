@@ -208,6 +208,7 @@ console.log("The api is hit");
               batchEndSerialNo: lm.batchEndSerialNo,
               unitsCreated: lm.unitsCreated,
               utcTimestamp: lm.utcTimestamp,
+              generatedHash:lm.generatedHash
       }))
     };
   }

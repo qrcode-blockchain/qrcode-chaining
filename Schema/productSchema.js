@@ -26,6 +26,13 @@ export const productSchema = z.object({
 
 })
 .refine(
+        (data) => data.endSerialNo >= data.startSerialNo,
+        {
+          message: "End Serial Number must be greater than or equal to Start Serial Number",
+          path: ["endSerialNo"],
+        }
+      )
+.refine(
         (data)=>data.endSerialNo<=data.TotalNoOfUnits,
         {
                 message:"End Serial Number can't exceed the total number of units",

@@ -590,7 +590,8 @@
 import React, {useState, useEffect} from 'react';
 import { Package, Calendar, User, Hash, Plus, Edit, CheckCircle, Clock, AlertCircle, Info, ChevronDown, ChevronUp, QrCode } from 'lucide-react';
 import axios from 'axios';
-
+import { useToast } from "../hooks/useToast";
+import {  Loader2, CheckCircle2 } from "lucide-react";
 import BatchDialog from '../components/BatchDialog'
 import { create } from 'domain';
 
@@ -605,7 +606,9 @@ onUpdateTask
   const [expandedTasks, setExpandedTasks] = useState(new Set());
   const [batchData, setBatchData] = useState({});
   const [loadingBatches, setLoadingBatches] = useState({});
- 
+ const [isLoading,setIsLoading]=useState(false);
+const [buttonStatuses,setButtonStatuses]=useState({});
+ const { toast } = useToast();
   const onCreateAction = async (taskId) => {
     try {
       console.log('Creating action for task:', taskId);
@@ -673,18 +676,47 @@ onUpdateTask
     }
   };
 
-  const onCreateQRCode =async (batchData) => {
-    
-    const {taskId,batchNo,startSerial,endSerial,unitsCreated,createdAt}=batchData;
-    console.log("The info is",taskId,batchNo,startSerial,endSerial,unitsCreated,createdAt);
-    
-    console.log('Creating QR code for batch:', batchData);
-    const response=await axios.post('/api/products/create_qrcodes1',batchData);
-     console.log("The response for reation is",response);
-     
-    // Add your QR code creation logic here
+  
+  const onCreateQRCode = async (batchData) => {
+    const key = `${batchData.taskId}_${batchData.batchNo}`; //make a unique key
+    setButtonStatuses((prev) => ({ ...prev, [key]: "loading" }));
+    setIsLoading(true); 
+    try {
+      const { taskId, batchNo, startSerial, endSerial, unitsCreated, createdAt } = batchData;
+     // console.log("The info is", taskId, batchNo, startSerial, endSerial, unitsCreated, createdAt);
+      
+      const response = await axios.post('/api/products/create_qrcodes1', batchData);
+      //console.log("The response for creation is", response);
+  
+      if (response.data.success) {
+        setButtonStatuses((prev)=>({
+          ...prev,
+          [key]:"success"
+        }));
+        await fetchBatchData(batchData.productId);
+        
+        
+        toast({
+          title: "PDF sent successfully",
+          description: "QR codes have been generated and the PDF is sent to your email.",
+          variant: 'success',
+          duration: 5000,
+        });
+      }
+    } catch (error) {
+      console.error("Error creating QR codes:", error);
+      toast({
+        title: "Something went wrong",
+        description: "QR code generation failed.",
+        variant: 'destructive',
+        duration: 5000,
+      });
+      setButtonStatuses((prev) => ({ ...prev, [key]: "idle" }));
+    } finally {
+      setIsLoading(false); // Hide loader
+    }
   };
-
+  
   const getStatusColor = (status) => {
     switch (status.toLowerCase()) {
       case 'pending':
@@ -717,6 +749,8 @@ onUpdateTask
     console.log("The render fucntion is being hit");
     
     const batches = batchData[task.productId] || [];
+    console.log("The batches in render are",batches);
+    
     const isLoading = loadingBatches[task.productId];
 
     if (isLoading) {
@@ -781,20 +815,42 @@ onUpdateTask
                     {lm.unitsCreated}
                   </td>
                   <td className="px-3 py-2">
-                    <button
-                      onClick={() => onCreateQRCode({ 
-                        taskId:task._id,
-                        batchNo: batch.batchNo,
-                        startSerial: lm.batchStartSerialNo,
-                        endSerial: lm.batchEndSerialNo,
-                        unitsCreated: lm.unitsCreated,
-                        createdAt:lm.utcTimestamp
-                      })} 
-                      className="bg-purple-600 text-white px-2 py-1 rounded text-xs hover:bg-purple-700 transition-colors flex items-center gap-1"
-                    >
-                      <QrCode className="h-3 w-3" />
-                      Create QR Code
-                    </button>
+                  <button
+    onClick={() =>
+      onCreateQRCode({
+        taskId: task._id,
+        batchNo: batch.batchNo,
+        startSerial: lm.batchStartSerialNo,
+        endSerial: lm.batchEndSerialNo,
+        unitsCreated: lm.unitsCreated,
+        createdAt: lm.utcTimestamp,
+        generatedHash: lm.generatedHash,
+        productId: task.productId // Add this for updating batch data
+      })
+    }
+    className="bg-purple-600 text-white px-2 py-1 rounded text-xs hover:bg-purple-700 transition-colors flex items-center gap-1 disabled:opacity-50"
+    disabled={
+      lm.generatedHash || // Disable if already generated
+      buttonStatuses[`${task._id}_${batch.batchNo}`] === "loading"
+    }
+  >
+    {buttonStatuses[`${task._id}_${batch.batchNo}`] === "loading" ? (
+      <>
+        <Loader2 className="h-3 w-3 animate-spin" />
+        Generating...
+      </>
+    ) : lm.generatedHash ? (
+      <>
+        <CheckCircle2 className="h-3 w-3 text-green-300" />
+        Generated
+      </>
+    ) : (
+      <>
+        <QrCode className="h-3 w-3" />
+        Create QR Code
+      </>
+    )}
+  </button>
                   </td>
                 </tr>
               ))

@@ -21,11 +21,16 @@ try{
     
    task.completedUnits=newCompletedUnits;
    task.endSerialNo=newCompletedUnits;
-   task.status='in-progress';
+   if(task.TotalNoOfUnits===task.completedUnits){
+    task.status='completed'
+   }else{
+    task.status='in-progress';
+   }
+   
    await task.save();
    return NextResponse.json({
    success:true,
-   message:"Task ahs been successfully updated"
+   message:"Task has been successfully updated"
    })
     
       
