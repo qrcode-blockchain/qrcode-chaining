@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
 import QRCode from 'qrcode';
 import { PDFDocument, rgb, StandardFonts, degrees } from 'pdf-lib';
+import { dbConnect, getGridFsBucket } from '../../../lib/dbConnect';
 import { resend } from '../../../lib/resend';
+import { Readable } from 'stream';
 
 // function updateCoOrdinates() {
 
@@ -9,7 +11,7 @@ import { resend } from '../../../lib/resend';
 
 export async function POST(req) {
     try {
-        const { dataArray, email } = await req.json();
+        const { dataArray, email, taskId } = await req.json();
 
         if (!dataArray || !email) {
             console.log("Missing Data: ", { dataArray, email })
@@ -92,6 +94,28 @@ export async function POST(req) {
 
         const pdfBytes = await pdfDoc.save();
         console.log("PDF Generation done.... Sending PDF......")
+
+        await dbConnect()
+        const bucket = getGridFsBucket()
+        const pdfBuffer = Buffer.from(pdfBytes);
+        const pdfStream = Readable.from([pdfBuffer]);
+
+        const uploadStream = bucket.openUploadStream(`qrcodes-${taskId}.pdf`, {
+            metadata: {
+                email,
+                taskId,
+                createdAt: new Date()
+            }
+        });
+
+        pdfStream.pipe(uploadStream)
+        .on('error', (err) => {
+            console.error("Error uploading PDF to GridFS:", err);
+        })
+        .on('finish', () => {
+            console.log("PDF successfully uploaded to GridFS with ID:", uploadStream.id);
+        });
+
         const msg = {
             from: 'info@qrcipher.in',
             to: email,
