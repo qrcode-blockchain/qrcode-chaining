@@ -26,7 +26,7 @@ function chunkArray(array, size) {
 
 async function storeDataInIpfs(data) {
   try {
-    const ipfsResponse = await fetch('http://localhost:3000/api/ipfs_store', {
+    const ipfsResponse = await fetch('https://www.qrcipher.in/api/ipfs_store', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
@@ -49,7 +49,7 @@ async function storeDataInIpfs(data) {
 
 async function storeHashOnBlockchain(ipfsHashArray) {
   try {
-      const chainResponse = await axios.post('http://localhost:3000/api/blockchain_store', {
+      const chainResponse = await axios.post('https://www.qrcipher.in/api/blockchain_store', {
           ipfsHashes: ipfsHashArray
           }, {
           timeout: 18000000
@@ -255,7 +255,7 @@ export async function POST(request) {
         // }
 // Replace the problematic section around line 192-206 with this:
 
-const pdfResponse = await fetch('http://localhost:3000/api/generate-pdf', {
+const pdfResponse = await fetch('https://www.qrcipher.in/api/generate-pdf', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
