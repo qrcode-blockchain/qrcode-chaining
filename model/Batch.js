@@ -18,6 +18,10 @@ const lineManagerSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  generatedHash: {
+    type: Boolean,
+    default: false
+},
   utcTimestamp: {
     type: Date,
     required: true
@@ -55,5 +59,5 @@ const batchSchema = new mongoose.Schema({
     default: undefined // This keeps it optional
   }
 });
-
+batchSchema.index({ productId: 1, batchNo: 1 }, { unique: true });
 export default mongoose.models.Batch || mongoose.model("Batch", batchSchema);

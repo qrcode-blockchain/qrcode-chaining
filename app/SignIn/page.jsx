@@ -3,7 +3,7 @@ import React from 'react'
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import { signIn } from 'next-auth/react';
+import { signIn,getSession } from 'next-auth/react';
 import {
   Form,
   FormField,
@@ -46,20 +46,20 @@ export default function SignInForm() {
     console.log("Form Data",data);
     setIsSubmitting(true);
     try {
-      console.log("The data in signin is",data.identifier);
+     // console.log("The data in signin is",data.identifier);
       
       const result = await signIn('credentials', {
         redirect: false,
         email: data.identifier,
         password: data.password,
-        callbackUrl: '/dashboard' 
+       // callbackUrl: '/dashboard' 
       });
-        console.log((result));
+       // console.log("The result is",result);
         // Then check if authentication was successful before redirecting
-if (!result?.error) {
-  // Use the URL from the result if available, otherwise fallback to dashboard
-  router.replace(result?.url || '/dashboard');
-}
+// if (!result?.error) {
+//   // Use the URL from the result if available, otherwise fallback to dashboard
+//   router.replace(result?.url || '/dashboard');
+// }
       if (result?.error) {
         if (result.error === 'CredentialsSignin') {
           toast({
@@ -76,12 +76,22 @@ if (!result?.error) {
         }
       } else if (result?.url) {
         console.log("The  result url is",result?.url);
-        toast({
-          title:'Success',
-          desciption:'You hhave successfully logged in!',
-        })
-        router.replace('/dashboard');
+        const session=await getSession();
+        console.log("The session is",session);
+        if(session.user){
+          console.log("Ypu have successfully logged in");
+        }
+        const userRole=session.user.role;
+        if(userRole==='lineManager'){
+          router.replace('/lineManager/lineManagerDash');
+        }
+        if(userRole==='manufacturer'){
+          router.replace('/dashboard');
+        }
       }
+
+      
+      
     } catch (error) {
       toast({
         title: 'Error',
