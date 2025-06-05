@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { Shield, CheckCircle, XCircle, AlertTriangle, Package, Calendar, MapPin, Tag, Weight, Factory, Hash, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
+import FetchLocation from "./fetch_location"
 
 export default function ProductPage() {
   const params = useParams();
@@ -211,6 +212,7 @@ export default function ProductPage() {
           </motion.div>
         </motion.div>
       )}
+      <FetchLocation />
     </motion.div>
   );
 }
