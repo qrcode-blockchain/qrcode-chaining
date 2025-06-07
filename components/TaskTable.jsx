@@ -745,6 +745,30 @@ const [buttonStatuses,setButtonStatuses]=useState({});
     }
   };
 
+  const handleDownload = async (taskId) => {
+    const response = await fetch(`/api/pdf/${taskId}`);
+    if (response.status !== 200) {
+      toast({
+        title: "PDF Not Found",
+        description: "Couldn't find PDF in Database",
+        variant: 'destructive',
+        duration: 5000,
+      });
+      return
+    }
+    const blob = await response.blob()
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'qrcodes.pdf';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    window.URL.revokeObjectURL(url);
+  };
+
   const renderBatchTable = (task) => {
     console.log("The render fucntion is being hit");
     
@@ -792,6 +816,9 @@ const [buttonStatuses,setButtonStatuses]=useState({});
               <th className="px-3 py-2 text-left text-xs font-medium text-gray-600 border-b">
                 Action
               </th>
+              <th className="px-3 py-2 text-left text-xs font-medium text-gray-600 border-b">
+                Download PDF
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
@@ -802,9 +829,8 @@ const [buttonStatuses,setButtonStatuses]=useState({});
                     {batch.batchNo}
                   </td>
                   <td className="px-3 py-2 text-sm text-gray-800 font-medium">
-  {new Date(lm.utcTimestamp).toLocaleString()}
-</td>
-
+                    {new Date(lm.utcTimestamp).toLocaleString()}
+                  </td>
                   <td className="px-3 py-2 text-sm text-gray-800 font-mono">
                     {lm.batchStartSerialNo}
                   </td>
@@ -815,42 +841,53 @@ const [buttonStatuses,setButtonStatuses]=useState({});
                     {lm.unitsCreated}
                   </td>
                   <td className="px-3 py-2">
-                  <button
-    onClick={() =>
-      onCreateQRCode({
-        taskId: task._id,
-        batchNo: batch.batchNo,
-        startSerial: lm.batchStartSerialNo,
-        endSerial: lm.batchEndSerialNo,
-        unitsCreated: lm.unitsCreated,
-        createdAt: lm.utcTimestamp,
-        generatedHash: lm.generatedHash,
-        productId: task.productId // Add this for updating batch data
-      })
-    }
-    className="bg-purple-600 text-white px-2 py-1 rounded text-xs hover:bg-purple-700 transition-colors flex items-center gap-1 disabled:opacity-50"
-    disabled={
-      lm.generatedHash || // Disable if already generated
-      buttonStatuses[`${task._id}_${batch.batchNo}`] === "loading"
-    }
-  >
-    {buttonStatuses[`${task._id}_${batch.batchNo}`] === "loading" ? (
-      <>
-        <Loader2 className="h-3 w-3 animate-spin" />
-        Generating...
-      </>
-    ) : lm.generatedHash ? (
-      <>
-        <CheckCircle2 className="h-3 w-3 text-green-300" />
-        Generated
-      </>
-    ) : (
-      <>
-        <QrCode className="h-3 w-3" />
-        Create QR Code
-      </>
-    )}
-  </button>
+                    <button
+                      onClick={() =>
+                        onCreateQRCode({
+                          taskId: task._id,
+                          batchNo: batch.batchNo,
+                          startSerial: lm.batchStartSerialNo,
+                          endSerial: lm.batchEndSerialNo,
+                          unitsCreated: lm.unitsCreated,
+                          createdAt: lm.utcTimestamp,
+                          generatedHash: lm.generatedHash,
+                          productId: task.productId // Add this for updating batch data
+                        })
+                      }
+                      className="bg-purple-600 text-white px-2 py-1 rounded text-xs hover:bg-purple-700 transition-colors flex items-center gap-1 disabled:opacity-50"
+                      disabled={
+                        lm.generatedHash || // Disable if already generated
+                        buttonStatuses[`${task._id}_${batch.batchNo}`] === "loading"
+                      }
+                    >
+                      {buttonStatuses[`${task._id}_${batch.batchNo}`] === "loading" ? (
+                        <>
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                          Generating...
+                        </>
+                      ) : lm.generatedHash ? (
+                        <>
+                          <CheckCircle2 className="h-3 w-3 text-green-300" />
+                          Generated
+                        </>
+                      ) : (
+                        <>
+                          <QrCode className="h-3 w-3" />
+                          Create QR Code
+                        </>
+                      )}
+                    </button>
+                  </td>
+                  <td>
+                    <button
+                      className='bg-slate-600 text-white px-2 py-1 rounded text-xs hover:bg-slate-700 transition-colors flex items-center gap-1 disabled:opacity-50'
+                      onClick={() => handleDownload(task._id)}
+                      disabled={
+                        !lm.generatedHash
+                      }
+                    >
+                      Download PDF
+                    </button>
                   </td>
                 </tr>
               ))
