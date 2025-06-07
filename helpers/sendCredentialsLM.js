@@ -10,7 +10,7 @@ export async function sendCredentialsLM(
 ){
   try {
    const response= await resend.emails.send({
-        from: 'onboarding@resend.dev',
+        from: 'info@qrcipher.in',
         to: email,
         subject: 'QRChain:Credentials of your acount',
         react: <CredentialsEmail name={name}  />

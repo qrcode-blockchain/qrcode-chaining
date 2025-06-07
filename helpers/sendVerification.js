@@ -10,7 +10,7 @@ export async function sendVerificationEmail(
 ){
   try {
    const response= await resend.emails.send({
-        from: 'onboarding@resend.dev',
+        from: 'info@qrcipher.in',
         to: email,
         subject: 'QRChain:Verification code of email',
         react: <VerificationEmail name={name} otp={verifyCode} />
