@@ -56,57 +56,6 @@ export default function MProductRegistration() {
         loadInitialState();
     }, []);
 
-    // Save or update product in state and localStorage
-    // const handleSaveProduct = (product) => {
-    //     console.log('It is hitting this api');
-        
-    //     // Calculate the units for the product
-    //     const productUnits = product.endSerialNo - product.startSerialNo + 1;
-        
-    //     // Check if this is an update to an existing product
-    //     const existingProductIndex = products.findIndex(p => 
-    //         p.name === product.name && 
-    //         p.batchNo === product.batchNo && 
-    //         p.startSerialNo === product.startSerialNo);
-        
-    //     let updatedProducts;
-    //     let newTotalUnits = totalUnits;
-        
-    //     // If updating an existing product
-    //     if (existingProductIndex !== -1) {
-    //         const existingProduct = products[existingProductIndex];
-    //         const existingUnits = existingProduct.endSerialNo - existingProduct.startSerialNo + 1;
-            
-    //         // Update total units by removing old units and adding new units
-    //         newTotalUnits = totalUnits - existingUnits + productUnits;
-            
-    //         // Update product in array
-    //         updatedProducts = [...products];
-    //         updatedProducts[existingProductIndex] = product;
-    //     } else {
-    //         // It's a new product, just add the new units
-    //         newTotalUnits = totalUnits + productUnits;
-            
-    //         // Add to products array
-    //         updatedProducts = [...products, product];
-            
-    //         // Update last used serial number
-    //         setLastUsedSerialNo(product.endSerialNo + 1);
-    //         localStorage.setItem("lastUsedSerialNo", (product.endSerialNo + 1).toString());
-    //     }
-        
-    //     // Update products state and localStorage
-    //     setProducts(updatedProducts);
-    //     localStorage.setItem("products", JSON.stringify(updatedProducts));
-        
-    //     // Update total units state and localStorage
-    //     setTotalUnits(newTotalUnits);
-    //     localStorage.setItem("totalUnits", newTotalUnits.toString());
-        
-    //     // Clear selected product
-    //     setSelectedProduct(null);
-    // };
-// Save or update product in state and localStorage
 const handleSaveProduct = (product) => {
     console.log('It is hitting this api');
     
@@ -247,7 +196,7 @@ const handleSaveProduct = (product) => {
             setLastUsedSerialNo(1);
             setSuccess(true);
             
-            const res = await axios.get('/api/products/submit');
+            const res = await axios.get('/api/products/submit');  //????
         } catch (error) {
             console.error("Error submitting products:", error);
             setError(error.message || "Failed to submit products. Please try again.");
