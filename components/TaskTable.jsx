@@ -623,7 +623,7 @@ const [buttonStatuses,setButtonStatuses]=useState({});
   
  },[tasks,selectedTaskId,expandedTasks,isDialogOpen,onRefreshTasks])
  useEffect(() => {
-  // Refresh batch data for all currently expanded tasks when tasks update
+
   expandedTasks.forEach(taskId => {
     const task = tasks.find(t => t._id === taskId);
     if (task) {
