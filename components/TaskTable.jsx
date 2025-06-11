@@ -774,7 +774,19 @@ const [buttonStatuses,setButtonStatuses]=useState({});
     
     const batches = batchData[task.productId] || [];
     console.log("The batches in render are",batches);
-    
+//     0
+// : 
+// batchNo
+// : 
+// "1"
+// lineManagers
+// : 
+// Array(1)
+// 0
+// : 
+// {batchStartSerialNo: 1, batchEndSerialNo: 100, unitsCreated: 100, utcTimestamp: '2025-05-31T16:09:44.102Z', generatedHash: true}
+// length
+
     const isLoading = loadingBatches[task.productId];
 
     if (isLoading) {
