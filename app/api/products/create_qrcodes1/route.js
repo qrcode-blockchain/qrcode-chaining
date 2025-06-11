@@ -260,7 +260,7 @@ const pdfResponse = await fetch('https://www.qrcipher.in/api/generate-pdf', {
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
     dataArray: flatUrlsArray,
-    email: "carol.lobo2005@gmail.com",
+    email: "mayaggarwal@gmail.com",
   }),
 });
 
