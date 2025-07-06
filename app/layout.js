@@ -12,6 +12,9 @@ const monaSans = Mona_Sans({
 export const metadata = {
   title: "QR Chain",
   description: "Where Authenticity Meets Innovation.",
+  other: {
+    "facebook-domain-verification": "29su7jiemmkj50vw310vyhpdydhhto",
+  },
 };
 
 export default function RootLayout({ children }) {
