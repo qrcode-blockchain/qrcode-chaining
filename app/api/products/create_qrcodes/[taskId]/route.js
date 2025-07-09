@@ -79,7 +79,7 @@ async function getProductAndManufacturerDetails() {
 
 async function storeHashOnBlockchain(ipfsHashArray) {
     try {
-        const chainResponse = await axios.post('http://localhost:3000/api/blockchain_store', {
+        const chainResponse = await axios.post('https://www.qrcipher.in/api/blockchain_store', {
             ipfsHashes: ipfsHashArray
             }, {
             timeout: 18000000
@@ -107,7 +107,7 @@ async function storeHashOnBlockchain(ipfsHashArray) {
 
 async function storeDataInIpfs(data) {
     try {
-        const ipfsResponse = await fetch('http://localhost:3000/api/ipfs_store', {
+        const ipfsResponse = await fetch('https://www.qrcipher.in/api/ipfs_store', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -258,7 +258,7 @@ export async function GET(request, { params }) {
                 const flatUrlsArray = completedUnits.flat();
                 console.log("Generated QR urls successfully: ", (flatUrlsArray.length - errorQRs.length));
 
-                const pdfReponse = await fetch('http://localhost:3000/api/generate-pdf', {
+                const pdfReponse = await fetch('https://www.qrcipher.in/api/generate-pdf', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({

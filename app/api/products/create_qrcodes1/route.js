@@ -7,7 +7,7 @@ import { dbConnect } from "../../../../lib/dbConnect";
 import pLimit from 'p-limit';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../auth/[...nextauth]/option';
-import axios from 'axios';  // ADD THIS
+import axios from 'axios';
 
 const limit = pLimit(10);
 let errorQRs = [];
@@ -26,7 +26,7 @@ function chunkArray(array, size) {
 
 async function storeDataInIpfs(data) {
   try {
-    const ipfsResponse = await fetch('http://localhost:3000/api/ipfs_store', {
+    const ipfsResponse = await fetch('https://www.qrcipher.in/api/ipfs_store', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
@@ -49,7 +49,7 @@ async function storeDataInIpfs(data) {
 
 async function storeHashOnBlockchain(ipfsHashArray) {
   try {
-      const chainResponse = await axios.post('http://localhost:3000/api/blockchain_store', {
+      const chainResponse = await axios.post('https://www.qrcipher.in/api/blockchain_store', {
           ipfsHashes: ipfsHashArray
           }, {
           timeout: 18000000
@@ -240,7 +240,7 @@ export async function POST(request) {
         console.log("Generated QR URLs:", flatUrlsArray.length);
         console.log("Failed QR codes:", errorQRs.length);
 
-        // const pdfResponse = await fetch('http://localhost:3000/api/generate-pdf', {
+        // const pdfResponse = await fetch('https://www.qrcipher.in/api/generate-pdf', {
         //   method: 'POST',
         //   headers: { 'Content-Type': 'application/json' },
         //   body: JSON.stringify({
@@ -255,12 +255,12 @@ export async function POST(request) {
         // }
 // Replace the problematic section around line 192-206 with this:
 
-const pdfResponse = await fetch('http://localhost:3000/api/generate-pdf', {
+const pdfResponse = await fetch('https://www.qrcipher.in/api/generate-pdf', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
     dataArray: flatUrlsArray,
-    email: "carol.lobo2005@gmail.com",
+    email: "keithzidand@gmail.com",
     taskId: taskId
   }),
 });
