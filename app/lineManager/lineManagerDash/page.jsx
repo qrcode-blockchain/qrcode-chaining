@@ -540,40 +540,40 @@ const LineManagerDashboard = () => {
 // };
   //to check if logged in otherwise load
 
+  const fetchTasks=async()=>{
+    try {
+      const response=await axios.get('/api/lineManagers/fetch-assigned-task');
+      
+      if(response.data.success){
+        console.log("The task returned is",response.data.tasks);
+        
+        setTasks(response.data.tasks);
+      }else{
+        toast({
+          title:"Failed to fetch tasks",
+          description: response.data.message || "An error occurred",
+        variant: 'destructive',
+        duration: 5000,
+        })
+      }
 
+      
+    } catch (error) {
+      console.error("Error:", error);
+      toast({
+        title: "Failed to load tasks",
+        description: error.response?.data?.message || "An error occurred while fetching line tasks",
+        variant: 'destructive',
+        duration: 5000,
+      });
+    }finally{
+      setLoading(false);
+    }
+  }
 
   useEffect(()=>{
     if(status==="authenticated"){
-      const fetchTasks=async()=>{
-        try {
-          const response=await axios.get('/api/lineManagers/fetch-assigned-task');
-          
-          if(response.data.success){
-            console.log("The task returned is",response.data.tasks);
-            
-            setTasks(response.data.tasks);
-          }else{
-            toast({
-              title:"Failed to fetch tasks",
-              description: response.data.message || "An error occurred",
-            variant: 'destructive',
-            duration: 5000,
-            })
-          }
-  
-          
-        } catch (error) {
-          console.error("Error:", error);
-          toast({
-            title: "Failed to load tasks",
-            description: error.response?.data?.message || "An error occurred while fetching line tasks",
-            variant: 'destructive',
-            duration: 5000,
-          });
-        }finally{
-          setLoading(false);
-        }
-      }
+      
       fetchTasks();
    }
     } ,[status]);
@@ -642,7 +642,9 @@ const LineManagerDashboard = () => {
       </div>
     );
   }
-
+  const handleRefreshTasks=()=>{
+    fetchTasks();
+  }
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Navigation */}
@@ -692,6 +694,7 @@ const LineManagerDashboard = () => {
         tasks={tasks}
         onUpdateTask={handleUpdateTask}
         role={session?.user.role}
+        onRefreshTasks={handleRefreshTasks}
         //onCreateAction={handleCreateAction}
 
       />

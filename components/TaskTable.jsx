@@ -598,7 +598,8 @@ import { create } from 'domain';
 const TaskManagementTable=({
 tasks,
 role,
-onUpdateTask
+onUpdateTask,
+onRefreshTasks
 }
 )=>{
   const [selectedTaskId, setSelectedTaskId] = useState(null);
@@ -609,6 +610,27 @@ onUpdateTask
  const [isLoading,setIsLoading]=useState(false);
 const [buttonStatuses,setButtonStatuses]=useState({});
  const { toast } = useToast();
+ useEffect(()=>{
+   if(!isDialogOpen && selectedTaskId){
+    if(onRefreshTasks){
+      onRefreshTasks();
+    }
+    const task=tasks.find(t=>t._id===selectedTaskId);
+    if(task && expandedTasks.has(selectedTaskId)){
+     fetchBatchData(task.productId);
+    }
+   }
+  
+ },[tasks,selectedTaskId,expandedTasks,isDialogOpen,onRefreshTasks])
+ useEffect(() => {
+
+  expandedTasks.forEach(taskId => {
+    const task = tasks.find(t => t._id === taskId);
+    if (task) {
+      fetchBatchData(task.productId);
+    }
+  });
+}, [tasks]);
   const onCreateAction = async (taskId) => {
     try {
       console.log('Creating action for task:', taskId);
@@ -623,7 +645,9 @@ const [buttonStatuses,setButtonStatuses]=useState({});
 
   const closeDialog = () => {
     setIsDialogOpen(false);
-    setSelectedTaskId(null);
+
+  //set the selectedTaskId as null only after 100 ms so tat teh state and ui can update
+  setTimeout(()=>setSelectedTaskId(null),100)
   };
 
   const toggleTaskExpansion = (taskId, productId) => {
@@ -774,7 +798,19 @@ const [buttonStatuses,setButtonStatuses]=useState({});
     
     const batches = batchData[task.productId] || [];
     console.log("The batches in render are",batches);
-    
+//     0
+// : 
+// batchNo
+// : 
+// "1"
+// lineManagers
+// : 
+// Array(1)
+// 0
+// : 
+// {batchStartSerialNo: 1, batchEndSerialNo: 100, unitsCreated: 100, utcTimestamp: '2025-05-31T16:09:44.102Z', generatedHash: true}
+// length
+
     const isLoading = loadingBatches[task.productId];
 
     if (isLoading) {
