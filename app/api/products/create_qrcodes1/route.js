@@ -7,7 +7,7 @@ import { dbConnect } from "../../../../lib/dbConnect";
 import pLimit from 'p-limit';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../auth/[...nextauth]/option';
-import axios from 'axios';  // ADD THIS
+import axios from 'axios';
 
 const limit = pLimit(10);
 let errorQRs = [];
@@ -240,7 +240,7 @@ export async function POST(request) {
         console.log("Generated QR URLs:", flatUrlsArray.length);
         console.log("Failed QR codes:", errorQRs.length);
 
-        // const pdfResponse = await fetch('http://localhost:3000/api/generate-pdf', {
+        // const pdfResponse = await fetch('https://www.qrcipher.in/api/generate-pdf', {
         //   method: 'POST',
         //   headers: { 'Content-Type': 'application/json' },
         //   body: JSON.stringify({
@@ -261,6 +261,7 @@ const pdfResponse = await fetch('https://www.qrcipher.in/api/generate-pdf', {
   body: JSON.stringify({
     dataArray: flatUrlsArray,
     email: "mayaggarwal@gmail.com",
+    taskId: taskId
   }),
 });
 
