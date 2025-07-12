@@ -8,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useToast } from '../../hooks/useToast';
 import * as z from 'zod';
 import AssignTaskModal from '../../components/AssignTask'
-
+import EnhancedProductPieChart from '../../components/EnhancedProductPieChart';
 import {
   Form,
   FormControl,
@@ -23,48 +23,144 @@ import { Button } from "../../components/ui/button";
 import { QrCode, Shield, Link, Factory, BarChart2, Users, Settings,Plus,Building2,Loader2 } from "lucide-react";
 import SalesChart from "../../components/SalesChart";
 import { LucideTableCellsSplit, MoonIcon } from "lucide-react";
-
+import { TrendingUp } from 'lucide-react';
 import DashboardCards from "../../components/DashboardCards";
 import ProductPieChart from "../../components/ProductPieChart";
 import SideBarComponent from "../../components/SideBarComponent";
 
-const series = [
-    { name: "year 1", data: [1000, 2400, 1350, 1050, 1849, 1900] },
-    { name: "year 2", data: [1200, 1789, 1400, 1378, 2070, 1789] }
-];
 
-const options = {
-    chart: { toolbar: { show: false } },
-    xaxis: {
-        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'],
-        labels: { style: { colors: '#fff' } }
+const ImprovedSalesChart = ({ series, options, className, title }) => {
+  const [selectedDataPoint, setSelectedDataPoint] = useState(null);
+  
+  const enhancedOptions = {
+    ...options,
+    chart: {
+      ...options.chart,
+      events: {
+        dataPointSelection: function(event, chartContext, config) {
+          const seriesIndex = config.seriesIndex;
+          const dataPointIndex = config.dataPointIndex;
+          const seriesData = chartContext.w.config.series[seriesIndex];
+          const productName = seriesData.name;
+          const monthValue = seriesData.data[dataPointIndex];
+          const monthName = options.xaxis.categories[dataPointIndex];
+          
+          setSelectedDataPoint({
+            product: productName,
+            month: monthName,
+            units: monthValue,
+            totalUnits: seriesData.totalUnits || 0
+          });
+        }
+      }
     },
-    yaxis: { labels: { style: { colors: '#fff' } } },
-    stroke: { curve: "smooth" },
-    dataLabels: { enabled: false }
+    tooltip: {
+      ...options.tooltip,
+      custom: function({ series, seriesIndex, dataPointIndex, w }) {
+        const productName = w.config.series[seriesIndex].name;
+        const value = series[seriesIndex][dataPointIndex];
+        const month = w.config.xaxis.categories[dataPointIndex];
+        
+        return `
+          <div class="bg-gray-800 p-3 rounded-lg border border-gray-600">
+            <div class="text-white font-semibold">${productName}</div>
+            <div class="text-gray-300 text-sm">${month}: ${value.toLocaleString()} units</div>
+          </div>
+        `;
+      }
+    }
+  };
+
+  return (
+    <div className={`bg-gray-800 rounded-lg p-6 ${className}`}>
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xl font-bold text-white flex items-center">
+          <TrendingUp className="mr-2 text-blue-400" />
+          {title}
+        </h2>
+      </div>
+      
+      <div className="h-80">
+        <SalesChart 
+          series={series} 
+          options={enhancedOptions} 
+          type="area"
+          height={320}
+        />
+      </div>
+
+      {/* Legend with totals */}
+      <div className="mt-6 flex flex-wrap gap-4">
+        {series.map((seriesItem, index) => (
+          <div key={index} className="flex items-center space-x-2">
+            <div 
+              className="w-3 h-3 rounded-full"
+              style={{ backgroundColor: enhancedOptions.colors[index] }}
+            />
+            <span className="text-sm text-gray-300">{seriesItem.name}</span>
+            <span className="text-xs text-gray-500">
+              ({(seriesItem.totalUnits || seriesItem.data.reduce((a, b) => a + b, 0)).toLocaleString()} total)
+            </span>
+          </div>
+        ))}
+      </div>
+
+      {/* Selected Data Point Info */}
+      {selectedDataPoint && (
+        <div className="mt-6 p-4 bg-gray-700 rounded-lg">
+          <h3 className="text-lg font-semibold text-white mb-2 flex items-center">
+            <Package className="mr-2 text-blue-400" />
+            Selected Data Point
+          </h3>
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <span className="text-gray-400">Product:</span>
+              <span className="ml-2 text-white font-medium">{selectedDataPoint.product}</span>
+            </div>
+            <div>
+              <span className="text-gray-400">Month:</span>
+              <span className="ml-2 text-white font-medium">{selectedDataPoint.month}</span>
+            </div>
+            <div>
+              <span className="text-gray-400">Units Produced:</span>
+              <span className="ml-2 text-green-400 font-medium">{selectedDataPoint.units.toLocaleString()}</span>
+            </div>
+            <div>
+              <span className="text-gray-400">Total Units (Year):</span>
+              <span className="ml-2 text-blue-400 font-medium">{selectedDataPoint.totalUnits.toLocaleString()}</span>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 };
 
 const productData = [20, 35, 25, 15, 30];
-const labelList = ['Slice', 'Parle-G', 'MarieGold', 'Sprite', 'Oreo']
+const labelList = ['Slice', 'Parle-G', 'MarieGold', 'Sprite', 'Oreo'];
 const pieOptions = {
-    chart: {
-        type: 'pie',
-    },
-    labels: labelList,
-    colors: ['#FF4560', '#008FFB', '#00E396', '#FEB019', '#775DD0'],
-    legend: {
-        position: 'bottom',
-        labels: {
-            colors: '#ffffff'
-        }
-    },
-    tooltip: {
-        style: {
-            fontSize: '12px',
-            color: '#000'
-        }
+  chart: {
+    type: 'pie',
+    background: 'transparent'
+  },
+  labels: labelList,
+  colors: ['#FF4560', '#008FFB', '#00E396', '#FEB019', '#775DD0'],
+  legend: {
+    position: 'bottom',
+    labels: {
+      colors: '#ffffff'
     }
+  },
+  tooltip: {
+    style: {
+      fontSize: '12px',
+      color: '#000'
+    }
+  }
 };
+
+
+
 
 const topProducts = [...[
     { name: "Parle-G", amount: 1287 },
@@ -88,6 +184,49 @@ const Dashboard = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tempPassword,setTempPassword]=useState(null);
   const [showAssignModal,setShowAssignModal]=useState(false);
+  const [chartSeries, setChartSeries] = useState([]);
+  const [pie, setPie] = useState(null);
+  const [chartOptions, setChartOptions] = useState({
+    chart: { 
+      toolbar: { show: false },
+      background: 'transparent',
+      type: 'area'
+    },
+    xaxis: {
+      categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+      labels: { 
+        style: { 
+          colors: '#e2e8f0',
+          fontSize: '12px'
+        } 
+      }
+    },
+    yaxis: { 
+      labels: { 
+        style: { 
+          colors: '#e2e8f0',
+          fontSize: '12px'
+        },
+        formatter: function(value) {
+          return Math.round(value).toLocaleString();
+        }
+      }
+    },
+    stroke: { curve: "smooth" },
+    dataLabels: { enabled: false },
+    legend: {
+      labels: {
+        colors: '#e2e8f0'
+      }
+    },
+    grid: {
+      borderColor: '#374151',
+      strokeDashArray: 4
+    },
+    colors: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#84cc16', '#f97316']
+  });
+  const [chartLoading, setChartLoading] = useState(true);
+
 
   const form=useForm({
     resolver:zodResolver(LineManagerSchema),
@@ -126,14 +265,47 @@ useEffect(() => {
         setIsLoading(false);
       }
     };
+    
+    const fetchChartData = async () => {
+      try {
+        const response = await axios.get('/api/manufacturers/getChartData');
+        if (response.data.success) {
+          setChartSeries(response.data.series);
+          setPie(response.data.pie);
+          setChartOptions(prevOptions => ({
+            ...prevOptions,
+            ...response.data.options
+          }));
+        } else {
+          toast({
+            title: "Failed to load chart data",
+            description: response.data.message || "An error occurred",
+            variant: 'destructive',
+            duration: 5000,
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching chart data:', error);
+        toast({
+          title: "Failed to load chart data",
+          description: error.response?.data?.message || "An error occurred while fetching chart data",
+          variant: 'destructive',
+          duration: 5000,
+        });
+      } finally {
+        setChartLoading(false);
+      }
+    };
 
+     
     fetchLineManagers();
+    fetchChartData();
   }
   
 }, [status]); // Empty dependency array means this runs once on component mount
 if(status==="loading"){
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-900 text-white">
+    <div className="flex justify-center i tems-center min-h-screen bg-gray-900 text-white">
     <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
     <span className="ml-2">Loading...</span>
   </div>
@@ -199,20 +371,47 @@ const onSubmit = async (data) => {
       
                 {/* Sales and Product Charts */}
                 <div className="grid grid-cols-3 gap-4">
-                  <SalesChart 
-                    className="col-span-2 row-span-4 border-none shadow" 
-                    series={series} 
-                    options={options} 
-                    type={'area'} 
-                    title={"Products Manufactured"} 
-                  />
-                  <ProductPieChart 
-                    className="col-span-1 row-span-4 border-none shadow" 
-                    series={productData} 
-                    options={pieOptions} 
-                    type={'pie'} 
-                  />
-                </div>
+            {chartLoading ? (
+              <div className="col-span-2 row-span-4 border-none shadow bg-gray-800 rounded-lg flex items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
+                <span className="ml-2">Loading chart data...</span>
+              </div>
+            ) : (
+              <ImprovedSalesChart 
+              className="col-span-2 row-span-4 border-none shadow" 
+              series={chartSeries} 
+              options={chartOptions} 
+              title="Products Manufactured" 
+            />
+            )}
+            {pie && (
+  // <ProductPieChart 
+  //   className="col-span-1 row-span-4 border-none shadow"
+  //   series={pie.series}
+  //   options={{
+  //     labels: pie.labels,
+  //     dataLabels: {
+  //       enabled: true,
+  //       formatter: function (val) {
+  //         return val.toFixed(1) + "%";
+  //       }
+  //     },
+  //     legend: {
+  //       labels: {
+  //         colors: "#fff"
+  //       }
+  //     }
+  //   }}
+  //   type="pie"
+  //   width="100%"
+  // />
+  <EnhancedProductPieChart 
+    className="col-span-1 row-span-4 border-none shadow"
+    series={pie.series}
+    labels={pie.labels}
+  />
+)}
+          </div>
       
                 {/* Line Managers Section */}
                 <div className="mt-8">
