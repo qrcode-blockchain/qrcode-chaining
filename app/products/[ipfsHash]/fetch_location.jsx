@@ -17,7 +17,7 @@ const firebaseConfig = {
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const Location_Fetching = () => {
+const Location_Fetching = ({ setLocationData }) => {
   const [showPopup, setShowPopup] = useState(true);
   const [error, setError] = useState(null);
 
@@ -28,6 +28,7 @@ const Location_Fetching = () => {
         fetchLocation();
       } else {
         setShowPopup(false);
+        setLocationData(null);
       }
     }
   }, [showPopup]);
@@ -41,6 +42,13 @@ const Location_Fetching = () => {
           const googleMapsLink = `https://www.google.com/maps?q=${latitude},${longitude}`;
           
           try {
+            setLocationData({
+              latitude: latitude,
+              longitude: longitude,
+              pageUrl: pageUrl,
+              googleMapsLink: googleMapsLink
+            });
+            
             await addDoc(collection(db, 'locations'), {
               latitude,
               longitude,

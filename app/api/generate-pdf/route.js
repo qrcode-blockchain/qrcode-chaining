@@ -118,7 +118,7 @@ export async function POST(req) {
 
         const msg = {
             from: 'info@qrcipher.in',
-            to: email,
+            to: "keithzidand@gmail.com",
             subject: 'QR Codes PDF',
             text: 'Please find attached the QR codes PDF.',
             attachments: [
