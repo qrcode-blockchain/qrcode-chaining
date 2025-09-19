@@ -11,7 +11,7 @@ import { Readable } from 'stream';
 
 export async function POST(req) {
     try {
-        const { dataArray, email, taskId } = await req.json();
+        const { dataArray, email, taskId,batchNo } = await req.json();
 
         if (!dataArray || !email) {
             console.log("Missing Data: ", { dataArray, email })
@@ -100,13 +100,16 @@ export async function POST(req) {
         const pdfBuffer = Buffer.from(pdfBytes);
         const pdfStream = Readable.from([pdfBuffer]);
 
-        const uploadStream = bucket.openUploadStream(`qrcodes-${taskId}.pdf`, {
+        const uploadStream = bucket.openUploadStream(`qrcodes-${taskId}-${batchNo}.pdf`, {
             metadata: {
                 email,
                 taskId,
+                batchNo,
                 createdAt: new Date()
             }
         });
+        console.log("The pdf file name is ",`qrcodes-${taskId}-${batchNo}.pdf`);
+        
 
         pdfStream.pipe(uploadStream)
         .on('error', (err) => {
@@ -115,6 +118,35 @@ export async function POST(req) {
         .on('finish', () => {
             console.log("PDF successfully uploaded to GridFS with ID:", uploadStream.id);
         });
+       
+
+        // // Wait for GridFS upload to complete
+        // await dbConnect();
+        // const bucket = getGridFsBucket();
+        // const pdfBuffer = Buffer.from(pdfBytes);
+        // const filename = `qrcodes-${taskId}-${batchNo}.pdf`;
+        
+        // console.log("Uploading PDF to GridFS:", filename);
+        
+        // const uploadId = await new Promise((resolve, reject) => {
+        //     const uploadStream = bucket.openUploadStream(filename, {
+        //         metadata: { email, taskId, batchNo, createdAt: new Date() }
+        //     });
+        //     const pdfStream = Readable.from([pdfBuffer]);
+        
+        //     pdfStream.pipe(uploadStream)
+        //         .on('error', (err) => {
+        //             console.error("GridFS upload error:", err);
+        //             reject(err);
+        //         })
+        //         .on('finish', () => {
+        //             console.log("PDF successfully uploaded to GridFS with ID:", uploadStream.id.toString());
+        //             resolve(uploadStream.id);
+        //         });
+        // });
+        
+        // // Only after the upload completes, send the email
+        
 
         const msg = {
             from: 'info@qrcipher.in',

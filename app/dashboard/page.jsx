@@ -93,14 +93,14 @@ const ImprovedSalesChart = ({ series, options, className, title }) => {
       <div className="mt-6 flex flex-wrap gap-4">
         {series.map((seriesItem, index) => (
           <div key={index} className="flex items-center space-x-2">
-            <div 
+            {/* <div 
               className="w-3 h-3 rounded-full"
               style={{ backgroundColor: enhancedOptions.colors[index] }}
-            />
-            <span className="text-sm text-gray-300">{seriesItem.name}</span>
+            /> */}
+            {/* <span className="text-sm text-gray-300">{seriesItem.name}</span>
             <span className="text-xs text-gray-500">
               ({(seriesItem.totalUnits || seriesItem.data.reduce((a, b) => a + b, 0)).toLocaleString()} total)
-            </span>
+            </span> */}
           </div>
         ))}
       </div>
@@ -363,7 +363,7 @@ const onSubmit = async (data) => {
                   <h1 className="text-lg font-semibold">Dashboard</h1>
                   <MoonIcon className="text-white cursor-pointer" size={24} />
                 </div>
-      
+                 
                 {/* Dashboard Cards */}
                 <div className="w-full my-4">
                   <DashboardCards />

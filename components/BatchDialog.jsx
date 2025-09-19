@@ -36,6 +36,7 @@ export default function BatchDialog({ isOpen, onClose, taskId, role }) {
     const { toast } = useToast();
     const [taskData, setTaskData] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [isSubmitting,setIsSubmitting]=useState(false);
     const [completedUnits,setCompletedUnits]=useState(0);
     const methods = useForm({
         resolver: zodResolver(productSchema),
@@ -130,6 +131,7 @@ export default function BatchDialog({ isOpen, onClose, taskId, role }) {
     const handleSubmitForm = async (data) => {
         
         try {
+            setIsSubmitting(true)
             console.log("Form submitted with data:", data);
             console.log("The taskid being sent is", taskId);
 
@@ -155,7 +157,7 @@ export default function BatchDialog({ isOpen, onClose, taskId, role }) {
                 //create an api here to fetch task api
                 toast({
                     title: "Success",
-                    description: response.data.message || "QR Codes created successfully",
+                    description: response.data.message || "Batch created successfully.Kindly generate and download qr codes",
                     variant: 'default',
                     duration: 3000,
                 });
@@ -212,7 +214,7 @@ export default function BatchDialog({ isOpen, onClose, taskId, role }) {
             });
         } finally {
             console.log("Finally");
-            
+            setIsSubmitting(false);
         }
     };
 
@@ -672,8 +674,19 @@ export default function BatchDialog({ isOpen, onClose, taskId, role }) {
       ? "bg-gray-400 cursor-not-allowed" 
       : "bg-blue-600 hover:bg-blue-700 text-white"}`}
 >
-  <Package className="w-4 h-4 mr-2" />
-  Create QR Codes
+    {
+        isSubmitting?(
+            <>
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+            Creating...</>
+        ):(
+            <>
+            <Package className="w-4 h-4 mr-2" />
+            Create Batch
+        </>
+        )
+    }
+ 
 </Button>
 
 
