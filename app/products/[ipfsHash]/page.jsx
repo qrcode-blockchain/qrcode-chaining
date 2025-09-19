@@ -13,13 +13,13 @@ export default function ProductPage() {
   const [ipfsData, setIpfsData] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [locationData, setLocationData] = useState({});
 
   useEffect(() => {
     const verifyAndFetch = async (blockchainFlag) => {
       try {
         setLoading(true);
-        
-        // Step 1: Verify on blockchain
+
         if (blockchainFlag) {
             const newHash = hash.slice(0, -3)
             const res = await fetch('/api/verify_hash', {
@@ -57,6 +57,35 @@ export default function ProductPage() {
         verifyAndFetch(false)
     };
   }, [hash]);
+
+  useEffect(() => {
+    const fetchAndStoreLocation = async () => {
+      try {
+        const response = await fetch('/api/store-location', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...locationData,
+            productId: ipfsData._id,
+          }),
+        });
+
+        const locationResult = await response.json();
+        if (!locationResult.success) {
+          console.log('Location not stored');
+        } else {
+          console.log('Location Stored!!');
+        }
+      } catch (err) {
+        setError(err.message);
+      }
+    };
+
+    if (ipfsData && locationData) {
+      fetchAndStoreLocation();
+    }
+  }, [ipfsData, locationData]);
+
 
   // Animation variants
   const containerVariants = {
@@ -212,7 +241,7 @@ export default function ProductPage() {
           </motion.div>
         </motion.div>
       )}
-      <FetchLocation />
+      <FetchLocation setLocationData={setLocationData}/>
     </motion.div>
   );
 }

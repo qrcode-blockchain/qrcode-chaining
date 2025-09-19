@@ -38,11 +38,11 @@ export default function DashboardCards() {
     const [totalCount,setTotalCount]=useState(null);
     const [noOfProducts,setNoOfProducts]=useState(null);
     const [growth, setGrowth] = useState(null);
-
-
+    const [scannedAmount, setScannedAmount] = useState(null);
+    const [totalValue, setTotalValue] = useState(null);
    
     useEffect(()=>{
-        const fecthFunction=async()=>{
+        const fetchFunction=async()=>{
             const response=await axios.get('/api/manufacturers/getChartData');
             setTotalCount(response.data.totalUnits);
             setNoOfProducts(response.data.noOfProducts);
@@ -52,17 +52,19 @@ export default function DashboardCards() {
             ? 100
             : (((thisMonth - lastMonth) / lastMonth) * 100).toFixed(2);
           
-          setGrowth(growthPercentage);
+            setGrowth(growthPercentage);
+            setScannedAmount(response.data.scannedQRCodes);
+            setTotalValue(response.data.totalValue);
         }
-        fecthFunction();
+        fetchFunction();
 
     },[])
     
     const cards = [
         { title: "QR Codes Generated", value: totalCount, Icon: QrCode },
         { title: "Types of Products", value: noOfProducts, Icon: Package },
-        { title: "Value of Products with Qr", value: 14000, Icon: Scan },
-        { title: "Revenue", value: 1400, Icon: IndianRupee },
+        { title: "Value of Products with Qr", value: scannedAmount, Icon: Scan },
+        { title: "Value", value: totalValue, Icon: IndianRupee },
     ];
 
     return (

@@ -6,6 +6,8 @@ import { dbConnect } from "../../../../lib/dbConnect";
 import Manufacturer from '../../../../model/Manufacturer';
 import Product from '../../../../model/Product';
 import Batch from '../../../../model/Batch';
+import Location from '../../../../model/Location';
+import Task from '../../../../model/TaskLM'
 import mongoose from 'mongoose';
 
 
@@ -194,6 +196,29 @@ return {
     const noOfProducts=await Product.countDocuments({
       manufacturerId:new mongoose.Types.ObjectId(manufacturerId)
     })
+    const scannedQRCodes = await Location.countDocuments({
+      manufacturerId:new mongoose.Types.ObjectId(manufacturerId)
+    })
+    const result = await Task.aggregate([
+        {
+            $match: {
+                manufacturer: new mongoose.Types.ObjectId(manufacturerId)
+            }
+        },
+        {
+            $project: {
+                totalValue: { $multiply: ["$productPrice", "$completedUnits"] }
+            }
+        },
+        {
+            $group: {
+                _id: null,
+                totalAmount: { $sum: "$totalValue" }
+            }
+        }
+    ]);
+
+    const totalValue = result.length > 0 ? result[0].totalAmount : 0;
     //now find the unist produced last montha n this month
     const now=new Date();
     const thisMonthKey=now.toISOString().slice(0,7);
@@ -229,7 +254,9 @@ return {
         pie: {
           series: pieSeries,
           labels: pieLabels
-        }
+        },
+        scannedQRCodes,
+        totalValue
     }, { status: 200 });
 
   }catch(error){
