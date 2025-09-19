@@ -95,55 +95,55 @@ export async function POST(req) {
         const pdfBytes = await pdfDoc.save();
         console.log("PDF Generation done.... Sending PDF......")
 
-        await dbConnect()
-        const bucket = getGridFsBucket()
-        const pdfBuffer = Buffer.from(pdfBytes);
-        const pdfStream = Readable.from([pdfBuffer]);
+        // await dbConnect()
+        // const bucket = getGridFsBucket()
+        // const pdfBuffer = Buffer.from(pdfBytes);
+        // const pdfStream = Readable.from([pdfBuffer]);
 
-        const uploadStream = bucket.openUploadStream(`qrcodes-${taskId}-${batchNo}.pdf`, {
-            metadata: {
-                email,
-                taskId,
-                batchNo,
-                createdAt: new Date()
-            }
-        });
-        console.log("The pdf file name is ",`qrcodes-${taskId}-${batchNo}.pdf`);
+        // const uploadStream = bucket.openUploadStream(`qrcodes-${taskId}-${batchNo}.pdf`, {
+        //     metadata: {
+        //         email,
+        //         taskId,
+        //         batchNo,
+        //         createdAt: new Date()
+        //     }
+        // });
+        // console.log("The pdf file name is ",`qrcodes-${taskId}-${batchNo}.pdf`);
         
 
-        pdfStream.pipe(uploadStream)
-        .on('error', (err) => {
-            console.error("Error uploading PDF to GridFS:", err);
-        })
-        .on('finish', () => {
-            console.log("PDF successfully uploaded to GridFS with ID:", uploadStream.id);
-        });
+        // pdfStream.pipe(uploadStream)
+        // .on('error', (err) => {
+        //     console.error("Error uploading PDF to GridFS:", err);
+        // })
+        // .on('finish', () => {
+        //     console.log("PDF successfully uploaded to GridFS with ID:", uploadStream.id);
+        // });
        
 
         // // Wait for GridFS upload to complete
-        // await dbConnect();
-        // const bucket = getGridFsBucket();
-        // const pdfBuffer = Buffer.from(pdfBytes);
-        // const filename = `qrcodes-${taskId}-${batchNo}.pdf`;
+        await dbConnect();
+        const bucket = getGridFsBucket();
+        const pdfBuffer = Buffer.from(pdfBytes);
+        const filename = `qrcodes-${taskId}-${batchNo}.pdf`;
         
-        // console.log("Uploading PDF to GridFS:", filename);
+        console.log("Uploading PDF to GridFS:", filename);
         
-        // const uploadId = await new Promise((resolve, reject) => {
-        //     const uploadStream = bucket.openUploadStream(filename, {
-        //         metadata: { email, taskId, batchNo, createdAt: new Date() }
-        //     });
-        //     const pdfStream = Readable.from([pdfBuffer]);
+        const uploadId = await new Promise((resolve, reject) => {
+            const uploadStream = bucket.openUploadStream(filename, {
+                metadata: { email, taskId, batchNo, createdAt: new Date() }
+            });
+            const pdfStream = Readable.from([pdfBuffer]);
         
-        //     pdfStream.pipe(uploadStream)
-        //         .on('error', (err) => {
-        //             console.error("GridFS upload error:", err);
-        //             reject(err);
-        //         })
-        //         .on('finish', () => {
-        //             console.log("PDF successfully uploaded to GridFS with ID:", uploadStream.id.toString());
-        //             resolve(uploadStream.id);
-        //         });
-        // });
+            pdfStream.pipe(uploadStream)
+                .on('error', (err) => {
+                    console.error("GridFS upload error:", err);
+                    reject(err);
+                })
+                .on('finish', () => {
+                    console.log("PDF successfully uploaded to GridFS with ID:", uploadStream.id.toString());
+                    resolve(uploadStream.id);
+                });
+        });
         
         // // Only after the upload completes, send the email
         
