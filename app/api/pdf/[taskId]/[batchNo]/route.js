@@ -1,12 +1,12 @@
-import { dbConnect, getGridFsBucket } from "../../../../lib/dbConnect";
+import { dbConnect, getGridFsBucket } from "../../../../../lib/dbConnect";
 import { NextResponse } from "next/server";
 
 export async function GET(req, { params }) {
-    const { taskId } = await params;
+    const { taskId,batchNo } =await params;
     try {
         await dbConnect();
         const bucket = getGridFsBucket();
-        const filename = `qrcodes-${taskId}.pdf`
+        const filename = `qrcodes-${taskId}-${batchNo}.pdf`
 
         const fileCursor = await bucket.find({ filename }).toArray();
         if (!fileCursor || fileCursor.length === 0) {

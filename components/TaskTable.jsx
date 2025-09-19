@@ -594,6 +594,7 @@ import { useToast } from "../hooks/useToast";
 import {  Loader2, CheckCircle2 } from "lucide-react";
 import BatchDialog from '../components/BatchDialog'
 import { create } from 'domain';
+// import { log } from 'console';
 
 const TaskManagementTable=({
 tasks,
@@ -769,8 +770,10 @@ const [buttonStatuses,setButtonStatuses]=useState({});
     }
   };
 
-  const handleDownload = async (taskId) => {
-    const response = await fetch(`/api/pdf/${taskId}`);
+  const handleDownload = async (taskId,batchNo) => {
+    console.log("The task id is and the batch no of download button is",taskId,batchNo);
+    
+    const response = await fetch(`/api/pdf/${taskId}/${batchNo}`);
     if (response.status !== 200) {
       toast({
         title: "PDF Not Found",
@@ -794,10 +797,10 @@ const [buttonStatuses,setButtonStatuses]=useState({});
   };
 
   const renderBatchTable = (task) => {
-    console.log("The render fucntion is being hit");
+    //console.log("The render fucntion is being hit");
     
     const batches = batchData[task.productId] || [];
-    console.log("The batches in render are",batches);
+    //console.log("The batches in render are",batches);
 //     0
 // : 
 // batchNo
@@ -917,7 +920,7 @@ const [buttonStatuses,setButtonStatuses]=useState({});
                   <td>
                     <button
                       className='bg-slate-600 text-white px-2 py-1 rounded text-xs hover:bg-slate-700 transition-colors flex items-center gap-1 disabled:opacity-50'
-                      onClick={() => handleDownload(task._id)}
+                      onClick={() => handleDownload(task._id,batch.batchNo)}
                       disabled={
                         !lm.generatedHash
                       }

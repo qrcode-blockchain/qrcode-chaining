@@ -1,4 +1,4 @@
-// Create this file at: /pages/api/manufacturers/getById.js
+
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/option";

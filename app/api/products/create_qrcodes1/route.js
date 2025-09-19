@@ -254,14 +254,17 @@ export async function POST(request) {
         //   console.error('Failed to generate PDF');
         // }
 // Replace the problematic section around line 192-206 with this:
-
-const pdfResponse = await fetch('https://www.qrcipher.in/api/generate-pdf', {
+console.log("Hitting the generate pdf now");
+const API = "https://www.qrcipher.in";
+//"http://localhost:3000"
+const pdfResponse = await fetch(`${API}/api/generate-pdf`, {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
     dataArray: flatUrlsArray,
-    email: "mayaggarwal@gmail.com",
-    taskId: taskId
+    email: "carol.lobo2005@gmail.com",
+    taskId: taskId,
+    batchNo:batchNo
   }),
 });
 

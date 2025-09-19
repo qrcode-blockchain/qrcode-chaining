@@ -61,7 +61,7 @@ export default function DashboardCards() {
     const cards = [
         { title: "QR Codes Generated", value: totalCount, Icon: QrCode },
         { title: "Types of Products", value: noOfProducts, Icon: Package },
-        { title: "QR Codes Scanned", value: 14000, Icon: Scan },
+        { title: "Value of Products with Qr", value: 14000, Icon: Scan },
         { title: "Revenue", value: 1400, Icon: IndianRupee },
     ];
 
