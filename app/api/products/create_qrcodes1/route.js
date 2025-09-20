@@ -181,7 +181,7 @@ export async function POST(request) {
     
   await dbConnect();
   const body = await request.json();
-  const { taskId, batchNo, endSerial, startSerial, unitsCreated, createdAt } = body;
+  const { taskId, batchNo, endSerial, startSerial, unitsCreated, createdAt,productId } = body;
   const session=await getServerSession(authOptions);
   try {
    
@@ -264,7 +264,8 @@ const pdfResponse = await fetch(`${API}/api/generate-pdf`, {
     dataArray: flatUrlsArray,
     email: "carol.lobo2005@gmail.com",
     taskId: taskId,
-    batchNo:batchNo
+    batchNo:batchNo,
+    productName:productName
   }),
 });
 

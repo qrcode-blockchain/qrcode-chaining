@@ -607,8 +607,9 @@ onRefreshTasks
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [expandedTasks, setExpandedTasks] = useState(new Set());
   const [batchData, setBatchData] = useState({});
+  const [isLoading,setIsLoading]=useState(false);
   const [loadingBatches, setLoadingBatches] = useState({});
- const [isLoading,setIsLoading]=useState(false);
+ 
 const [buttonStatuses,setButtonStatuses]=useState({});
  const { toast } = useToast();
  useEffect(()=>{
@@ -707,7 +708,7 @@ const [buttonStatuses,setButtonStatuses]=useState({});
     setButtonStatuses((prev) => ({ ...prev, [key]: "loading" }));
     setIsLoading(true); 
     try {
-      const { taskId, batchNo, startSerial, endSerial, unitsCreated, createdAt } = batchData;
+      const { taskId, batchNo, startSerial, endSerial, unitsCreated, createdAt,productId } = batchData;
      // console.log("The info is", taskId, batchNo, startSerial, endSerial, unitsCreated, createdAt);
       
       const response = await axios.post('/api/products/create_qrcodes1', batchData);
@@ -770,9 +771,12 @@ const [buttonStatuses,setButtonStatuses]=useState({});
     }
   };
 
-  const handleDownload = async (taskId,batchNo) => {
+  const handleDownload = async (taskId,batchNo,productName) => {
+    const downloadKey = `${taskId}_${batchNo}_download`;
+    try{
+      
     console.log("The task id is and the batch no of download button is",taskId,batchNo);
-    
+    setButtonStatuses(prev => ({ ...prev, [downloadKey]: "loading" }));
     const response = await fetch(`/api/pdf/${taskId}/${batchNo}`);
     if (response.status !== 200) {
       toast({
@@ -788,13 +792,25 @@ const [buttonStatuses,setButtonStatuses]=useState({});
 
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'qrcodes.pdf';
+    a.download = `qrcodes-${productName}-${batchNo}.pdf`;
     document.body.appendChild(a);
     a.click();
     a.remove();
 
     window.URL.revokeObjectURL(url);
+   
+  }catch (err) {
+    console.error("Error downloading PDF:", err);
+    toast({
+      title: "Error",
+      description: "Something went wrong while downloading the PDF.",
+      variant: 'destructive',
+      duration: 5000,
+    });
+  } finally {
+    setButtonStatuses(prev => ({ ...prev, [downloadKey]: "idle" }));
   };
+};
 
   const renderBatchTable = (task) => {
     //console.log("The render fucntion is being hit");
@@ -918,14 +934,22 @@ const [buttonStatuses,setButtonStatuses]=useState({});
                     </button>
                   </td>
                   <td>
+                
                     <button
                       className='bg-slate-600 text-white px-2 py-1 rounded text-xs hover:bg-slate-700 transition-colors flex items-center gap-1 disabled:opacity-50'
-                      onClick={() => handleDownload(task._id,batch.batchNo)}
+                      onClick={() => handleDownload(task._id,batch.batchNo,task.productName)}
                       disabled={
                         !lm.generatedHash
                       }
                     >
-                      Download PDF
+                      {buttonStatuses[`${task._id}_${batch.batchNo}_download`] === "loading" ? (
+      <>
+        <Loader2 className="animate-spin w-4 h-4" />
+        Downloading...
+      </>
+    ) : (
+      "Download PDF"
+    )}
                     </button>
                   </td>
                 </tr>
