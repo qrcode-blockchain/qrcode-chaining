@@ -11,7 +11,7 @@ import { Readable } from 'stream';
 
 export async function POST(req) {
     try {
-        const { dataArray, email, taskId,batchNo } = await req.json();
+        const { dataArray, email, taskId,batchNo,productName } = await req.json();
 
         if (!dataArray || !email) {
             console.log("Missing Data: ", { dataArray, email })
@@ -155,7 +155,7 @@ export async function POST(req) {
             text: 'Please find attached the QR codes PDF.',
             attachments: [
                 {
-                    filename: 'qrcodes.pdf',
+                    filename: `qrcodes-${productName}-${batchNo}.pdf`,
                     content: Buffer.from(pdfBytes).toString('base64'),
                     type: 'application/pdf',
                     disposition: 'attachment',
