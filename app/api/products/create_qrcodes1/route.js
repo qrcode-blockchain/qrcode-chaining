@@ -9,7 +9,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '../../auth/[...nextauth]/option';
 import axios from 'axios';
 
-const limit = pLimit(10);
+const limit = pLimit(30);
 let errorQRs = [];
 
 function sleep(ms) {
@@ -26,7 +26,7 @@ function chunkArray(array, size) {
 
 async function storeDataInIpfs(data) {
   try {
-    const ipfsResponse = await fetch('https://www.qrcipher.in/api/ipfs_store', {
+    const ipfsResponse = await fetch('http://localhost:3000/api/ipfs_store', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
@@ -48,35 +48,29 @@ async function storeDataInIpfs(data) {
 }
 
 async function storeHashOnBlockchain(ipfsHashArray) {
-  try {
-      const chainResponse = await axios.post('https://www.qrcipher.in/api/blockchain_store', {
-          ipfsHashes: ipfsHashArray
-          }, {
-          timeout: 18000000
-      });
+    try {
+        const chainResponse = await axios.post(`http://localhost:3000/api/contract/blockchain-store`, {
+                metadataArray: ipfsHashArray,
+            }, {
+                timeout: 18000000
+        });
 
-      if (chainResponse.status != 200) {
-          return { success: false, errorMsg: "Failed to Store data on blockchain"}
-      } 
-      console.log("Response From Blockchain")
-      const chainData = await chainResponse.data;
-      const hashArray = chainData.results.filter(r => r.status === 'success')
-      console.log(hashArray)
+        if (chainResponse.status != 200) {
+            return { success: false, errorMsg: "Failed to Store data on blockchain"}
+        } 
+        console.log("Response From Blockchain");
 
-      let hashes = []
-      for (const transaction of hashArray) {
-          hashes.push(transaction.hash)
-      }
-
-      return {success: true, ipfsHashes: hashes};
-  } catch (error) {
-      console.log(error);
-      return { success: false, errorMsg: error.message };
-  }
+        const chainData = await chainResponse.data;
+        return {success: true, runtime: chainData.runtime};
+    } catch (error) {
+        console.log(error);
+        return { success: false, errorMsg: error.message };
+    }
 }
 
 async function processBatches(productData, useBlockchainFlag, manufacturerName) {
   console.log("The processBatches function is hit");
+  console.log("Function Flag: ", useBlockchainFlag);
 
   const {
       productId,
@@ -117,10 +111,9 @@ async function processBatches(productData, useBlockchainFlag, manufacturerName) 
 
           let productUrl;
           if (useBlockchainFlag) {
-              productUrl = productUrl = `https://www.qrcipher.in/products/${ipfsHash + "bcf"}`;
-              ;
+              productUrl = `http://localhost:3000/products/${ipfsHash + "bcf"}`;
           } else {
-              productUrl = `https://www.qrcipher.in/products/${ipfsHash}`;
+              productUrl = `http://localhost:3000/products/${ipfsHash}`;
           }
 
           console.log(`IPFS CID for ${data.serial_number}: ${ipfsHash}`);
@@ -129,51 +122,37 @@ async function processBatches(productData, useBlockchainFlag, manufacturerName) 
       };
   });
 
-  const batchedTasks = chunkArray(tasks, 5);
-  let results = [];
+  const batchedTasks = chunkArray(tasks, 30);
+  let results = [], metadataArray = [];
 
   for (const batch of batchedTasks) {
       const batchResults = await Promise.all(batch.map(task => limit(task)));
       results.push(...batchResults);
       await sleep(300);
+
+      const batchCids = batchResults.map(r => r.cid).filter(Boolean);
+      metadataArray.push(...batchCids);
+
+      await sleep(300);
   }
 
   if (useBlockchainFlag) {
-      let cidArray = [];
-      let temp = [];
+    const batchSize = 100;
+    const blockchainChunks = chunkArray(metadataArray, batchSize);
 
-      for (const result of results) {
-          const regexPattern = /https:\/\/[^/]+\/products\/([^/]+)/;
-          const match = result?.url.match(regexPattern);
-          if (match) {
-              cidArray.push(match[1].slice(0, -3)); // Remove "bcf" from end
-          }
+    const blockchainTasks = blockchainChunks.map((batch, idx) =>
+        limit(async () => {
+            return await storeHashOnBlockchain(batch);
+        })
+    );
 
-          temp.push({ data: result.data, url: result.url });
-      }
+    const blockchainResults = await Promise.all(blockchainTasks);
+    console.log(blockchainResults);
 
-      const response = await storeHashOnBlockchain(cidArray);
-      results = [];
-
-      if (!response.success) {
-          console.error('Error occurred while storing hash on blockchain');
-          return temp; // return what you have
-      }
-
-      const hashArray = response.ipfsHashes;
-      console.log("Received hashes from blockchain");
-
-      for (const product of temp) {
-          const regexPattern = /https:\/\/[^/]+\/products\/([^/]+)/;
-          const match = product?.url.match(regexPattern);
-
-          if (match && hashArray.includes(match[1].slice(0, -3))) {
-              results.push(product);
-          }
-      }
+    return {results: results, contractRuntime: blockchainResults?.runtime};
   }
 
-  return results;
+  return {results: results};
 }
 
 export async function POST(request) {
@@ -201,6 +180,7 @@ export async function POST(request) {
           productPrice,
           useBlockchain,
         } = task;
+        console.log('Flag: ', useBlockchain);
         const product=await Product.find({_id:productId})
        
        
@@ -236,11 +216,11 @@ export async function POST(request) {
           }
         );
         
-        const flatUrlsArray = unitResults.flat();
+        const flatUrlsArray = unitResults.results.flat();
         console.log("Generated QR URLs:", flatUrlsArray.length);
         console.log("Failed QR codes:", errorQRs.length);
 
-        // const pdfResponse = await fetch('https://www.qrcipher.in/api/generate-pdf', {
+        // const pdfResponse = await fetch('http://localhost:3000/api/generate-pdf', {
         //   method: 'POST',
         //   headers: { 'Content-Type': 'application/json' },
         //   body: JSON.stringify({
