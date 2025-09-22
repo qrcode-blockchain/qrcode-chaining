@@ -118,7 +118,7 @@ async function processBatches(productData, useBlockchainFlag, manufacturerName) 
 
           console.log(`IPFS CID for ${data.serial_number}: ${ipfsHash}`);
 
-          return { data, url: productUrl };
+          return { data, url: productUrl, cid: ipfsHash };
       };
   });
 
