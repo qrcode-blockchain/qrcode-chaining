@@ -26,7 +26,7 @@
 //           <div className="flex items-center">
 //             <div className="flex-shrink-0 flex items-center space-x-2">
 //               <QrCode className="h-10 w-10 text-blue-600" />
-//               <span className="text-2xl font-bold text-[#001A32]">QR Chain</span>
+//               <span className="text-2xl font-bold text-[#001A32]">Qrcipher</span>
 //             </div>
 //           </div>
 
@@ -144,7 +144,7 @@ const Navbar = () => {
         {/* Logo Section */}
         <div className="flex items-center space-x-2">
           <QrCode className="h-10 w-10 text-blue-600" />
-          <span className="text-2xl font-bold text-[#001A32]">QR Chain</span>
+          <span className="text-2xl font-bold text-[#001A32]">Qrcipher</span>
         </div>
 
         {/* Desktop Navigation */}
