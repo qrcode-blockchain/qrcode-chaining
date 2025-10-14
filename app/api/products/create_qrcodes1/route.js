@@ -235,7 +235,7 @@ export async function POST(request) {
         // }
 // Replace the problematic section around line 192-206 with this:
 console.log("Hitting the generate pdf now");
-const API = "https://www.qrcipher.in";
+const API ="https://www.qrcipher.in";
 //"http://localhost:3000"
 const pdfResponse = await fetch(`${API}/api/generate-pdf`, {
   method: 'POST',
