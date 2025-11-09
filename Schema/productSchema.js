@@ -23,7 +23,7 @@ export const productSchema = z.object({
 
     location: z.string()
             .min(3, { message: "Location must be at least 3 characters." }),
-
+	videoLink: z.string().url().optional()
 })
 .refine(
         (data) => data.endSerialNo >= data.startSerialNo,

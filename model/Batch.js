@@ -57,6 +57,9 @@ const batchSchema = new mongoose.Schema({
   lineManagers: {
     type: [lineManagerSchema],
     default: undefined // This keeps it optional
+  },
+  marketingVideoUrl: {
+    type: String
   }
 });
 batchSchema.index({ productId: 1, batchNo: 1 }, { unique: true });

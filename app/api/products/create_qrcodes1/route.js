@@ -26,7 +26,7 @@ function chunkArray(array, size) {
 
 async function storeDataInIpfs(data) {
   try {
-    const ipfsResponse = await fetch('http://localhost:3000/api/ipfs_store', {
+    const ipfsResponse = await fetch('https://www.qrcipher.in/api/ipfs_store', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
@@ -49,7 +49,7 @@ async function storeDataInIpfs(data) {
 
 async function storeHashOnBlockchain(ipfsHashArray) {
     try {
-        const chainResponse = await axios.post(`http://localhost:3000/api/contract/blockchain-store`, {
+        const chainResponse = await axios.post(`https://www.qrcipher.in/api/contract/blockchain-store`, {
                 metadataArray: ipfsHashArray,
             }, {
                 timeout: 18000000
@@ -111,9 +111,9 @@ async function processBatches(productData, useBlockchainFlag, manufacturerName) 
 
           let productUrl;
           if (useBlockchainFlag) {
-              productUrl = `http://localhost:3000/products/${ipfsHash + "bcf"}`;
+              productUrl = `https://www.qrcipher.in/products/${ipfsHash + "bcf"}`;
           } else {
-              productUrl = `http://localhost:3000/products/${ipfsHash}`;
+              productUrl = `https://www.qrcipher.in/products/${ipfsHash}`;
           }
 
           console.log(`IPFS CID for ${data.serial_number}: ${ipfsHash}`);
@@ -220,7 +220,7 @@ export async function POST(request) {
         console.log("Generated QR URLs:", flatUrlsArray.length);
         console.log("Failed QR codes:", errorQRs.length);
 
-        // const pdfResponse = await fetch('http://localhost:3000/api/generate-pdf', {
+        // const pdfResponse = await fetch('https://www.qrcipher.in/api/generate-pdf', {
         //   method: 'POST',
         //   headers: { 'Content-Type': 'application/json' },
         //   body: JSON.stringify({
@@ -236,7 +236,7 @@ export async function POST(request) {
 // Replace the problematic section around line 192-206 with this:
 console.log("Hitting the generate pdf now");
 const API = "https://www.qrcipher.in";
-//"http://localhost:3000"
+//"https://www.qrcipher.in"
 const pdfResponse = await fetch(`${API}/api/generate-pdf`, {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },

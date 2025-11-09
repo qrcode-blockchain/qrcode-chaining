@@ -29,6 +29,7 @@ const emptyValues = {
     TotalNoOfUnits: '',
     location: "",
     remainingUnits:"",
+    videoLink: ""
 };
 
 export default function BatchDialog({ isOpen, onClose, taskId, role }) {
@@ -252,6 +253,10 @@ export default function BatchDialog({ isOpen, onClose, taskId, role }) {
         // Add logic for end serial number change if needed
         console.log("End serial changed:", e.target.value);
     };
+
+    const handleVideoLinkChange = (e) => {
+        console.log("Youtube link: ", e.target.value);
+    }
 
     // Calculate completion percentage
     const getCompletionPercentage = () => {
@@ -646,6 +651,25 @@ export default function BatchDialog({ isOpen, onClose, taskId, role }) {
                                                             {...field} 
                                                             onBlur={handleEndSerialChange} 
                                                             placeholder="End Serial Number"
+                                                            className="border-green-300 focus:border-green-500 focus:ring-green-500"
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )} 
+                                        />
+                                        <FormField 
+                                            control={methods.control} 
+                                            name="videoLink" 
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="text-xs font-medium text-green-700">Market Video (optional)</FormLabel>
+                                                    <FormControl>
+                                                        <Input 
+                                                            type="string"
+                                                            {...field}
+                                                            onBlur={handleVideoLinkChange} 
+                                                            placeholder="Enter Video Url"
                                                             className="border-green-300 focus:border-green-500 focus:ring-green-500"
                                                         />
                                                     </FormControl>

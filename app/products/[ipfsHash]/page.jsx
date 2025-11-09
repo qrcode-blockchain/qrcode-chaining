@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { Shield, CheckCircle, XCircle, AlertTriangle, Package, Calendar, MapPin, Tag, Weight, Factory, Hash, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
-import FetchLocation from "./fetch_location"
+import FetchLocation from "./fetch_location";
+import YouTube from 'react-youtube';
 
 export default function ProductPage() {
   const params = useParams();
@@ -15,13 +16,22 @@ export default function ProductPage() {
   const [loading, setLoading] = useState(true);
   const [locationData, setLocationData] = useState({});
 
+  const options= {
+        height: '390',
+        width: '640',
+        playerVars: {
+          autoplay: 1,
+          controls: 1,
+        },
+  };
+
   useEffect(() => {
     const verifyAndFetch = async (blockchainFlag) => {
       try {
         setLoading(true);
 
         if (blockchainFlag) {
-            const newHash = hash.slice(0, -3)
+            const newHash = hash.slice(0, -3);
             const res = await fetch('/api/verify_hash', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -34,15 +44,16 @@ export default function ProductPage() {
 
             if (exists) {
                 const ipfsResponse = await fetch(`/api/ipfs-url/${newHash}`);
-                const result = await ipfsResponse.json()
+                const result = await ipfsResponse.json();
                 if (!result.success) throw new Error('Failed to fetch data from IPFS');
-                setIpfsData(result.data)
+                setIpfsData(result.data);
             }
         } else {
             const ipfsResponse = await fetch(`/api/ipfs-url/${hash}`);
-            const result = await ipfsResponse.json()
+            const result = await ipfsResponse.json();
             if (!result.success) throw new Error('Failed to fetch data from IPFS');
-            setIpfsData(result.data)
+            setIpfsData(result.data);
+            console.log(result.data);
         }
       } catch (err) {
         setError(err.message);
@@ -52,9 +63,9 @@ export default function ProductPage() {
     };
 
     if (hash.length > 46) {
-        verifyAndFetch(true)
+        verifyAndFetch(true);
     } else {
-        verifyAndFetch(false)
+        verifyAndFetch(false);
     };
   }, [hash]);
 
@@ -239,6 +250,11 @@ export default function ProductPage() {
           >
             <p>Secured by blockchain technology</p>
           </motion.div>
+          {ipfsData?.videoUrl && (
+            <motion.div className='flex justify-center align-center text-center'>
+              <YouTube videoId={ipfsData.videoUrl} onReady={(event) => event.target.pauseVideo()} opts={options}></YouTube>
+            </motion.div>
+          )}
         </motion.div>
       )}
       <FetchLocation setLocationData={setLocationData}/>
