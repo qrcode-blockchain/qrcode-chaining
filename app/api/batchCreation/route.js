@@ -7,7 +7,11 @@ import Task from "../../../model/TaskLM";
 import Batch from "../../../model/Batch";
 import mongoose from "mongoose";
 
-
+async function extractYouTubeId(url) {
+  const regex = /(?:v=|\/embed\/|\/shorts\/|youtu\.be\/)([0-9A-Za-z_-]{11})/;
+  const match = url.match(regex);
+  return match ? match[1] : null;
+}
 
 export async function POST(request) {
   await dbConnect();
@@ -34,6 +38,7 @@ export async function POST(request) {
       endSerialNo,
       lineManagerId,
       date,
+      videoLink,
     } = data;
      
     console.log("Task ID:", taskId);
@@ -105,6 +110,8 @@ export async function POST(request) {
 
       await batch.save({ session: mongoSession });
     } else {
+      const videoId = await extractYouTubeId(videoLink);
+      
       batch = new Batch({
         productId: product._id,
         batchNo,
@@ -121,6 +128,7 @@ export async function POST(request) {
           },
         ],
         utcTimestamp: new Date(),
+        marketingVideoUrl: videoId
       });
 
       await batch.save({ session: mongoSession });

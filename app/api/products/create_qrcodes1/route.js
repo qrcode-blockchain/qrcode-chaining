@@ -220,7 +220,7 @@ export async function POST(request) {
         console.log("Generated QR URLs:", flatUrlsArray.length);
         console.log("Failed QR codes:", errorQRs.length);
 
-        // const pdfResponse = await fetch('http://localhost:3000/api/generate-pdf', {
+        // const pdfResponse = await fetch('https://www.qrcipher.in/api/generate-pdf', {
         //   method: 'POST',
         //   headers: { 'Content-Type': 'application/json' },
         //   body: JSON.stringify({
