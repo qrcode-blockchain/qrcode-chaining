@@ -710,7 +710,7 @@ const [buttonStatuses,setButtonStatuses]=useState({});
     try {
       const { taskId, batchNo, startSerial, endSerial, unitsCreated, createdAt,productId } = batchData;
      // console.log("The info is", taskId, batchNo, startSerial, endSerial, unitsCreated, createdAt);
-     //https://www.qrcipher.in
+     //http://localhost:3000
       const response = await axios.post('https://www.qrcipher.in/api/products/create_qrcodes1', batchData);
       //console.log("The response for creation is", response);
   
