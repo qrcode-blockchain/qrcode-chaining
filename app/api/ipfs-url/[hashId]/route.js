@@ -14,6 +14,7 @@ export async function GET(request, { params }) {
         }
         let productData = await dataResponse.json();
 
+        await mongoose.model("Batch");
         const batchData = await Batch.findOne({ batchNo: productData.batch_number, productId: new mongoose.Types.ObjectId(productData?._id) }, 
                                                 { marketingVideoUrl: 1 });
 
