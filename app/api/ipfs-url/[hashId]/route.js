@@ -18,7 +18,7 @@ export async function GET(request, { params }) {
                                                 { marketingVideoUrl: 1 });
 
         productData.videoUrl = batchData?.marketingVideoUrl || null;
-        console.log(productData);
+        console.log(productData, batchData);
 
         return NextResponse.json({ success: true, data: productData });
     } catch (error) {
