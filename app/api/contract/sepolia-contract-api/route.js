@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import Web3 from "web3";
-import contractABI from "../../abi.json";
+// import contractABI from "../../abi.json";
 
 // Array of RPC URLs to cycle through
 const RPC_URLS = [
