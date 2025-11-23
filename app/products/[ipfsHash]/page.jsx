@@ -32,7 +32,7 @@
 
 //         if (blockchainFlag) {
 //             const newHash = hash.slice(0, -3);
-//             const res = await fetch('/api/verify_hash', {
+//             const res = await fetch('/api/contract/sepolia-verify-hash', {
 //                 method: 'POST',
 //                 headers: { 'Content-Type': 'application/json' },
 //                 body: JSON.stringify({ ipfsHash: newHash }),
@@ -43,13 +43,13 @@
 //             setIsValid(exists);
 
 //             if (exists) {
-//                 const ipfsResponse = await fetch(`/api/ipfs-url/${newHash}`);
+//                 const ipfsResponse = await fetch(`/api/ipfs/${newHash}`);
 //                 const result = await ipfsResponse.json();
 //                 if (!result.success) throw new Error('Failed to fetch data from IPFS');
 //                 setIpfsData(result.data);
 //             }
 //         } else {
-//             const ipfsResponse = await fetch(`/api/ipfs-url/${hash}`);
+//             const ipfsResponse = await fetch(`/api/ipfs/${hash}`);
 //             const result = await ipfsResponse.json();
 //             if (!result.success) throw new Error('Failed to fetch data from IPFS');
 //             setIpfsData(result.data);
@@ -72,7 +72,7 @@
 //   useEffect(() => {
 //     const fetchAndStoreLocation = async () => {
 //       try {
-//         const response = await fetch('/api/store-location', {
+//         const response = await fetch('/api/products/store-location', {
 //           method: 'POST',
 //           headers: { 'Content-Type': 'application/json' },
 //           body: JSON.stringify({
@@ -299,7 +299,7 @@ export default function ProductPage() {
 
         if (blockchainFlag) {
             const newHash = hash.slice(0, -3);
-            const res = await fetch('/api/verify_hash', {
+            const res = await fetch('/api/contract/sepolia-verify-hash', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ipfsHash: newHash }),
@@ -310,13 +310,13 @@ export default function ProductPage() {
             setIsValid(exists);
 
             if (exists) {
-                const ipfsResponse = await fetch(`/api/ipfs-url/${newHash}`);
+                const ipfsResponse = await fetch(`/api/ipfs/${newHash}`);
                 const result = await ipfsResponse.json();
                 if (!result.success) throw new Error('Failed to fetch data from IPFS');
                 setIpfsData(result.data);
             }
         } else {
-            const ipfsResponse = await fetch(`/api/ipfs-url/${hash}`);
+            const ipfsResponse = await fetch(`/api/ipfs/${hash}`);
             const result = await ipfsResponse.json();
             if (!result.success) throw new Error('Failed to fetch data from IPFS');
             setIpfsData(result.data);
@@ -339,7 +339,7 @@ export default function ProductPage() {
   useEffect(() => {
     const fetchAndStoreLocation = async () => {
       try {
-        const response = await fetch('/api/store-location', {
+        const response = await fetch('/api/products/store-location', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

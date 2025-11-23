@@ -28,7 +28,7 @@
     ".next/types/**/*.ts",
     "**/*.ts",
     "**/*.tsx"
-, "app/api/ipfs_store/route.js", "app/api/pdf/[taskId]/[batchNo]/route.js"  ],
+, "app/api/ipfs/ipfs/store/route.js", "app/api/pdf/[taskId]/[batchNo]/route.js"  ],
   "exclude": [
     "node_modules"
   ]
