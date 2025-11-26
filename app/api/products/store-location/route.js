@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { dbConnect } from "../../../lib/dbConnect";
-import Location from "../../../model/Location";
-import Product from "../../../model/Product";
+import { dbConnect } from "../../../../lib/dbConnect";
+import Location from "../../../../model/Location";
+import Product from "../../../../model/Product";
 
 await dbConnect();
 

@@ -309,7 +309,7 @@
      
 //       const  getBatchData =async (productId) => {
 //         try {
-//           const response=await axios.get(`/api/batchCreation?taskId=${productId}`,
+//           const response=await axios.get(`/api/products/batchCreation?taskId=${productId}`,
 //             {
 //               headers:{
 //                 'Content-Type':'application/json'
@@ -671,7 +671,7 @@ const [buttonStatuses,setButtonStatuses]=useState({});
     console.log('Hit the fetch batch data fucntion');
     
     try {
-      const response = await axios.get(`/api/batchCreation?taskId=${productId}`, {
+      const response = await axios.get(`/api/products/batchCreation?taskId=${productId}`, {
         headers: {
           'Content-Type': 'application/json'
         }
