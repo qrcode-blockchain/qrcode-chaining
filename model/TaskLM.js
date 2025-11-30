@@ -52,6 +52,9 @@ const TaskSchema = new mongoose.Schema({
         default: false,
         
     },
+    marketingVideoUrl: {
+        type: String
+      },
  
     assignedAt: {
         type: Date,
@@ -63,6 +66,7 @@ const TaskSchema = new mongoose.Schema({
         default:"Not Started",
     }
 });
+console.log("Loaded TaskLM Schema:", TaskSchema.obj);
 
 const Task = mongoose.models.Task || mongoose.model("Task", TaskSchema);
 export default Task;

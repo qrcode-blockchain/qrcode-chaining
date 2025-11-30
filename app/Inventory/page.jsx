@@ -4,7 +4,7 @@ import SalesChart from "../../components/SalesChart";
 import { MoonIcon } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import SideBarComponent from "../../components/SideBarComponent";
-
+const API = process.env.NEXT_API;
 const series = [
     { name: "year 1", data: [1000, 2400, 1350, 1050, 1849, 1900] },
     { name: "year 2", data: [1200, 1789, 1400, 1378, 2070, 1789] }
@@ -26,7 +26,7 @@ export default function Inventory() {
     const [shippedUnits, setShippedUnits] = useState({});
 
     useEffect(() => {
-        fetch("/api/products/summary")
+        fetch("${API}/api/products/summary")
             .then((res) => res.json())
             .then((response) => {
                 const data = response.data;

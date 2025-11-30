@@ -29,7 +29,8 @@ const emptyValues = {
     TotalNoOfUnits: '',
     location: "",
     remainingUnits:"",
-    videoLink: ""
+    VideoLink: ""
+    
 };
 
 export default function BatchDialog({ isOpen, onClose, taskId, role }) {
@@ -75,6 +76,8 @@ export default function BatchDialog({ isOpen, onClose, taskId, role }) {
                             if (task.productPrice) setValue("price", task.productPrice);
                             if (task.TotalNoOfUnits) setValue("TotalNoOfUnits", task.TotalNoOfUnits);
                             if (task.location) setValue("location", task.location);
+                            if (task.
+                                marketingVideoUrl) setValue("VideoLink", task.marketingVideoUrl);
                             const nextSerialNo = (task.startSerialNo || 1) + (task.completedUnits || 0);
                             setValue("startSerialNo", nextSerialNo);
                             if(task.TotalNoOfUnits && task.completedUnits !== undefined) {
@@ -118,6 +121,7 @@ export default function BatchDialog({ isOpen, onClose, taskId, role }) {
             if (taskData.productPrice) preservedValues.price = taskData.productPrice;
             if (taskData.TotalNoOfUnits) preservedValues.TotalNoOfUnits = taskData.TotalNoOfUnits;
             if (taskData.location) preservedValues.location = taskData.location;
+            if (taskData.marketingVideoUrl) preservedValues.VideoLink = taskData.marketingVideoUrl;
             const nextSerialNo = (taskData.startSerialNo || 1) + completedUnits;
             preservedValues.startSerialNo = nextSerialNo;
             if(taskData.TotalNoOfUnits && completedUnits !== undefined) {
@@ -243,6 +247,7 @@ export default function BatchDialog({ isOpen, onClose, taskId, role }) {
             "price": !!taskData.productPrice,
             "TotalNoOfUnits": !!taskData.TotalNoOfUnits,
             "location": !!taskData.location,
+            "VideoLink": !!taskData.marketingVideoUrl,
             "remainingUnits": !!(taskData.TotalNoOfUnits && taskData.completedUnits !== undefined)
         };
         
@@ -254,9 +259,7 @@ export default function BatchDialog({ isOpen, onClose, taskId, role }) {
         console.log("End serial changed:", e.target.value);
     };
 
-    const handleVideoLinkChange = (e) => {
-        console.log("Youtube link: ", e.target.value);
-    }
+    
 
     // Calculate completion percentage
     const getCompletionPercentage = () => {
@@ -441,7 +444,26 @@ export default function BatchDialog({ isOpen, onClose, taskId, role }) {
                                                     </FormItem>
                                                 )} 
                                             />
-
+ <FormField 
+                                                control={methods.control} 
+                                                name="VideoLink" 
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel className="text-xs font-medium text-slate-600 flex items-center gap-1">
+                                                            <Lock className="h-3 w-3" />
+                                                            Marketing Video Link
+                                                        </FormLabel>
+                                                        <FormControl>
+                                                            <Input 
+                                                                type="string" 
+                                                                {...field} 
+                                                                readOnly={isFieldReadOnly("VideoLink")}
+                                                                className="bg-slate-100 border-slate-200 text-slate-700 cursor-not-allowed text-sm font-medium"
+                                                            />
+                                                        </FormControl>
+                                                    </FormItem>
+                                                )} 
+                                            />
                                             {/* Remaining Units - Special styling */}
                                             <FormField 
                                                 control={methods.control} 
@@ -658,25 +680,7 @@ export default function BatchDialog({ isOpen, onClose, taskId, role }) {
                                                 </FormItem>
                                             )} 
                                         />
-                                        <FormField 
-                                            control={methods.control} 
-                                            name="videoLink" 
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel className="text-xs font-medium text-green-700">Market Video (optional)</FormLabel>
-                                                    <FormControl>
-                                                        <Input 
-                                                            type="string"
-                                                            {...field}
-                                                            onBlur={handleVideoLinkChange} 
-                                                            placeholder="Enter Video Url"
-                                                            className="border-green-300 focus:border-green-500 focus:ring-green-500"
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )} 
-                                        />
+                                       
                                     </div>
                                 </div>
 

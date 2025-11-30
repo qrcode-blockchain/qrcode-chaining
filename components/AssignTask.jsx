@@ -38,7 +38,8 @@ const AssignTaskSchema = z.object({
   location: z.string().min(1, { message: "Location is required" }),
   productName: z.string().min(1, { message: "Product name is required" }),
   productPrice: z.coerce.number().positive({ message: "Product price must be a positive number" }),
-  TotalNoOfUnits: z.coerce.number().int().positive({ message: "Number of units must be a positive integer" })
+  TotalNoOfUnits: z.coerce.number().int().positive({ message: "Number of units must be a positive integer" }),
+  VideoLink: z.string().url({ message: "Please enter a valid URL" }).optional().or(z.literal(''))
 });
 
 
@@ -85,6 +86,7 @@ const AssignTaskModal = ({ isOpen, onClose }) => {
       productName: '',
       productPrice: '',
       TotalNoOfUnits: '',
+      VideoLink:''
     }
   });
  const manufacturerId=session?.user._id;
@@ -114,8 +116,12 @@ const AssignTaskModal = ({ isOpen, onClose }) => {
       form.setValue("location", "");
     }
   }, [selectedLineManager, lineManagers, form]);
-
+  const handleVideoLinkChange = (e) => {
+    console.log("Youtube link: ", e.target.value);
+}
   const onSubmit = async (data) => {
+    console.log("Form Data: ", data);
+    
     setIsSubmitting(true);
     try {
       const response = await axios.post('/api/lineManagers/assign-task',{...data,manufacturerId,useBlockchain} , {
@@ -339,8 +345,28 @@ const AssignTaskModal = ({ isOpen, onClose }) => {
                       <FormMessage className="text-red-500 text-xs" />
                     </FormItem>
                   )}
-                />
+
                 
+                />
+                 <FormField 
+                                                            control={form.control} 
+                                                            name="VideoLink" 
+                                                            render={({ field }) => (
+                                                                <FormItem>
+                                                                    <FormLabel className="text-xs font-medium text-green-700">Market Video (optional)</FormLabel>
+                                                                    <FormControl>
+                                                                        <Input 
+                                                                            type="string"
+                                                                            {...field}
+                                                                            onBlur={handleVideoLinkChange} 
+                                                                            placeholder="Enter Video Url"
+                                                                            className="border-green-300 focus:border-green-500 focus:ring-green-500"
+                                                                        />
+                                                                    </FormControl>
+                                                                    <FormMessage />
+                                                                </FormItem>
+                                                            )} 
+                                                        />
                 <div className="flex items-center mt-1 mb-1">
                   <AlertCircle className="text-amber-500 mr-1" size={16} />
                   <p className="text-xs text-amber-700 font-medium">Fields below will be filled by line manager</p>

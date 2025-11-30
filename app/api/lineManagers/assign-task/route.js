@@ -17,7 +17,7 @@ export async function POST(request){
 try{
     const data =await request.json();
     console.log("Received Data:", data);
-    const {manufacturerId,lineManager,location,productName,productPrice,TotalNoOfUnits,useBlockchain}=data;
+    const {manufacturerId,lineManager,location,productName,productPrice,TotalNoOfUnits,useBlockchain,VideoLink}=data;
     if(!productPrice || !productName){
         return NextResponse.json({
             success:false,
@@ -34,7 +34,8 @@ try{
         productName,
         productPrice,
         TotalNoOfUnits,
-        useBlockchain
+        useBlockchain,
+        marketingVideoUrl:VideoLink
       })
       await newTask.save();
     }else{
@@ -43,6 +44,7 @@ try{
         manufacturerId,
         location,
         price:productPrice,
+        
     })
     await newproduct.save();
     const newTask=new Task({
@@ -53,7 +55,8 @@ try{
       productName,
       productPrice,
       TotalNoOfUnits,
-      useBlockchain
+      useBlockchain,
+      marketingVideoUrl:VideoLink
     })
     await newTask.save();
     }

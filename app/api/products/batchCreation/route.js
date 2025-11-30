@@ -38,11 +38,11 @@ export async function POST(request) {
       endSerialNo,
       lineManagerId,
       date,
-      videoLink,
+      VideoLink,
     } = data;
      
     console.log("Task ID:", taskId);
-    console.log("Request data:", data);
+    console.log("Request data at batch creation is:", data);
     console.log("The date is",date);
     
     const task = await Task.findById(taskId);
@@ -110,7 +110,7 @@ export async function POST(request) {
 
       await batch.save({ session: mongoSession });
     } else {
-      const videoId = await extractYouTubeId(videoLink);
+      const videoId = await extractYouTubeId(VideoLink);
       
       batch = new Batch({
         productId: product._id,
