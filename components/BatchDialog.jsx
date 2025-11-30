@@ -136,7 +136,7 @@ export default function BatchDialog({ isOpen, onClose, taskId, role }) {
             console.log("Form submitted with data:", data);
             console.log("The taskid being sent is", taskId);
 
-            const response = await axios.post('/api/products/batchCreation', {
+            const response = await axios.post('/api/batchCreation', {
                 data,
                 taskId
             }, {
