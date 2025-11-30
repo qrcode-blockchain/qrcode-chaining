@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/option";
-import { dbConnect } from "../../../lib/dbConnect";
-import Product from "../../../model/Product";
-import Task from "../../../model/TaskLM";
-import Batch from "../../../model/Batch";
+import { authOptions } from "../../auth/[...nextauth]/option";
+import { dbConnect } from "../../../../lib/dbConnect";
+import Product from "../../../../model/Product";
+import Task from "../../../../model/TaskLM";
+import Batch from "../../../../model/Batch";
 import mongoose from "mongoose";
 
 async function extractYouTubeId(url) {

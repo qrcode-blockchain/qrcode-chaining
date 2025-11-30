@@ -26,7 +26,7 @@ function chunkArray(array, size) {
 
 async function storeDataInIpfs(data) {
   try {
-    const ipfsResponse = await fetch('https://www.qrcipher.in/api/ipfs_store', {
+    const ipfsResponse = await fetch('https://www.qrcipher.in/api/ipfs/store', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
@@ -49,7 +49,7 @@ async function storeDataInIpfs(data) {
 
 async function storeHashOnBlockchain(ipfsHashArray) {
     try {
-        const chainResponse = await axios.post(`https://www.qrcipher.in/api/contract/blockchain-store`, {
+        const chainResponse = await axios.post(`https://www.qrcipher.in/api/contract/hedera-blockchain-store`, {
                 metadataArray: ipfsHashArray,
             }, {
                 timeout: 18000000
